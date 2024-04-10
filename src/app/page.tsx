@@ -44,9 +44,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "~/components/ui/resizable";
-import { CodeEditor } from "~/components/code-editor";
+import { CodeEditor } from "~/components/editor/code-editor";
 import { SelectLanguage } from "~/components/select-language";
 import { useEditorStore } from "~/lib/stores";
+import EditorPanel from "~/components/playground/editor-panel";
 // import { judge } from "~/lib/judge";
 
 export default async function Home() {
@@ -104,7 +105,7 @@ export default async function Home() {
     //     <CrudShowcase />
     //   </div>
     // </main>
-    <main className="flex-1 overflow-auto p-4">
+    <main className="flex-1 overflow-auto p-3">
       {/* <div
         className="relative hidden flex-col items-start gap-8 md:flex"
         x-chunk="dashboard-03-chunk-0"
@@ -273,48 +274,8 @@ export default async function Home() {
           <ResizablePanel defaultSize={70} minSize={25}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={95} minSize={5}>
-                <div className="flex h-full flex-col items-center justify-center gap-5 p-4">
-                  <div className="min-h-0 w-full flex-1">
-                    <Tabs
-                      defaultValue="code"
-                      className="flex h-full w-full flex-col"
-                    >
-                      <TabsList className="flex w-full justify-start gap-2">
-                        <TabsTrigger value="code">Code</TabsTrigger>
-                        <TabsTrigger value="note">Note</TabsTrigger>
-                        <TabsTrigger value="whiteboard">
-                          White Board
-                        </TabsTrigger>
-                      </TabsList>
-                      <TabsContent
-                        value="code"
-                        className="max-h-full min-h-0 flex-1"
-                      >
-                        <Card className="h-full max-h-full min-h-0">
-                          <CardContent className="flex h-full min-h-0 flex-col p-0 !overflow-hidden">
-                            <div className="flex-1">
-                              <CodeEditor />
-                            </div>
-                            <div className="flex gap-3">
-                              <SelectLanguage />
-                              <Button>Submit</Button>
-                              <Button>Get Submission</Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="note">
-                        <Card>
-                          <CardContent></CardContent>
-                        </Card>
-                      </TabsContent>
-                      <TabsContent value="whiteboard">
-                        <Card>
-                          <CardContent></CardContent>
-                        </Card>
-                      </TabsContent>
-                    </Tabs>
-                  </div>
+                <div className="p-3 h-full">
+                  <EditorPanel />
                 </div>
               </ResizablePanel>
               <ResizableHandle withHandle />

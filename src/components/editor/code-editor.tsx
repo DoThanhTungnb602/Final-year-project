@@ -5,6 +5,8 @@ import { Editor } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useTheme } from "next-themes";
+import { SelectLanguage } from "~/components/select-language";
+import { Button } from "~/components/ui/button";
 
 export function CodeEditor() {
   const languageCode = useEditorStore((state) => state.languageCode);
@@ -25,13 +27,24 @@ export function CodeEditor() {
   }, [language]);
 
   return (
-    <Editor
-      theme={theme === "dark" ? "vs-dark" : "vs-light"}
-      defaultLanguage={language.editorValue}
-      defaultValue={sourceCode}
-      value={sourceCode}
-      options={{ minimap: { enabled: false } }}
-      onChange={(value) => setSourceCode(value)}
-    />
+    <div className="flex h-full min-h-0 w-full flex-col">
+      <div className="min-h-0 flex-1">
+        <Editor
+          theme={theme === "dark" ? "vs-dark" : "vs-light"}
+          defaultLanguage={language.editorValue}
+          defaultValue={sourceCode}
+          value={sourceCode}
+          options={{ minimap: { enabled: false } }}
+          onChange={(value) => setSourceCode(value)}
+        />
+      </div>
+      <div className="flex justify-between gap-3 p-3">
+        <SelectLanguage />
+        <div className="space-x-2">
+          <Button>Submit</Button>
+          <Button>Get Submission</Button>
+        </div>
+      </div>
+    </div>
   );
 }

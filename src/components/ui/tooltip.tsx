@@ -6,11 +6,11 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "~/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
-TooltipProvider.defaultProps = {
-  delayDuration: 150,
-};
 
 const Tooltip = TooltipPrimitive.Root;
+Tooltip.defaultProps = {
+  delayDuration: 100,
+};
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
