@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
 import { CodeEditor } from "~/components/editor/code-editor";
@@ -7,6 +5,7 @@ import { SlNote } from "react-icons/sl";
 import { Code2 } from "lucide-react";
 import { MdDraw } from "react-icons/md";
 import RichEditor from "../editor/rich-editor";
+import WhiteboardEditor from "../editor/white-board-editor";
 
 type Props = {};
 
@@ -41,9 +40,11 @@ const EditorPanel = (props: Props) => {
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="whiteboard">
-        <Card>
-          <CardContent></CardContent>
+      <TabsContent value="whiteboard" className="min-h-0 flex-1">
+        <Card className="h-full min-h-0 overflow-hidden">
+          <CardContent className="h-full min-h-0 p-0">
+            <WhiteboardEditor />
+          </CardContent>
         </Card>
       </TabsContent>
     </Tabs>

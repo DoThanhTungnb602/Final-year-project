@@ -1,6 +1,9 @@
+@import url("tldraw/tldraw.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @layer base {
   :root {
@@ -71,4 +74,9 @@ p {
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+/* Hide debug panel tldraw */
+.tlui-debug-panel {
+  display: none;
 }

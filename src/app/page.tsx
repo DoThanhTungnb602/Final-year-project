@@ -48,6 +48,8 @@ import { CodeEditor } from "~/components/editor/code-editor";
 import { SelectLanguage } from "~/components/select-language";
 import { useEditorStore } from "~/lib/stores";
 import EditorPanel from "~/components/playground/editor-panel";
+import ProblemDescriptionPanel from "~/components/playground/problem-description-panel";
+import ConsolePanel from "~/components/playground/console-panel";
 // import { judge } from "~/lib/judge";
 
 export default async function Home() {
@@ -268,20 +270,22 @@ export default async function Home() {
           className="h-full min-h-full w-full rounded-lg border"
         >
           <ResizablePanel defaultSize={25} minSize={25}>
-            <div className="flex h-full items-center justify-center p-5"></div>
+            <div className="h-full p-2">
+              <ProblemDescriptionPanel />
+            </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={70} minSize={25}>
+          <ResizablePanel defaultSize={70} minSize={40}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={95} minSize={5}>
-                <div className="p-3 h-full">
+              <ResizablePanel defaultSize={95} minSize={6.5}>
+                <div className="h-full p-2">
                   <EditorPanel />
                 </div>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={5} minSize={5}>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Three</span>
+              <ResizablePanel defaultSize={10} minSize={6.5}>
+                <div className="h-full p-2">
+                  <ConsolePanel />
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>

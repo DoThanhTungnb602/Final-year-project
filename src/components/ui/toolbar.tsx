@@ -1,4 +1,3 @@
-import React from "react";
 import {
   ToggleGroup as ToggleGroupPrimitive,
   Toolbar as ToolbarPrimitive,

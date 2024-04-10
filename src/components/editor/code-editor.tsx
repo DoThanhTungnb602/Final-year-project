@@ -40,9 +40,9 @@ export function CodeEditor() {
       </div>
       <div className="flex justify-between gap-3 p-3">
         <SelectLanguage />
-        <div className="space-x-2">
-          <Button>Submit</Button>
-          <Button>Get Submission</Button>
+        <div className="my-auto space-x-2">
+          <Button size="sm">Submit</Button>
+          <Button size="sm">Get Submission</Button>
         </div>
       </div>
     </div>
