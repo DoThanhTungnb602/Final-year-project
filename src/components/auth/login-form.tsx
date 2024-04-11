@@ -13,7 +13,6 @@ import { Input } from "~/components/ui/input";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -55,7 +54,6 @@ export function LoginForm() {
                     type="email"
                   />
                 </FormControl>
-                <FormDescription></FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -74,7 +72,6 @@ export function LoginForm() {
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
-                <FormDescription></FormDescription>
                 <FormMessage />
               </FormItem>
             )}

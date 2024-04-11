@@ -1,43 +1,132 @@
 "use client";
 
+import * as z from "zod";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RegisterSchema } from "schemas";
+
 import Link from "next/link";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import LoginButton from "~/components/auth/login-button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+
 import CardWrapper from "~/components/card-wrapper";
 
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+
 export function RegisterForm() {
+  const form = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    console.log(values);
+  };
+
   return (
-    <CardWrapper title="Register">
-      <div className="grid gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
-        </div>
-        <div className="grid gap-2">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <Link href="#" className="ml-auto inline-block text-sm underline">
-              Forgot your password?
-            </Link>
-          </div>
-          <Input id="password" type="password" required />
-        </div>
-        <LoginButton>
-          <Button type="submit" className="w-full">
-            Login
+    <CardWrapper title="Login">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your name" {...field} type="text" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="email@example.com"
+                    {...field}
+                    type="email"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                </div>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel>Confirm Password</FormLabel>
+                </div>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            size="sm"
+            className="w-full"
+            onSubmit={() => {}}
+            type="submit"
+          >
+            Register
           </Button>
-        </LoginButton>
-        <Button variant="outline" className="w-full">
-          Login with Google
+        </form>
+      </Form>
+      <div className="mt-5 flex gap-3">
+        <Button size="sm" variant="outline" className="w-full" asChild>
+          <Link href="/">
+            <FcGoogle className="size-5" />
+          </Link>
+        </Button>
+        <Button size="sm" variant="outline" className="w-full" asChild>
+          <Link href="/">
+            <FaGithub className="size-5" />
+          </Link>
         </Button>
       </div>
       <div className="mt-4 text-center text-sm">
-        Don&apos;t have an account?{" "}
+        Already have an account?{" "}
         <Link href="#" className="underline">
-          Sign up
+          Sign in
         </Link>
       </div>
     </CardWrapper>
