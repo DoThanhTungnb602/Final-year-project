@@ -1,4 +1,4 @@
-import { Bird, Rabbit, Settings, Share, Turtle } from "lucide-react";
+import { Bird, Rabbit, Settings, Turtle } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
+import LoginButton from "../auth/login-button";
 
 type Props = {};
 
@@ -144,10 +145,22 @@ const Header = (props: Props) => {
           </form>
         </DrawerContent>
       </Drawer>
-      <Button variant="outline" size="sm" className="ml-auto gap-1.5 text-sm">
-        <Share className="size-3.5" />
-        Share
-      </Button>
+      <div className="ml-auto space-x-5">
+        <LoginButton>
+          <Button
+            className="hover:text-primary-dark focus:text-primary-dark active:text-primary-dark gap-1.5 text-sm font-semibold text-primary"
+            size="sm"
+            variant="ghost"
+          >
+            Sign in
+          </Button>
+        </LoginButton>
+        <LoginButton>
+          <Button className="gap-1.5 text-sm font-semibold" size="sm">
+            Sign up
+          </Button>
+        </LoginButton>
+      </div>
     </header>
   );
 };

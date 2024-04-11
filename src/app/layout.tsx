@@ -6,8 +6,6 @@ import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 import { cn } from "~/lib/utils";
 import { ThemeProvider } from "~/components/theme-provider";
-import Header from "~/components/layout/header";
-import Sidebar from "~/components/layout/sidebar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
           "h-screen min-h-screen bg-background font-sans antialiased",
@@ -39,15 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TRPCReactProvider>
-            <div className="grid h-screen w-full pl-[56px]">
-              <Sidebar />
-              <div className="flex flex-col">
-                <Header />
-                {children}
-              </div>
-            </div>
-          </TRPCReactProvider>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
         </ThemeProvider>
       </body>
     </html>

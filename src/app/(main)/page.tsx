@@ -21,15 +21,15 @@ export default async function Home() {
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={70} minSize={40}>
+          <ResizablePanel defaultSize={75} minSize={40}>
             <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={95} minSize={6.5}>
+              <ResizablePanel defaultSize={90} minSize={10}>
                 <div className="h-full p-2">
                   <EditorPanel />
                 </div>
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={10} minSize={6.5}>
+              <ResizablePanel defaultSize={10} minSize={10}>
                 <div className="h-full p-2">
                   <ConsolePanel />
                 </div>

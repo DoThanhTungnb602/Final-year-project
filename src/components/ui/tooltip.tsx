@@ -8,9 +8,6 @@ import { cn } from "~/lib/utils";
 const TooltipProvider = TooltipPrimitive.Provider;
 
 const Tooltip = TooltipPrimitive.Root;
-Tooltip.defaultProps = {
-  delayDuration: 100,
-};
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
