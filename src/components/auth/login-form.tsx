@@ -1,64 +1,112 @@
 "use client";
 
+import * as z from "zod";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema } from "schemas";
+
 import Link from "next/link";
 
 import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import LoginButton from "~/components/auth/login-button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+
+import CardWrapper from "~/components/card-wrapper";
+
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 export function LoginForm() {
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    console.log(values);
+  };
+
   return (
-    <Card className="mx-auto my-auto h-fit max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
-            />
-          </div>
-          <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              <Link href="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </Link>
-            </div>
-            <Input id="password" type="password" required />
-          </div>
-          <LoginButton>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </LoginButton>
-          <Button variant="outline" className="w-full">
-            Login with Google
+    <CardWrapper title="Login">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="email@example.com"
+                    {...field}
+                    type="email"
+                  />
+                </FormControl>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                  <Link href="#" className="text-sm underline">
+                    Forgot your password?
+                  </Link>
+                </div>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            size="sm"
+            className="w-full"
+            onSubmit={() => {}}
+            type="submit"
+          >
+            Login
           </Button>
-        </div>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="#" className="underline">
-            Sign up
+        </form>
+      </Form>
+      <div className="mt-5 flex gap-3">
+        <Button size="sm" variant="outline" className="w-full" asChild>
+          <Link href="/">
+            <FcGoogle className="size-5" />
           </Link>
-        </div>
-      </CardContent>
-    </Card>
+        </Button>
+        <Button size="sm" variant="outline" className="w-full" asChild>
+          <Link href="/">
+            <FaGithub className="size-5" />
+          </Link>
+        </Button>
+      </div>
+      <div className="mt-4 text-center text-sm">
+        Don&apos;t have an account?{" "}
+        <Link href="#" className="underline">
+          Sign up
+        </Link>
+      </div>
+    </CardWrapper>
   );
 }
