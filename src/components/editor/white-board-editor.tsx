@@ -13,7 +13,6 @@ const components: TLComponents = {
   StylePanel: null,
   PageMenu: null,
   NavigationPanel: null,
-  // Toolbar: null,
   KeyboardShortcutsDialog: null,
   QuickActions: null,
   HelperButtons: null,

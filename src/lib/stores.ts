@@ -30,7 +30,7 @@ defaultLanguageCode.set(
           }
           return l;
       }
-  }`,
+  };`,
 );
 
 export const useUserPreferencesStore = create<UserPreferencesStore>((set) => ({
