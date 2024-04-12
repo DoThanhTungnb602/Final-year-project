@@ -23,7 +23,6 @@ import CardWrapper from "~/components/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { api } from "~/trpc/server";
 import { login } from "actions/login";
 
 export function LoginForm() {
@@ -102,7 +101,7 @@ export function LoginForm() {
       </div>
       <div className="mt-4 text-center text-sm">
         Don&apos;t have an account?{" "}
-        <Link href="#" className="underline">
+        <Link href="/auth/register" className="underline">
           Sign up
         </Link>
       </div>

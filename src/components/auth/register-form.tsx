@@ -23,7 +23,11 @@ import CardWrapper from "~/components/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { api } from "~/trpc/react";
 import { register } from "actions/register";
+import { redirect } from "next/navigation";
+import { Spinner } from "~/components/spinner";
+import { toast } from "react-toastify";
 
 export function RegisterForm() {
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -36,14 +40,28 @@ export function RegisterForm() {
     },
   });
 
+  const userCreator = api.auth.register.useMutation({
+    onSuccess: () => {
+      redirect("/");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-    register(values);
+    // register(values);
+    userCreator.mutate(values);
   };
 
   return (
     <CardWrapper title="Register">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
+        <form
+          // onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid gap-5"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -104,8 +122,17 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-          <Button size="sm" className="w-full" type="submit">
-            Register
+          <Button
+            size="sm"
+            className="w-full"
+            type="submit"
+            disabled={userCreator.isPending}
+          >
+            {userCreator.isPending ? (
+              <Spinner className="h-6 w-6" />
+            ) : (
+              "Register"
+            )}
           </Button>
         </form>
       </Form>
@@ -123,7 +150,7 @@ export function RegisterForm() {
       </div>
       <div className="mt-4 text-center text-sm">
         Already have an account?{" "}
-        <Link href="#" className="underline">
+        <Link href="/auth/login" className="underline">
           Sign in
         </Link>
       </div>

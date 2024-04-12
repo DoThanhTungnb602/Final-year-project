@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+
 import "~/styles/globals.css";
+import "react-toastify/dist/ReactToastify.min.css";
 
 import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { cn } from "~/lib/utils";
 import { ThemeProvider } from "~/components/theme-provider";
+import { Toastify } from "~/components/toastify";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,7 +30,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "h-screen min-h-screen bg-background font-sans antialiased overflow-hidden",
+          "h-screen min-h-screen overflow-hidden bg-background font-sans antialiased",
           inter.variable,
         )}
       >
@@ -37,7 +40,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            {children}
+            <Toastify />
+          </TRPCReactProvider>
         </ThemeProvider>
       </body>
     </html>

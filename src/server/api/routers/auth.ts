@@ -6,6 +6,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
+import { Prisma } from "@prisma/client";
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
@@ -16,7 +18,6 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("input", input)
       const user = await ctx.db.user.findFirst({
         where: {
           email: input.email,
@@ -37,14 +38,26 @@ export const authRouter = createTRPCRouter({
     .input(RegisterSchema)
     .output(z.string())
     .mutation(async ({ ctx, input }) => {
-      console.log("input", input)
-      const user = await ctx.db.user.create({
-        data: {
-          email: input.email,
-          password: input.password,
-          name: input.name,
-        },
-      });
-      return `User ${user.id} created`;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      try {
+        const user = await ctx.db.user.create({
+          data: {
+            email: input.email,
+            password: input.password,
+            name: input.name,
+          },
+        });
+        return `User ${user.id} created`;
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === "P2002") {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Email already exists",
+            });
+          }
+        }
+        throw error;
+      }
     }),
 });
