@@ -4,7 +4,7 @@ import * as z from "zod";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterSchema } from "schemas";
+import { RegisterSchema } from "~/schemas";
 
 import Link from "next/link";
 
@@ -24,7 +24,7 @@ import CardWrapper from "~/components/card-wrapper";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { api } from "~/trpc/react";
-import { register } from "actions/register";
+import { register } from "~/actions/register";
 import { redirect } from "next/navigation";
 import { Spinner } from "~/components/spinner";
 import { toast } from "react-toastify";

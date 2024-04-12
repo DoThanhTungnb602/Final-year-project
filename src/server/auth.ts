@@ -1,4 +1,3 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
 // import {
 //   getServerSession,
 //   type DefaultSession,
@@ -8,7 +7,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import DiscordProvider from "next-auth/providers/discord";
 
 import { env } from "~/env";
-import { db } from "~/server/db";
 
 // /**
 //  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -71,15 +69,14 @@ import { db } from "~/server/db";
 //  */
 // export const getServerAuthSession = () => getServerSession(authOptions);
 
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { db } from "~/server/db";
+
 import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
+import authConfig from "~/server/auth.config";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
-  providers: [GitHub],
-  pages: {
-    signIn: "/auth/login",
-    signOut: "/auth/logout",
-    newUser: "/auth/signup",
-  },
+  session: { strategy: "jwt" },
+  ...authConfig,
 });

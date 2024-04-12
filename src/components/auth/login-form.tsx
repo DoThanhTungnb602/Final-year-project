@@ -4,7 +4,7 @@ import * as z from "zod";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "schemas";
+import { LoginSchema } from "~/schemas";
 
 import Link from "next/link";
 
@@ -23,7 +23,7 @@ import CardWrapper from "~/components/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { login } from "actions/login";
+import { login } from "~/actions/login";
 
 export function LoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
