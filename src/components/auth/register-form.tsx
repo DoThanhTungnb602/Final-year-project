@@ -23,22 +23,25 @@ import CardWrapper from "~/components/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { register } from "actions/register";
 
 export function RegisterForm() {
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-    console.log(values);
+    register(values);
   };
 
   return (
-    <CardWrapper title="Login">
+    <CardWrapper title="Register">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
           <FormField
@@ -101,12 +104,7 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-          <Button
-            size="sm"
-            className="w-full"
-            onSubmit={() => {}}
-            type="submit"
-          >
+          <Button size="sm" className="w-full" type="submit">
             Register
           </Button>
         </form>

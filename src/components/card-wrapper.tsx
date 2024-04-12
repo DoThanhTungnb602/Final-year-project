@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 type Props = {
   children: React.ReactNode;
@@ -12,7 +7,7 @@ type Props = {
 
 const CardWrapper = ({ children, title }: Props) => {
   return (
-    <Card className="mx-auto my-auto h-fit w-[350px] max-w-sm">
+    <Card className="mx-auto my-auto h-fit w-[400px] max-w-sm">
       <CardHeader>
         <CardTitle className="text-center text-3xl">{title}</CardTitle>
       </CardHeader>

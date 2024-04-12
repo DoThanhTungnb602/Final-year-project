@@ -23,6 +23,8 @@ import CardWrapper from "~/components/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { api } from "~/trpc/server";
+import { login } from "actions/login";
 
 export function LoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -33,8 +35,8 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    login(values);
   };
 
   return (
