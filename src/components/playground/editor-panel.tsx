@@ -6,13 +6,10 @@ import { SlNote } from "react-icons/sl";
 import { Code2 } from "lucide-react";
 import { MdDraw } from "react-icons/md";
 import { useState } from "react";
+import { CodeEditor } from "~/components/editor/code-editor";
 import dynamic from "next/dynamic";
 
 type Props = {};
-
-const CodeEditor = dynamic(() =>
-  import("~/components/editor/code-editor").then((mod) => mod.CodeEditor),
-);
 
 const RichEditor = dynamic(
   () => import("~/components/editor/rich-editor").then((mod) => mod.default),

@@ -24,7 +24,6 @@ export default {
   ],
   pages: {
     signIn: "/auth/login",
-    signOut: "/auth/logout",
-    newUser: "/auth/signup",
+    newUser: "/auth/register",
   },
 } satisfies NextAuthConfig;

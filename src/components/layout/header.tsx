@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
-import Link from "next/link";
+import { UserInfo } from "~/components/shared/user-info";
 
 type Props = {};
 
@@ -145,19 +145,7 @@ const Header = (props: Props) => {
           </form>
         </DrawerContent>
       </Drawer>
-      <div className="ml-auto space-x-5">
-        <Button
-          className="hover:text-primary-dark focus:text-primary-dark active:text-primary-dark gap-1.5 text-sm font-semibold text-primary"
-          size="sm"
-          variant="ghost"
-          asChild
-        >
-          <Link href="/auth/login">Sign in</Link>
-        </Button>
-        <Button className="gap-1.5 text-sm font-semibold" size="sm" asChild>
-          <Link href="/auth/register">Sign up</Link>
-        </Button>
-      </div>
+      <UserInfo />
     </header>
   );
 };

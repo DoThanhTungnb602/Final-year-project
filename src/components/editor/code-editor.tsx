@@ -5,7 +5,7 @@ import { Editor } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useTheme } from "next-themes";
-import { SelectLanguage } from "~/components/select-language";
+import { SelectLanguage } from "~/components/shared/select-language";
 import { Button } from "~/components/ui/button";
 
 export function CodeEditor() {
@@ -36,6 +36,12 @@ export function CodeEditor() {
           value={sourceCode}
           options={{ minimap: { enabled: false } }}
           onChange={(value) => setSourceCode(value)}
+          loading={
+            <div>
+              {/* TODO: loading component */}
+              Loading...
+            </div>
+          }
         />
       </div>
       <div className="flex justify-between gap-3 p-3">

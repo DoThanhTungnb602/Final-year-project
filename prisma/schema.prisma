@@ -26,6 +26,11 @@ model Post {
     @@index([name])
 }
 
+enum Role {
+    USER
+    ADMIN
+}
+
 // Necessary for Next auth
 model User {
     id            String    @id @default(cuid())
@@ -33,6 +38,7 @@ model User {
     email         String    @unique
     emailVerified DateTime?
     password      String?
+    role          Role      @default(USER)
     image         String?
     accounts      Account[]
     sessions      Session[]

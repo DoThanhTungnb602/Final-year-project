@@ -19,13 +19,18 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 
-import CardWrapper from "~/components/card-wrapper";
+import CardWrapper from "~/components/shared/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { login } from "~/actions/login";
+import { toast } from "react-toastify";
+import { useTransition } from "react";
+import { Spinner } from "~/components/shared/spinner";
 
 export function LoginForm() {
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -34,8 +39,19 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-    login(values);
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    startTransition(async () => {
+      const res = await login(values);
+      const errors = res?.errors;
+      if (errors) {
+        if (typeof errors === "string") {
+          toast.error(errors);
+        } else {
+          errors.email && toast.error(errors.email[0]);
+          errors.password && toast.error(errors.password[0]);
+        }
+      }
+    });
   };
 
   return (
@@ -78,12 +94,12 @@ export function LoginForm() {
             )}
           />
           <Button
+            type="submit"
+            disabled={isPending}
             size="sm"
             className="w-full"
-            onSubmit={() => {}}
-            type="submit"
           >
-            Login
+            {isPending ? <Spinner /> : "Login"}
           </Button>
         </form>
       </Form>

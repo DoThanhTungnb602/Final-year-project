@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { ModeToggle } from "../mode-toggle";
+import { ModeToggle } from "../shared/mode-toggle";
 import Link from "next/link";
-import CustomTooltip from "~/components/custom-tooltip";
+import CustomTooltip from "~/components/shared/custom-tooltip";
 
 type Props = {};
 
@@ -78,16 +78,6 @@ const Sidebar = (props: Props) => {
       </nav>
       <nav className="mt-auto grid gap-1 p-2">
         <ModeToggle />
-        <CustomTooltip content="Account" side="right">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="mt-auto rounded-lg"
-            aria-label="Account"
-          >
-            <SquareUser className="size-5" />
-          </Button>
-        </CustomTooltip>
       </nav>
     </aside>
   );

@@ -19,14 +19,13 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 
-import CardWrapper from "~/components/card-wrapper";
+import CardWrapper from "~/components/shared/card-wrapper";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { api } from "~/trpc/react";
-import { register } from "~/actions/register";
-import { redirect } from "next/navigation";
-import { Spinner } from "~/components/spinner";
+import { useRouter } from "next/navigation";
+import { Spinner } from "~/components/shared/spinner";
 import { toast } from "react-toastify";
 
 export function RegisterForm() {
@@ -40,9 +39,12 @@ export function RegisterForm() {
     },
   });
 
+  const router = useRouter();
+
   const userCreator = api.auth.register.useMutation({
     onSuccess: () => {
-      redirect("/");
+      toast.success("Account created successfully");
+      router.push("/auth/login");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -50,18 +52,13 @@ export function RegisterForm() {
   });
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-    // register(values);
     userCreator.mutate(values);
   };
 
   return (
     <CardWrapper title="Register">
       <Form {...form}>
-        <form
-          // onSubmit={form.handleSubmit(onSubmit)}
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid gap-5"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
           <FormField
             control={form.control}
             name="name"

@@ -14,38 +14,32 @@ import { AuthError } from "next-auth";
 import { DEFAULT_LOGIN_REDIRECT } from "~/routes";
 
 export const authRouter = createTRPCRouter({
-  login: publicProcedure
-    .input(LoginSchema)
-    .output(z.string())
-    .mutation(async ({ ctx, input }) => {
-      let a = null;
-      try {
-        await signIn("credentials", {
-          email: input.email,
-          password: input.password,
-          redirectTo: DEFAULT_LOGIN_REDIRECT,
-        });
-        return "Logged in";
-      } catch (error) {
-        if (error instanceof AuthError) {
-          a = error;
+  login: publicProcedure.input(LoginSchema).mutation(async ({ ctx, input }) => {
+    try {
+      await signIn("credentials", {
+        email: input.email,
+        password: input.password,
+        redirectTo: DEFAULT_LOGIN_REDIRECT,
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error!.type) {
+          case "CredentialsSignin": {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Invalid credentials",
+            });
+          }
+          default: {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Error signing in",
+            });
+          }
         }
       }
-      switch (a!.type) {
-        case "CredentialsSignin": {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "Invalid credentials",
-          });
-        }
-        default: {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Error signing in",
-          });
-        }
-      }
-    }),
+    }
+  }),
 
   logout: protectedProcedure.mutation(async () => {
     await signOut();
@@ -56,7 +50,6 @@ export const authRouter = createTRPCRouter({
     .input(RegisterSchema)
     .output(z.string())
     .mutation(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       const hashedPassword = await bcrypt.hash(input.password, 10);
       const existingUser = await getUserByEmail(input.email);
       if (existingUser !== null) {

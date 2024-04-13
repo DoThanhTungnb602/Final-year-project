@@ -1,4 +1,4 @@
-import DefaultLoadingPage from "~/components/default-loading-page";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
 
 export default function Loading() {
   return <DefaultLoadingPage />;
