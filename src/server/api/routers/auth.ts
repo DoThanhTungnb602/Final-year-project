@@ -1,17 +1,18 @@
+import bcrypt from "bcryptjs";
+import { AuthError } from "next-auth";
 import { z } from "zod";
-
+import { getUserByEmail } from "~/data/user";
+import { generateVerificationToken } from "~/lib/tokens";
+import { DEFAULT_LOGIN_REDIRECT } from "~/routes";
 import { LoginSchema, RegisterSchema } from "~/schemas";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { TRPCError } from "@trpc/server";
-import bcrypt from "bcryptjs";
-import { getUserByEmail } from "~/data/user";
 import { signIn, signOut } from "~/server/auth";
-import { AuthError } from "next-auth";
-import { DEFAULT_LOGIN_REDIRECT } from "~/routes";
+
+import { TRPCError } from "@trpc/server";
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure.input(LoginSchema).mutation(async ({ ctx, input }) => {
@@ -48,7 +49,7 @@ export const authRouter = createTRPCRouter({
 
   register: publicProcedure
     .input(RegisterSchema)
-    .output(z.string())
+    .output(z.object({ success: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const hashedPassword = await bcrypt.hash(input.password, 10);
       const existingUser = await getUserByEmail(input.email);
@@ -66,8 +67,10 @@ export const authRouter = createTRPCRouter({
             name: input.name,
           },
         });
-        // TODO: Send email verification
-        return `User  created`;
+        const verificationToken = await generateVerificationToken(input.email);
+        return {
+          success: "Confirm your email address to complete registration",
+        };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

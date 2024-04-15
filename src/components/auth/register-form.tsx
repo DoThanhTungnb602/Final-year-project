@@ -1,15 +1,16 @@
 "use client";
 
-import * as z from "zod";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterSchema } from "~/schemas";
-
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FaCheckCircle, FaExclamationCircle, FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { toast } from "react-toastify";
+import * as z from "zod";
+import CardWrapper from "~/components/shared/card-wrapper";
+import { Spinner } from "~/components/shared/spinner";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import {
   Form,
   FormControl,
@@ -18,15 +19,11 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-
-import CardWrapper from "~/components/shared/card-wrapper";
-
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
+import { Input } from "~/components/ui/input";
+import { RegisterSchema } from "~/schemas";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
-import { Spinner } from "~/components/shared/spinner";
-import { toast } from "react-toastify";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export function RegisterForm() {
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -41,9 +38,13 @@ export function RegisterForm() {
 
   const router = useRouter();
 
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
+
   const userCreator = api.auth.register.useMutation({
-    onSuccess: () => {
-      toast.success("Account created successfully");
+    onSuccess: (data) => {
+      // toast.success("Account created successfully");
+      console.log(data);
       router.push("/auth/login");
     },
     onError: (error) => {
@@ -119,6 +120,18 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
+          {error && (
+            <div className="flex items-center gap-x-2 rounded-md bg-destructive/15 p-3 text-sm text-red-500">
+              <FaExclamationCircle className="size-5 shrink-0" />
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="flex items-center gap-x-2 rounded-md bg-emerald-500/15 p-3 text-sm text-emerald-500">
+              <FaCheckCircle className="size-5 shrink-0" />
+              {success}
+            </div>
+          )}
           <Button
             size="sm"
             className="w-full"

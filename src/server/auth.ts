@@ -4,6 +4,7 @@ import NextAuth, { DefaultSession } from "next-auth";
 import authConfig from "~/server/auth.config";
 import { type Adapter } from "next-auth/adapters";
 import { Role } from "@prisma/client";
+import { getUserById } from "~/data/user";
 
 declare module "next-auth" {
   interface User {
@@ -26,7 +27,29 @@ declare module "@auth/core/jwt" {
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  events: {
+    async linkAccount({ user }) {
+      await db.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          emailVerified: new Date(),
+        },
+      });
+    },
+  },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+
+      const existingUser = await getUserById(user.id as string);
+
+      if (!existingUser?.emailVerified) return false;
+
+      // TODO: Add 2 factor authentication
+      return true;
+    },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;

@@ -7,7 +7,7 @@ type Props = {
 
 const CardWrapper = ({ children, title }: Props) => {
   return (
-    <Card className="mx-auto my-auto h-fit w-[400px] max-w-sm">
+    <Card className="mx-auto my-auto h-fit max-w-sm w-[340px]">
       <CardHeader>
         <CardTitle className="text-center text-3xl">{title}</CardTitle>
       </CardHeader>

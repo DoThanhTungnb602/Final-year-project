@@ -1,15 +1,15 @@
 "use client";
 
-import * as z from "zod";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "~/schemas";
-
 import Link from "next/link";
-
+import { useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import * as z from "zod";
+import { login } from "~/actions/login";
+import CardWrapper from "~/components/shared/card-wrapper";
+import { Spinner } from "~/components/shared/spinner";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import {
   Form,
   FormControl,
@@ -18,18 +18,23 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { LoginSchema } from "~/schemas";
 
-import CardWrapper from "~/components/shared/card-wrapper";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
-import { login } from "~/actions/login";
-import { toast } from "react-toastify";
-import { useTransition } from "react";
-import { Spinner } from "~/components/shared/spinner";
+import Social from "./social";
 
 export function LoginForm() {
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Another account already exists with the same e-mail address."
+      : undefined;
+
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>(urlError);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -43,12 +48,19 @@ export function LoginForm() {
     startTransition(async () => {
       const res = await login(values);
       const errors = res?.errors;
+      const success = res?.success;
+      if (success) {
+        setSuccess(success);
+        setError(undefined);
+      }
       if (errors) {
         if (typeof errors === "string") {
-          toast.error(errors);
+          setError(errors);
+          setSuccess(undefined);
         } else {
-          errors.email && toast.error(errors.email[0]);
-          errors.password && toast.error(errors.password[0]);
+          errors.email && setError(errors.email[0]);
+          errors.password && setError(errors.password[0]);
+          setSuccess(undefined);
         }
       }
     });
@@ -93,6 +105,18 @@ export function LoginForm() {
               </FormItem>
             )}
           />
+          {error && (
+            <div className="flex items-center gap-x-2 rounded-md bg-destructive/15 p-3 text-sm text-red-500">
+              <FaExclamationCircle className="size-5 shrink-0" />
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="flex items-center gap-x-2 rounded-md bg-emerald-500/15 p-3 text-sm text-emerald-500">
+              <FaCheckCircle className="size-5 shrink-0" />
+              {success}
+            </div>
+          )}
           <Button
             type="submit"
             disabled={isPending}
@@ -103,18 +127,7 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
-      <div className="mt-5 flex gap-3">
-        <Button size="sm" variant="outline" className="w-full" asChild>
-          <Link href="/">
-            <FcGoogle className="size-5" />
-          </Link>
-        </Button>
-        <Button size="sm" variant="outline" className="w-full" asChild>
-          <Link href="/">
-            <FaGithub className="size-5" />
-          </Link>
-        </Button>
-      </div>
+      <Social />
       <div className="mt-4 text-center text-sm">
         Don&apos;t have an account?{" "}
         <Link href="/auth/register" className="underline">
