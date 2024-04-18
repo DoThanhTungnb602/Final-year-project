@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCheckCircle, FaExclamationCircle, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { toast } from "react-toastify";
 import * as z from "zod";
 import CardWrapper from "~/components/shared/card-wrapper";
 import { Spinner } from "~/components/shared/spinner";
@@ -43,12 +42,15 @@ export function RegisterForm() {
 
   const userCreator = api.auth.register.useMutation({
     onSuccess: (data) => {
-      // toast.success("Account created successfully");
-      console.log(data);
-      router.push("/auth/login");
+      const { success } = data;
+      if (success) {
+        setSuccess(success);
+        setError(undefined);
+      }
     },
     onError: (error) => {
-      toast.error(error.message);
+      setError(error.message);
+      setSuccess(undefined);
     },
   });
 
