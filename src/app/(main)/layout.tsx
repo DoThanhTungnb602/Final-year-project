@@ -3,11 +3,11 @@ import Sidebar from "~/components/layout/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="grid h-screen w-full pl-[56px]">
+    <div className="grid h-screen max-h-screen w-full pl-[56px]">
       <Sidebar />
-      <div className="flex flex-col">
+      <div className="flex h-full flex-col overflow-hidden">
         <Header />
-        {children}
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   );

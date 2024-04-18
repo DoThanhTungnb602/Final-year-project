@@ -8,23 +8,41 @@ export const ResetSchema = z.object({
 
 export const ProfileSettingsSchema = z
   .object({
-    name: z.string().min(1, {
-      message: "Name is required",
-    }),
-    currentPassword: z.string().min(6, {
-      message: "Password must be at least 6 characters long",
-    }),
-    newPassword: z.string().min(6, {
-      message: "Password must be at least 6 characters long",
-    }),
-    confirmNewPassword: z.string().min(6, {
-      message: "Password must be at least 6 characters long",
-    }),
+    name: z.string().optional(),
+    currentPassword: z.string().optional(),
+    newPassword: z.string().optional(),
+    confirmNewPassword: z.string().optional(),
   })
   .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: "New passwords do not match",
     path: ["confirmNewPassword"],
-  });
+  })
+  .refine(
+    (data) => {
+      if (!data.currentPassword) {
+        return true;
+      }
+      return data.newPassword !== data.currentPassword;
+    },
+    {
+      message: "New password must be different from the current password",
+      path: ["newPassword"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (
+        (data.currentPassword && data.newPassword && data.confirmNewPassword) ||
+        (!data.currentPassword && !data.newPassword && !data.confirmNewPassword)
+      )
+        return true;
+      return false;
+    },
+    {
+      message: "Please fill in all password fields",
+      path: ["currentPassword"],
+    },
+  );
 
 export const LoginSchema = z.object({
   email: z.string().email({
