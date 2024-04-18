@@ -63,7 +63,7 @@
   }
 }
 
-p {
+.tiptap > p {
   margin: 0 !important;
 }
 

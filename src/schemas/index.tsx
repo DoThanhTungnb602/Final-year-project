@@ -6,6 +6,26 @@ export const ResetSchema = z.object({
   }),
 });
 
+export const ProfileSettingsSchema = z
+  .object({
+    name: z.string().min(1, {
+      message: "Name is required",
+    }),
+    currentPassword: z.string().min(6, {
+      message: "Password must be at least 6 characters long",
+    }),
+    newPassword: z.string().min(6, {
+      message: "Password must be at least 6 characters long",
+    }),
+    confirmNewPassword: z.string().min(6, {
+      message: "Password must be at least 6 characters long",
+    }),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "New passwords do not match",
+    path: ["confirmNewPassword"],
+  });
+
 export const LoginSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address",

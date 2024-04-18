@@ -47,12 +47,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       if (!existingUser?.emailVerified) return false;
 
-      // TODO: Add 2 factor authentication
       return true;
     },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name;
         token.role = user.role;
       }
       return token;
