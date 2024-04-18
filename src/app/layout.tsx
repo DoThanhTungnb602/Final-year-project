@@ -9,6 +9,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { cn } from "~/lib/utils";
 import { ThemeProvider } from "~/components/shared/theme-provider";
 import { Toastify } from "~/components/shared/toastify";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "~/server/auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,11 +23,12 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -40,10 +43,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TRPCReactProvider>
-            {children}
-            <Toastify />
-          </TRPCReactProvider>
+          <SessionProvider session={session}>
+            <TRPCReactProvider>
+              {children}
+              <Toastify />
+            </TRPCReactProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

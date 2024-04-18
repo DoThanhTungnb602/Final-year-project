@@ -1,10 +1,12 @@
-import { auth } from "~/server/auth";
+"use client";
 
-export default async function SettingPage() {
-  const session = await auth();
+import { useCurrentUser } from "~/hooks/use-current-user";
+
+export default function SettingPage() {
+  const currentUser = useCurrentUser();
   return (
     <div>
-      <h1>{JSON.stringify(session)}</h1>
+      <h1>{JSON.stringify(currentUser)}</h1>
     </div>
   );
 }

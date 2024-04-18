@@ -158,7 +158,7 @@ export const authRouter = createTRPCRouter({
     };
   }),
 
-  newPassword: protectedProcedure
+  resetPassword: publicProcedure
     .input(z.object({ password: z.string(), token: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const existingToken = await getPasswordResetTokenByToken(input.token);
@@ -196,11 +196,20 @@ export const authRouter = createTRPCRouter({
             password: hashedPassword,
           },
         });
+        await ctx.db.passwordResetToken.delete({
+          where: {
+            id: existingToken.id,
+          },
+        });
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Error updating password",
         });
       }
+
+      return {
+        success: "Password updated.",
+      };
     }),
 });

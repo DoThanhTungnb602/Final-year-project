@@ -21,11 +21,22 @@ import { NewPasswordSchema } from "~/schemas";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "~/trpc/react";
+import Link from "next/link";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const changePassword = api.auth.newPassword.useMutation();
+  const changePassword = api.auth.resetPassword.useMutation({
+    onSuccess: (data) => {
+      const { success } = data;
+      setSuccess(success);
+      setError(undefined);
+    },
+    onError: (error) => {
+      setError(error.message);
+      setSuccess(undefined);
+    },
+  });
 
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
@@ -40,7 +51,7 @@ export default function LoginForm() {
 
   const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
     if (!token) {
-      setError("Token is required");
+      setError("Missing token!");
       setSuccess(undefined);
       return;
     }
@@ -101,6 +112,11 @@ export default function LoginForm() {
           >
             {changePassword.isPending ? <Spinner /> : "Reset password"}
           </Button>
+          {success && (
+            <Button variant="secondary" asChild>
+              <Link href="/auth/login">Back to login</Link>
+            </Button>
+          )}
         </form>
       </Form>
     </CardWrapper>

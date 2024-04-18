@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -13,30 +15,34 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { FaUserCircle } from "react-icons/fa";
-import { auth, signOut } from "~/server/auth";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+import { useCurrentUser } from "~/hooks/use-current-user";
+import { useState } from "react";
 
-export async function UserInfo() {
-  const session = await auth();
-  const user = session?.user;
+export function UserInfo() {
+  const currentUser = useCurrentUser();
+  const [showModal, setShowModal] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  return session ? (
+  return currentUser ? (
     <div className="ml-auto">
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <Button type="submit"> log out</Button>
-      </form>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="m-0 h-fit w-fit rounded-full p-0">
             <Avatar>
-              <AvatarImage src={user?.image ?? ""} />
+              <AvatarImage src={currentUser?.image ?? ""} />
               <AvatarFallback>
                 <FaUserCircle className="h-6 w-6" />
               </AvatarFallback>
@@ -88,12 +94,44 @@ export async function UserInfo() {
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuItem disabled>API</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setShowModal(true);
+            }}
+          >
             Sign out
             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <AlertDialog open={showModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to sign out?
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowModal(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setIsSigningOut(true);
+                await signOut();
+                setIsSigningOut(false);
+              }}
+              disabled={isSigningOut}
+            >
+              Sign out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   ) : (
     <div className="ml-auto space-x-5">
