@@ -24,33 +24,67 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Input } from "~/components/ui/input";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ProfileSettingsSchema } from "~/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UploadButton } from "~/lib/uploadthing";
 import { toast } from "react-toastify";
 import { useCurrentUser } from "~/hooks/use-current-user";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { api } from "~/trpc/react";
+
+const NameSchema = z.object({
+  name: z.string(),
+});
+
+const PasswordSchema = z.object({
+  currentPassword: z.string(),
+  newPassword: z.string(),
+  confirmNewPassword: z.string(),
+});
 
 export default function ProfileSettingPage() {
   const [isNameEditable, setIsNameEditable] = useState(false);
-  const [isPasswordEditable, setIsPasswordEditable] = useState(false);
-
   const currentUser = useCurrentUser();
 
-  const form = useForm<z.infer<typeof ProfileSettingsSchema>>({
-    resolver: zodResolver(ProfileSettingsSchema),
+  const nameForm = useForm<z.infer<typeof NameSchema>>({
+    resolver: zodResolver(NameSchema),
     defaultValues: {
       name: "",
+    },
+  });
+
+  const passwordForm = useForm<z.infer<typeof PasswordSchema>>({
+    resolver: zodResolver(PasswordSchema),
+    defaultValues: {
       currentPassword: "",
       newPassword: "",
       confirmNewPassword: "",
     },
   });
 
+  const updateAvatar = api.user.updateAvatar.useMutation({
+    onSuccess: (data) => {
+      const { success } = data;
+      if (success) toast.success("Image uploaded successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   return (
     <div className="h-full w-full overflow-auto">
-      <Form {...form}>
+      <Form {...nameForm}>
         <form
-          onSubmit={form.handleSubmit((values) => {
+          onSubmit={nameForm.handleSubmit((values) => {
             console.log(values);
           })}
           className="space-y-8"
@@ -76,9 +110,9 @@ export default function ProfileSettingPage() {
                   className="ut-button:bg-primary ut-button:font-semibold dark:ut-button:text-gray-900"
                   endpoint="imageUploader"
                   onClientUploadComplete={(res) => {
-                    // Do something with the response
-                    console.log("Files: ", res);
-                    toast.success("Image uploaded successfully");
+                    if (res[0]?.url) {
+                      updateAvatar.mutate({ url: res[0]?.url });
+                    }
                   }}
                   onUploadError={(error: Error) => {
                     console.log(error.message);
@@ -113,7 +147,7 @@ export default function ProfileSettingPage() {
                     className="h-10 w-10 rounded-full p-2"
                     onClick={() => {
                       setIsNameEditable(true);
-                      setTimeout(() => form.setFocus("name"), 0);
+                      setTimeout(() => nameForm.setFocus("name"), 0);
                     }}
                   >
                     <FaPen className="h-4 w-4" />
@@ -125,7 +159,7 @@ export default function ProfileSettingPage() {
               <div className="flex w-full gap-2">
                 <FormField
                   name="name"
-                  control={form.control}
+                  control={nameForm.control}
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>Name</FormLabel>
@@ -144,98 +178,84 @@ export default function ProfileSettingPage() {
               </div>
             </CardFooter>
           </Card>
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between">
-                <div className="space-y-2">
-                  <CardTitle>Password</CardTitle>
-                  <CardDescription>Update your password</CardDescription>
-                </div>
-                {isPasswordEditable ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="h-10 w-10 rounded-full p-2"
-                    onClick={() => setIsPasswordEditable(false)}
-                  >
-                    <FaCheck className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="h-10 w-10 rounded-full p-2"
-                    onClick={() => {
-                      setIsPasswordEditable(true);
-                      setTimeout(() => form.setFocus("currentPassword"), 0);
-                    }}
-                  >
-                    <FaPen className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-
-            <CardFooter className="flex flex-col gap-3 border-t px-6 py-4">
-              <FormField
-                control={form.control}
-                name="currentPassword"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Current password</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isPasswordEditable}
-                        placeholder="Enter your current password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="newPassword"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>New password</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isPasswordEditable}
-                        placeholder="Enter your new password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmNewPassword"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Confirm new password</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isPasswordEditable}
-                        placeholder="Confirm your new password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardFooter>
-          </Card>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="link">Change password</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Password</DialogTitle>
+                <DialogDescription>Update your password</DialogDescription>
+              </DialogHeader>
+              <Form {...passwordForm}>
+                <form
+                  onSubmit={passwordForm.handleSubmit(() => {})}
+                  className="space-y-5"
+                >
+                  <FormField
+                    control={passwordForm.control}
+                    name="currentPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current password</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your current password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={passwordForm.control}
+                    name="newPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New password</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your new password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={passwordForm.control}
+                    name="confirmNewPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm new password</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Confirm your new password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type="button" variant="ghost">
+                        Cancel
+                      </Button>
+                    </DialogClose>
+                    <Button type="submit">Save Changes</Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
           <Button
             type="submit"
             className="float-right"
-            disabled={!form.formState.isDirty}
+            disabled={!nameForm.formState.isDirty}
           >
             Save Changes
           </Button>
