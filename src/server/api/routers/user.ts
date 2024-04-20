@@ -4,16 +4,26 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const userRouter = createTRPCRouter({
-  updateAvatar: protectedProcedure
-    .input(z.object({ url: z.string() }))
+  updateName: protectedProcedure
+    .input(z.object({ name: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!input.url) {
+      try {
+        await ctx.db.user.update({
+          where: { id: ctx.session.user.id },
+          data: { name: input.name },
+        });
+      } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Invalid URL",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update name",
         });
       }
 
+      return { success: "Name updated successfully", name: input.name };
+    }),
+  updateAvatar: protectedProcedure
+    .input(z.object({ url: z.string() }))
+    .mutation(async ({ ctx, input }) => {
       try {
         await ctx.db.user.update({
           where: { id: ctx.session.user.id },
@@ -26,7 +36,7 @@ export const userRouter = createTRPCRouter({
         });
       }
 
-      return { success: "Avatar updated successfully" };
+      return { success: "Avatar updated successfully", url: input.url };
     }),
 
   updatePassword: protectedProcedure
@@ -37,7 +47,5 @@ export const userRouter = createTRPCRouter({
         confirmNewPassword: z.string(),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
-      
-    }),
+    .mutation(async ({ ctx, input }) => {}),
 });

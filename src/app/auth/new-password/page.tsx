@@ -55,7 +55,6 @@ export default function LoginForm() {
       setSuccess(undefined);
       return;
     }
-    console.log(values);
     changePassword.mutate({
       password: values.password,
       token,

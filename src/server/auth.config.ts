@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { getUserByEmail } from "~/data/user";
 import { LoginSchema } from "~/schemas";
 import bcrypt from "bcryptjs";
+import { ExtendedUser } from "./auth";
 
 export default {
   providers: [
@@ -24,7 +25,7 @@ export default {
           const user = await getUserByEmail(email);
           if (!user || !user.password) return null;
           const passwordMatch = await bcrypt.compare(password, user.password);
-          if (passwordMatch) return user;
+          if (passwordMatch) return user as unknown as ExtendedUser;
         }
         return null;
       },

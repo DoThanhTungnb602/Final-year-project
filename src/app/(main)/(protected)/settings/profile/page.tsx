@@ -26,7 +26,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UploadButton } from "~/lib/uploadthing";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useCurrentUser } from "~/hooks/use-current-user";
 import {
   Dialog,
@@ -39,6 +39,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { api } from "~/trpc/react";
+import { useSession } from "next-auth/react";
 
 const NameSchema = z.object({
   name: z.string(),
@@ -53,11 +54,12 @@ const PasswordSchema = z.object({
 export default function ProfileSettingPage() {
   const [isNameEditable, setIsNameEditable] = useState(false);
   const currentUser = useCurrentUser();
+  const { update } = useSession();
 
   const nameForm = useForm<z.infer<typeof NameSchema>>({
     resolver: zodResolver(NameSchema),
     defaultValues: {
-      name: "",
+      name: currentUser?.name || undefined,
     },
   });
 
@@ -71,57 +73,80 @@ export default function ProfileSettingPage() {
   });
 
   const updateAvatar = api.user.updateAvatar.useMutation({
-    onSuccess: (data) => {
-      const { success } = data;
-      if (success) toast.success("Image uploaded successfully");
+    onSuccess: async (data) => {
+      const { success, url } = data;
+      await update({ url });
+      if (success) toast.success("Your avatar has been updated");
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
+  const updateName = api.user.updateName.useMutation({
+    onSuccess: async (data) => {
+      const { success, name } = data;
+      await update({ name });
+      setIsNameEditable(false);
+      nameForm.reset({ name });
+      if (success) toast.success("Your name has been updated");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onFormNameSubmit = (values: z.infer<typeof NameSchema>) => {
+    updateName.mutate({ name: values.name });
+  };
+
   return (
-    <div className="h-full w-full overflow-auto">
+    <div className="h-full w-full space-y-5 overflow-auto">
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between">
+            <div className="space-y-2">
+              <CardTitle>Profile Image</CardTitle>
+              <CardDescription>Update your profile image</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardFooter className="border-t px-6 py-4">
+          <div className="flex w-full flex-col items-center gap-5">
+            <Avatar className="size-28">
+              <AvatarImage
+                src={currentUser?.image as string}
+                alt="avatar"
+                className="object-cover"
+              />
+              <AvatarFallback>
+                <FaUserCircle className="size-28" />
+              </AvatarFallback>
+            </Avatar>
+            {!currentUser?.isOAuth && (
+              <UploadButton
+                className="ut-button:bg-primary ut-button:font-semibold dark:ut-button:text-gray-900"
+                endpoint="imageUploader"
+                onUploadBegin={() => false}
+                onClientUploadComplete={(res) => {
+                  if (res[0]?.url) {
+                    updateAvatar.mutate({ url: res[0]?.url });
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  console.log(error.message);
+                  toast.error("Failed to upload image");
+                }}
+              />
+            )}
+          </div>
+        </CardFooter>
+      </Card>
       <Form {...nameForm}>
         <form
-          onSubmit={nameForm.handleSubmit((values) => {
-            console.log(values);
-          })}
-          className="space-y-8"
+          onSubmit={nameForm.handleSubmit(onFormNameSubmit)}
+          className="space-y-5"
         >
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between">
-                <div className="space-y-2">
-                  <CardTitle>Profile Image</CardTitle>
-                  <CardDescription>Update your profile image</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardFooter className="border-t px-6 py-4">
-              <div className="flex w-full flex-col items-center gap-5">
-                <Avatar className="size-28">
-                  <AvatarImage src={currentUser?.image as string} alt="image" />
-                  <AvatarFallback>
-                    <FaUserCircle className="size-28" />
-                  </AvatarFallback>
-                </Avatar>
-                <UploadButton
-                  className="ut-button:bg-primary ut-button:font-semibold dark:ut-button:text-gray-900"
-                  endpoint="imageUploader"
-                  onClientUploadComplete={(res) => {
-                    if (res[0]?.url) {
-                      updateAvatar.mutate({ url: res[0]?.url });
-                    }
-                  }}
-                  onUploadError={(error: Error) => {
-                    console.log(error.message);
-                    toast.error("Failed to upload image");
-                  }}
-                />
-              </div>
-            </CardFooter>
-          </Card>
           <Card>
             <CardHeader>
               <div className="flex justify-between">
@@ -167,7 +192,7 @@ export default function ProfileSettingPage() {
                         <Input
                           placeholder="Enter your name"
                           className="flex-1"
-                          disabled={!isNameEditable}
+                          readOnly={!isNameEditable}
                           {...field}
                         />
                       </FormControl>
@@ -178,80 +203,6 @@ export default function ProfileSettingPage() {
               </div>
             </CardFooter>
           </Card>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="link">Change password</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Password</DialogTitle>
-                <DialogDescription>Update your password</DialogDescription>
-              </DialogHeader>
-              <Form {...passwordForm}>
-                <form
-                  onSubmit={passwordForm.handleSubmit(() => {})}
-                  className="space-y-5"
-                >
-                  <FormField
-                    control={passwordForm.control}
-                    name="currentPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Current password</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your current password"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={passwordForm.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>New password</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your new password"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={passwordForm.control}
-                    name="confirmNewPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirm new password</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Confirm your new password"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="button" variant="ghost">
-                        Cancel
-                      </Button>
-                    </DialogClose>
-                    <Button type="submit">Save Changes</Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
           <Button
             type="submit"
             className="float-right"
@@ -261,6 +212,82 @@ export default function ProfileSettingPage() {
           </Button>
         </form>
       </Form>
+      {!currentUser?.isOAuth && (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="link">Change password</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Password</DialogTitle>
+              <DialogDescription>Update your password</DialogDescription>
+            </DialogHeader>
+            <Form {...passwordForm}>
+              <form
+                onSubmit={passwordForm.handleSubmit(() => {})}
+                className="space-y-5"
+              >
+                <FormField
+                  control={passwordForm.control}
+                  name="currentPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your current password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={passwordForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your new password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={passwordForm.control}
+                  name="confirmNewPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm new password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Confirm your new password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button type="button" variant="ghost">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button type="submit">Save Changes</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

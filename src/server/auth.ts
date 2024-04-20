@@ -6,13 +6,20 @@ import { type Adapter } from "next-auth/adapters";
 import { Role } from "@prisma/client";
 import { getUserById } from "~/data/user";
 
+export type ExtendedUser = DefaultSession["user"] & {
+  role: Role;
+  isOAuth: boolean;
+};
+
 declare module "next-auth" {
   interface User {
     role: Role;
+    isOAuth: boolean;
   }
   interface Session {
     user: {
       role: Role;
+      isOAuth: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -49,11 +56,22 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       return true;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user, trigger, session, account }) {
+      if (trigger === "update") {
+        if (session?.url) {
+          token.picture = session.url;
+        }
+        if (session?.name) {
+          token.name = session.name;
+        }
+      }
       if (user) {
+        const isOAuth = account?.provider !== "credentials";
+        token.isOAuth = isOAuth;
         token.id = user.id;
         token.name = user.name;
         token.role = user.role;
+        token.picture = user.image;
       }
       return token;
     },
@@ -64,6 +82,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           ...session.user,
           id: token.id as string,
           role: token.role as Role,
+          image: token.picture as string,
+          name: token.name as string,
+          isOAuth: token.isOAuth as boolean,
         },
       };
     },

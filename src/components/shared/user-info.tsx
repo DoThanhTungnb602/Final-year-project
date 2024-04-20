@@ -42,7 +42,10 @@ export function UserInfo() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="m-0 h-fit w-fit rounded-full p-0">
             <Avatar>
-              <AvatarImage src={currentUser?.image ?? ""} />
+              <AvatarImage
+                src={currentUser?.image ?? ""}
+                className="object-cover"
+              />
               <AvatarFallback>
                 <FaUserCircle className="h-6 w-6" />
               </AvatarFallback>
