@@ -9,7 +9,7 @@ import ConsolePanel from "~/components/playground/console-panel";
 
 export default async function Home() {
   return (
-    <main className="flex-1 overflow-auto p-3">
+    <main className="flex-1 overflow-auto p-3 h-full">
       <div className="h-full">
         <ResizablePanelGroup
           direction="horizontal"

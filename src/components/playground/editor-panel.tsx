@@ -22,6 +22,7 @@ const WhiteboardEditor = dynamic(
   () =>
     import("~/components/editor/white-board-editor").then((mod) => mod.default),
   {
+    // TODO: Add a loading component
     loading: () => <div>Loading...</div>,
   },
 );

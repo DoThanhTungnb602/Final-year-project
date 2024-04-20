@@ -1,18 +1,17 @@
-import {
-  Book,
-  Bot,
-  Code2,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+"use client";
+
+import { Book, Bot, Code2, Settings2, SquareTerminal } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "../shared/mode-toggle";
 import Link from "next/link";
 import CustomTooltip from "~/components/shared/custom-tooltip";
-
+import { usePathname } from "next/navigation";
+import { cn } from "~/lib/utils";
 
 const Sidebar = () => {
+  const pathname = usePathname();
+
   return (
     <aside className="inset-y fixed left-0 z-20 flex h-full flex-col border-r">
       <div className="border-b p-2">
@@ -27,50 +26,68 @@ const Sidebar = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-lg bg-muted"
+            className={cn("rounded-lg", pathname === "/" && "bg-muted")}
             aria-label="Playground"
+            asChild
           >
-            <SquareTerminal className="size-5" />
+            <Link href="/">
+              <SquareTerminal className="size-5" />
+            </Link>
           </Button>
         </CustomTooltip>
         <CustomTooltip content="Models" side="right">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-lg"
+            className={cn("rounded-lg", pathname === "/models" && "bg-muted")}
             aria-label="Models"
           >
-            <Bot className="size-5" />
+            <Link href="/">
+              <Bot className="size-5" />
+            </Link>
           </Button>
         </CustomTooltip>
         <CustomTooltip content="API" side="right">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-lg"
+            className={cn("rounded-lg", pathname === "/api" && "bg-muted")}
             aria-label="API"
           >
-            <Code2 className="size-5" />
+            <Link href="/">
+              <Code2 className="size-5" />
+            </Link>
           </Button>
         </CustomTooltip>
         <CustomTooltip content="Documentation" side="right">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-lg"
+            className={cn(
+              "rounded-lg",
+              pathname === "/documentation" && "bg-muted",
+            )}
             aria-label="Documentation"
           >
-            <Book className="size-5" />
+            <Link href="/">
+              <Book className="size-5" />
+            </Link>
           </Button>
         </CustomTooltip>
         <CustomTooltip content="Settings" side="right">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-lg"
+            className={cn(
+              "rounded-lg",
+              pathname.startsWith("/settings") && "bg-muted",
+            )}
             aria-label="Settings"
+            asChild
           >
-            <Settings2 className="size-5" />
+            <Link href="/settings/profile">
+              <Settings2 className="size-5" />
+            </Link>
           </Button>
         </CustomTooltip>
       </nav>

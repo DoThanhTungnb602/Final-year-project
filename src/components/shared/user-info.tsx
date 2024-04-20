@@ -22,6 +22,8 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { FaUserCircle } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useCurrentUser } from "~/hooks/use-current-user";
@@ -48,17 +50,21 @@ export function UserInfo() {
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent className="w-48">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-              Profile
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              <Link href="/settings/profile">Profile</Link>
+              <DropdownMenuShortcut>
+                <FaUserCircle />
+              </DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              Settings
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              <Link href="/settings/profile">Settings</Link>
+              <DropdownMenuShortcut>
+                <FaGear />
+              </DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -68,7 +74,9 @@ export function UserInfo() {
             }}
           >
             Sign out
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+            <DropdownMenuShortcut>
+              <FaSignOutAlt />
+            </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -48,7 +48,6 @@ export function CodeEditor() {
         <SelectLanguage />
         <div className="my-auto space-x-2">
           <Button size="sm">Submit</Button>
-          <Button size="sm">Get Submission</Button>
         </div>
       </div>
     </div>
