@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCheckCircle, FaExclamationCircle, FaGithub } from "react-icons/fa";
@@ -34,8 +33,6 @@ export function RegisterForm() {
       confirmPassword: "",
     },
   });
-
-  const router = useRouter();
 
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);

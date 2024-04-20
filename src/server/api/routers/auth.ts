@@ -21,7 +21,7 @@ import { getVerificationTokenByToken } from "~/data/verification-token";
 import { getPasswordResetTokenByToken } from "~/data/password-reset-token";
 
 export const authRouter = createTRPCRouter({
-  login: publicProcedure.input(LoginSchema).mutation(async ({ ctx, input }) => {
+  login: publicProcedure.input(LoginSchema).mutation(async ({ input }) => {
     try {
       await signIn("credentials", {
         email: input.email,
@@ -30,7 +30,7 @@ export const authRouter = createTRPCRouter({
       });
     } catch (error) {
       if (error instanceof AuthError) {
-        switch (error!.type) {
+        switch (error.type) {
           case "CredentialsSignin": {
             throw new TRPCError({
               code: "UNAUTHORIZED",
@@ -138,7 +138,7 @@ export const authRouter = createTRPCRouter({
       };
     }),
 
-  reset: publicProcedure.input(ResetSchema).mutation(async ({ ctx, input }) => {
+  reset: publicProcedure.input(ResetSchema).mutation(async ({ input }) => {
     const existingUser = await getUserByEmail(input.email);
     if (!existingUser) {
       throw new TRPCError({

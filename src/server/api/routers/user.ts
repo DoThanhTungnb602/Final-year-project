@@ -71,7 +71,7 @@ export const userRouter = createTRPCRouter({
 
       const passwordMatch = await bcrypt.compare(
         input.currentPassword,
-        user.password as string,
+        user.password!,
       );
 
       if (!passwordMatch) {

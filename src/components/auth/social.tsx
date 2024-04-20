@@ -8,9 +8,14 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { DEFAULT_LOGIN_REDIRECT } from "~/routes";
 
+enum Provider {
+  Google = "google",
+  Github = "github",
+}
+
 export default function Social() {
-  const handleClick = (provider: "google" | "github") => {
-    signIn(provider, {
+  const handleClick = async (provider: Provider) => {
+    await signIn(provider, {
       callbackUrl: DEFAULT_LOGIN_REDIRECT,
     });
   };
@@ -21,7 +26,7 @@ export default function Social() {
         size="sm"
         variant="outline"
         className="w-full"
-        onClick={() => handleClick("google")}
+        onClick={() => handleClick(Provider.Google)}
       >
         <FcGoogle className="size-5" />
       </Button>
@@ -29,7 +34,7 @@ export default function Social() {
         size="sm"
         variant="outline"
         className="w-full"
-        onClick={() => handleClick("github")}
+        onClick={() => handleClick(Provider.Github)}
       >
         <FaGithub className="size-5" />
       </Button>

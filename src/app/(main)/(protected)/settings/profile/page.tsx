@@ -51,7 +51,7 @@ export default function ProfileSettingPage() {
   const nameForm = useForm<z.infer<typeof UpdateNameSchema>>({
     resolver: zodResolver(UpdateNameSchema),
     defaultValues: {
-      name: currentUser?.name || undefined,
+      name: currentUser?.name ?? undefined,
     },
   });
 
@@ -124,7 +124,7 @@ export default function ProfileSettingPage() {
           <div className="flex w-full flex-col items-center gap-5">
             <Avatar className="size-28">
               <AvatarImage
-                src={currentUser?.image as string}
+                src={currentUser!.image ?? undefined}
                 alt="avatar"
                 className="object-cover"
               />

@@ -28,7 +28,7 @@ const VerificationPage = () => {
   });
 
   const verify = useCallback(() => {
-    if (success || error) {
+    if (success ?? error) {
       return;
     }
     if (!token) {
@@ -36,7 +36,7 @@ const VerificationPage = () => {
       return;
     }
     verifyEmail.mutate({ token });
-  }, [token, error]);
+  }, [success, error, token, verifyEmail]);
 
   useEffect(() => {
     verify();

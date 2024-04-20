@@ -9,7 +9,6 @@ import { useState } from "react";
 import { CodeEditor } from "~/components/editor/code-editor";
 import dynamic from "next/dynamic";
 
-type Props = {};
 
 const RichEditor = dynamic(
   () => import("~/components/editor/rich-editor").then((mod) => mod.default),
@@ -27,7 +26,7 @@ const WhiteboardEditor = dynamic(
   },
 );
 
-const EditorPanel = (props: Props) => {
+const EditorPanel = () => {
   const [tab, setTab] = useState<"code" | "note" | "whiteboard">("code");
 
   return (

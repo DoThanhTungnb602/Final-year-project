@@ -20,11 +20,11 @@ export function CodeEditor() {
     if (debouncedSourceCode) {
       setLanguageCode(language.name, debouncedSourceCode);
     }
-  }, [debouncedSourceCode]);
+  }, [debouncedSourceCode, language.name, setLanguageCode]);
 
   useEffect(() => {
     setSourceCode(languageCode.get(language.name));
-  }, [language]);
+  }, [language, languageCode]);
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">

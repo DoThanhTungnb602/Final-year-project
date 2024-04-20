@@ -17,7 +17,7 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: placeholder || "Write something...",
+        placeholder: placeholder ?? "Write something...",
       }),
     ],
     content: content,

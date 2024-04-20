@@ -3,9 +3,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { IoDocumentText } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
 
-type Props = {};
-
-const ProblemDescriptionPanel = (props: Props) => {
+const ProblemDescriptionPanel = () => {
   return (
     <Tabs defaultValue="description" className="flex h-full w-full flex-col">
       <TabsList className="flex w-full justify-start gap-1">

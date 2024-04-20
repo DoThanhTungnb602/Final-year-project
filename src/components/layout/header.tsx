@@ -21,11 +21,9 @@ import {
 import { Textarea } from "~/components/ui/textarea";
 import { UserInfo } from "~/components/shared/user-info";
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = () => {
   return (
-    <header className="sticky top-0 z-10 flex h-[57px] items-center gap-1 border-b bg-background px-4 shrink-0">
+    <header className="sticky top-0 z-10 flex h-[57px] shrink-0 items-center gap-1 border-b bg-background px-4">
       <h1 className="text-xl font-semibold">Playground</h1>
       <Drawer>
         <DrawerTrigger asChild>

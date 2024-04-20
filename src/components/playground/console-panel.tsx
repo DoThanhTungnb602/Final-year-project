@@ -3,9 +3,8 @@ import { Card, CardContent } from "~/components/ui/card";
 import { GrTest } from "react-icons/gr";
 import { HiClipboardDocumentList } from "react-icons/hi2";
 
-type Props = {};
 
-const ConsolePanel = (props: Props) => {
+const ConsolePanel = () => {
   return (
     <Tabs defaultValue="testcase" className="flex h-full w-full flex-col">
       <TabsList className="flex w-full justify-start gap-1">

@@ -2,11 +2,16 @@
 
 import Editor from "~/components/ui/editor/editor";
 
-type Props = {};
-
-const RichEditor = (props: Props) => {
+const RichEditor = () => {
   return (
-    <Editor content={""} onChange={() => {}} placeholder="Write something..." />
+    <Editor
+      content={""}
+      onChange={() => {
+        // TODO: Implement onChange for rich editor
+        console.log("changed");
+      }}
+      placeholder="Write something..."
+    />
   );
 };
 

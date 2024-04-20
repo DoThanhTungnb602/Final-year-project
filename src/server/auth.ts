@@ -50,7 +50,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") return true;
 
-      const existingUser = await getUserById(user.id as string);
+      const existingUser = await getUserById(user.id!);
 
       if (!existingUser?.emailVerified) return false;
 
@@ -58,10 +58,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
     async jwt({ token, user, trigger, session, account }) {
       if (trigger === "update") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (session?.url) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           token.picture = session.url;
         }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (session?.name) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           token.name = session.name;
         }
       }
@@ -82,8 +86,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           ...session.user,
           id: token.id as string,
           role: token.role as Role,
-          image: token.picture as string,
-          name: token.name as string,
+          image: token.picture!,
+          name: token.name!,
           isOAuth: token.isOAuth as boolean,
         },
       };

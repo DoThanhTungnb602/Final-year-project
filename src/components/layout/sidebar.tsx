@@ -4,7 +4,6 @@ import {
   Code2,
   Settings2,
   SquareTerminal,
-  SquareUser,
 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -12,9 +11,8 @@ import { ModeToggle } from "../shared/mode-toggle";
 import Link from "next/link";
 import CustomTooltip from "~/components/shared/custom-tooltip";
 
-type Props = {};
 
-const Sidebar = (props: Props) => {
+const Sidebar = () => {
   return (
     <aside className="inset-y fixed left-0 z-20 flex h-full flex-col border-r">
       <div className="border-b p-2">

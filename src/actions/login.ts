@@ -22,7 +22,7 @@ export async function login(values: z.infer<typeof LoginSchema>) {
 
   const existingUser = await getUserByEmail(email);
 
-  if (!existingUser || !existingUser.email || !existingUser.password) {
+  if (!existingUser?.email || !existingUser.password) {
     return {
       errors: "Invalid credentials",
     };
