@@ -1,9 +1,10 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const domain = process.env.NEXTAUTH_URL;
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetLink = `http://localhost:3000/auth/new-password?token=${token}`;
+  const resetLink = `${domain}/auth/new-password?token=${token}`;
 
   const html = `
     <h1>Reset your password</h1>
@@ -20,7 +21,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 };
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const confirmLink = `http://localhost:3000/auth/verification?token=${token}`;
+  const confirmLink = `${domain}/auth/verification?token=${token}`;
 
   const html = `
     <h1>Verify your email</h1>
