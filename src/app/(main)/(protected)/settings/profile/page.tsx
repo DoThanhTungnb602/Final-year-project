@@ -40,31 +40,23 @@ import {
 } from "~/components/ui/dialog";
 import { api } from "~/trpc/react";
 import { useSession } from "next-auth/react";
-
-const NameSchema = z.object({
-  name: z.string(),
-});
-
-const PasswordSchema = z.object({
-  currentPassword: z.string(),
-  newPassword: z.string(),
-  confirmNewPassword: z.string(),
-});
+import { UpdateNameSchema, UpdatePasswordSchema } from "~/schemas";
 
 export default function ProfileSettingPage() {
   const [isNameEditable, setIsNameEditable] = useState(false);
+  const [open, setOpen] = useState(false);
   const currentUser = useCurrentUser();
   const { update } = useSession();
 
-  const nameForm = useForm<z.infer<typeof NameSchema>>({
-    resolver: zodResolver(NameSchema),
+  const nameForm = useForm<z.infer<typeof UpdateNameSchema>>({
+    resolver: zodResolver(UpdateNameSchema),
     defaultValues: {
       name: currentUser?.name || undefined,
     },
   });
 
-  const passwordForm = useForm<z.infer<typeof PasswordSchema>>({
-    resolver: zodResolver(PasswordSchema),
+  const passwordForm = useForm<z.infer<typeof UpdatePasswordSchema>>({
+    resolver: zodResolver(UpdatePasswordSchema),
     defaultValues: {
       currentPassword: "",
       newPassword: "",
@@ -96,8 +88,25 @@ export default function ProfileSettingPage() {
     },
   });
 
-  const onFormNameSubmit = (values: z.infer<typeof NameSchema>) => {
-    updateName.mutate({ name: values.name });
+  const updatePassword = api.user.updatePassword.useMutation({
+    onSuccess: async () => {
+      passwordForm.reset();
+      setOpen(false);
+      toast.success("Your password has been updated");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onFormNameSubmit = (values: z.infer<typeof UpdateNameSchema>) => {
+    updateName.mutate(values);
+  };
+
+  const onFormPasswordSubmit = (
+    values: z.infer<typeof UpdatePasswordSchema>,
+  ) => {
+    updatePassword.mutate(values);
   };
 
   return (
@@ -127,7 +136,6 @@ export default function ProfileSettingPage() {
               <UploadButton
                 className="ut-button:bg-primary ut-button:font-semibold dark:ut-button:text-gray-900"
                 endpoint="imageUploader"
-                onUploadBegin={() => false}
                 onClientUploadComplete={(res) => {
                   if (res[0]?.url) {
                     updateAvatar.mutate({ url: res[0]?.url });
@@ -206,14 +214,14 @@ export default function ProfileSettingPage() {
           <Button
             type="submit"
             className="float-right"
-            disabled={!nameForm.formState.isDirty}
+            disabled={!nameForm.formState.isDirty || updateName.isPending}
           >
             Save Changes
           </Button>
         </form>
       </Form>
       {!currentUser?.isOAuth && (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="link">Change password</Button>
           </DialogTrigger>
@@ -224,7 +232,7 @@ export default function ProfileSettingPage() {
             </DialogHeader>
             <Form {...passwordForm}>
               <form
-                onSubmit={passwordForm.handleSubmit(() => {})}
+                onSubmit={passwordForm.handleSubmit(onFormPasswordSubmit)}
                 className="space-y-5"
               >
                 <FormField
@@ -235,6 +243,7 @@ export default function ProfileSettingPage() {
                       <FormLabel>Current password</FormLabel>
                       <FormControl>
                         <Input
+                          type="password"
                           placeholder="Enter your current password"
                           {...field}
                         />
@@ -251,6 +260,7 @@ export default function ProfileSettingPage() {
                       <FormLabel>New password</FormLabel>
                       <FormControl>
                         <Input
+                          type="password"
                           placeholder="Enter your new password"
                           {...field}
                         />
@@ -267,6 +277,7 @@ export default function ProfileSettingPage() {
                       <FormLabel>Confirm new password</FormLabel>
                       <FormControl>
                         <Input
+                          type="password"
                           placeholder="Confirm your new password"
                           {...field}
                         />
@@ -281,7 +292,15 @@ export default function ProfileSettingPage() {
                       Cancel
                     </Button>
                   </DialogClose>
-                  <Button type="submit">Save Changes</Button>
+                  <Button
+                    type="submit"
+                    disabled={
+                      !passwordForm.formState.isDirty ||
+                      updatePassword.isPending
+                    }
+                  >
+                    Save Changes
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>

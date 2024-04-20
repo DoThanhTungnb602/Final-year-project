@@ -8,7 +8,7 @@ export const authRoutes = [
   "/auth/verification",
 ];
 
-export const protectedRoutes = ["/settings"];
+export const protectedRoutes = ["/settings/profile"];
 
 export const apiAuthPrefix = "/api/auth";
 

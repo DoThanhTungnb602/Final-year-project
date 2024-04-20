@@ -10,6 +10,10 @@ import { ThemeProvider } from "~/components/shared/theme-provider";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "~/server/auth";
 import { Toaster } from "~/components/ui/sonner";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+
+import { ourFileRouter } from "~/app/api/uploadthing/core";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,6 +48,9 @@ export default async function RootLayout({
         >
           <SessionProvider session={session}>
             <TRPCReactProvider>
+              <NextSSRPlugin
+                routerConfig={extractRouterConfig(ourFileRouter)}
+              />
               {children}
               <Toaster />
             </TRPCReactProvider>
