@@ -12,19 +12,7 @@ datasource db {
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
-}
-
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
+    // directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -32,21 +20,31 @@ enum Role {
     ADMIN
 }
 
+enum Language {
+    C
+    CPP
+    JAVA
+    PYTHON
+    JAVASCRIPT
+}
+
 // Necessary for Next auth
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String    @unique
-    emailVerified DateTime?
-    password      String?
-    role          Role      @default(USER)
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+    id                String       @id @default(cuid())
+    name              String?
+    email             String       @unique
+    emailVerified     DateTime?
+    password          String?
+    role              Role         @default(USER)
+    image             String?
+    accounts          Account[]
+    sessions          Session[]
+    enrolledClasses   Class[]      @relation("EnrolledClasses")
+    instructedClasses Class[]      @relation("InstructedClasses")
+    submissions       Submission[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    Post      Post[]
 }
 
 model Account {
@@ -96,4 +94,72 @@ model PasswordResetToken {
     expires DateTime
 
     @@unique([email, token])
+}
+
+model Class {
+    id          String    @id @default(cuid())
+    name        String
+    description String?
+    image       String?
+    teacher     User      @relation(name: "InstructedClasses", fields: [teacherId], references: [id])
+    teacherId   String
+    students    User[]    @relation("EnrolledClasses")
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    Problem     Problem[]
+}
+
+model Problem {
+    id          String       @id @default(cuid())
+    name        String
+    description String?
+    timeLimit   Int
+    memoryLimit Int
+    image       String?
+    class       Class        @relation(fields: [classId], references: [id])
+    classId     String
+    testcases   TestCase[]
+    solution    Solution[]
+    submissions Submission[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model TestCase {
+    id        String   @id @default(cuid())
+    fileUrl   String
+    language  Language
+    problem   Problem  @relation(fields: [problemId], references: [id])
+    problemId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Solution {
+    id        String   @id @default(cuid())
+    code      String
+    language  Language
+    problem   Problem  @relation(fields: [problemId], references: [id])
+    problemId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Submission {
+    id        String   @id @default(cuid())
+    verdict   String
+    time      Int
+    memory    Int
+    code      String
+    language  Language
+    problem   Problem  @relation(fields: [problemId], references: [id])
+    problemId String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
