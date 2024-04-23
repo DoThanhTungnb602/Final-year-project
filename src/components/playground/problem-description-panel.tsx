@@ -26,7 +26,7 @@ const ProblemDescriptionPanel = async () => {
       <TabsContent value="description" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
           <CardContent className="h-full min-h-0 p-0">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div>Loading md file...</div>}>
               <MDXRemote source={mdxSource.text} />
             </Suspense>
           </CardContent>
