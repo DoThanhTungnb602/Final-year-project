@@ -1,9 +1,16 @@
+"use server";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
 import { IoDocumentText } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { api } from "~/trpc/server";
+import { Suspense } from "react";
 
-const ProblemDescriptionPanel = () => {
+const ProblemDescriptionPanel = async () => {
+  const mdxSource = await api.problem.getDescription();
+
   return (
     <Tabs defaultValue="description" className="flex h-full w-full flex-col">
       <TabsList className="flex w-full justify-start gap-1">
@@ -18,7 +25,11 @@ const ProblemDescriptionPanel = () => {
       </TabsList>
       <TabsContent value="description" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
-          <CardContent className="h-full min-h-0 p-0"></CardContent>
+          <CardContent className="h-full min-h-0 p-0">
+            <Suspense fallback={<div>Loading...</div>}>
+              <MDXRemote source={mdxSource.text} />
+            </Suspense>
+          </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="submissions" className="min-h-0 flex-1">
