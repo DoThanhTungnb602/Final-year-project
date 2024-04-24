@@ -7,7 +7,7 @@ import {
 export const problemRouter = createTRPCRouter({
   getDescription: publicProcedure.query(async ({ input }) => {
     const res = await fetch(
-      `https://utfs.io/f/2a136dcc-1291-4275-a63a-d0b762b89a28-21kzz.mdx`,
+      `https://utfs.io/f/57dd7ab6-e693-4ec2-bcb1-d241d7bed8f3-21kzz.md`,
     );
     const text = await res.text();
     return { text };
