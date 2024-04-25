@@ -11,7 +11,7 @@ export const ourFileRouter = {
       if (!session) throw new UploadThingError("Unauthorized");
       return { success: true, userId: session.user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ metadata }) => {
       return { uploadedBy: metadata.userId };
     }),
 
@@ -23,7 +23,7 @@ export const ourFileRouter = {
       if (user?.role !== "ADMIN") throw new UploadThingError("Forbidden");
       return { success: true, userId: session.user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ metadata }) => {
       return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;

@@ -4,9 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
 import { IoDocumentText } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { api } from "~/trpc/server";
-import { Suspense } from "react";
 import ErrorBoundary from "~/components/shared/error-boundary";
 import { convertMdToHtml } from "~/lib/utils";
 
