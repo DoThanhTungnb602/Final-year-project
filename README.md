@@ -1,29 +1,32 @@
-# Create T3 App
+# Two Sum
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Given an array of integers `nums` and an integer `target`, return _indices of the two numbers such that they add up to `target`._
 
-## What's next? How do I make an app with this?
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+You can return the answer in any order.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+**Example 1:**
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+> Input: nums = [2,7,11,15], target = 9
+> Output: [0,1]
+> Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
 
-## Learn More
+**Example 2:**
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+> Input: nums = [3,2,4], target = 6
+> Output: [1,2]
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+**Example 3:**
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+> Input: nums = [3,3], target = 6
+> Output: [0,1]
 
-## How do I deploy this?
+**Constraints:**
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- 2 <= nums.length <= 104
+- -109 <= nums[i] <= 109
+- -109 <= target <= 109
+- Only one valid answer exists.
+
+**Follow-up:** Can you come up with an algorithm that is less than O(n2) time complexity?

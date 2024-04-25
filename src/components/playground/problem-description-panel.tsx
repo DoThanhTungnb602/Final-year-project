@@ -7,9 +7,12 @@ import { FaHistory } from "react-icons/fa";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { api } from "~/trpc/server";
 import { Suspense } from "react";
+import ErrorBoundary from "~/components/shared/error-boundary";
+import { convertMdToHtml } from "~/lib/utils";
 
 const ProblemDescriptionPanel = async () => {
   const mdxSource = await api.problem.getDescription();
+  const html = await convertMdToHtml(mdxSource.text);
 
   return (
     <Tabs defaultValue="description" className="flex h-full w-full flex-col">
@@ -25,10 +28,10 @@ const ProblemDescriptionPanel = async () => {
       </TabsList>
       <TabsContent value="description" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-y-auto">
-          <CardContent className="prose h-full min-h-0 p-3 dark:prose-invert">
-            <Suspense fallback={<div>Loading md file...</div>}>
-              <MDXRemote source={mdxSource.text} />
-            </Suspense>
+          <CardContent className="prose h-full min-h-0 p-3 dark:prose-invert prose-code:rounded-md prose-code:bg-gray-300 prose-code:p-0.5 before:prose-code:content-none after:prose-code:content-none dark:prose-code:bg-gray-700">
+            <ErrorBoundary>
+              <div dangerouslySetInnerHTML={{ __html: html }} />
+            </ErrorBoundary>
           </CardContent>
         </Card>
       </TabsContent>

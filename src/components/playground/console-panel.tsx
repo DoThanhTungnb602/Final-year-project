@@ -33,12 +33,12 @@ const ConsolePanel = () => {
               </TabsList>
               <TabsContent value="testcase" className="min-h-0 flex-1">
                 <div className="mt-3 flex flex-col gap-4">
-                  <Card className="bg-neutral-800">
+                  <Card className="bg-neutral-100 dark:bg-neutral-800">
                     <CardContent className="flex min-h-0 items-center p-3">
                       <code>nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</code>
                     </CardContent>
                   </Card>
-                  <Card className="bg-neutral-800">
+                  <Card className="bg-neutral-100 dark:bg-neutral-800">
                     <CardContent className="flex min-h-0 items-center p-3">
                       <code>target = 9</code>
                     </CardContent>

@@ -1,22 +1,16 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
     provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
-    // directUrl = env("DIRECT_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 enum Role {
     USER
+    TEACHER
     ADMIN
 }
 
@@ -28,7 +22,6 @@ enum Language {
     JAVASCRIPT
 }
 
-// Necessary for Next auth
 model User {
     id                String       @id @default(cuid())
     name              String?
@@ -110,17 +103,16 @@ model Class {
 }
 
 model Problem {
-    id          String       @id @default(cuid())
-    name        String
-    description String?
-    timeLimit   Int
-    memoryLimit Int
-    image       String?
-    class       Class        @relation(fields: [classId], references: [id])
-    classId     String
-    testcases   TestCase[]
-    solution    Solution[]
-    submissions Submission[]
+    id             String       @id @default(cuid())
+    name           String
+    descriptionUrl String?
+    timeLimit      Int?
+    memoryLimit    Int?
+    class          Class?       @relation(fields: [classId], references: [id])
+    classId        String?
+    testcases      TestCase[]
+    solution       Solution[]
+    submissions    Submission[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

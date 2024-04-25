@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server";
+
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -7,9 +9,16 @@ import {
 export const problemRouter = createTRPCRouter({
   getDescription: publicProcedure.query(async ({ input }) => {
     const res = await fetch(
-      `https://utfs.io/f/57dd7ab6-e693-4ec2-bcb1-d241d7bed8f3-21kzz.md`,
+      `https://utfs.io/f/b382960c-13ed-46c2-8207-f9b0143adb79-v4aa8i.md`,
     );
-    const text = await res.text();
-    return { text };
+    if (res.status === 200) {
+      const text = await res.text();
+      return { text };
+    } else {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch problem description",
+      });
+    }
   }),
 });
