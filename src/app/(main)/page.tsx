@@ -15,13 +15,13 @@ export default async function Home() {
           direction="horizontal"
           className="h-full min-h-full w-full rounded-lg border"
         >
-          <ResizablePanel defaultSize={50} minSize={25}>
+          <ResizablePanel defaultSize={40} minSize={25}>
             <div className="h-full p-2">
               <ProblemDescriptionPanel />
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={50} minSize={40}>
+          <ResizablePanel defaultSize={60} minSize={40}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={60} minSize={10}>
                 <div className="h-full p-2">

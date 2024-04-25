@@ -33,6 +33,7 @@ export function UserInfo() {
   const currentUser = useCurrentUser();
   const [showModal, setShowModal] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  // TODO: Add user preferences
 
   return currentUser ? (
     <div className="ml-auto">

@@ -5,7 +5,7 @@ generator client {
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+    // directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -14,12 +14,10 @@ enum Role {
     ADMIN
 }
 
-enum Language {
-    C
-    CPP
-    JAVA
-    PYTHON
-    JAVASCRIPT
+enum Difficulty {
+    EASY
+    MEDIUM
+    HARD
 }
 
 model User {
@@ -105,6 +103,8 @@ model Class {
 model Problem {
     id             String       @id @default(cuid())
     name           String
+    difficulty     Difficulty
+    topics         Topic[]
     descriptionUrl String?
     timeLimit      Int?
     memoryLimit    Int?
@@ -118,12 +118,32 @@ model Problem {
     updatedAt DateTime @updatedAt
 }
 
+model Topic {
+    id       String    @id @default(cuid())
+    name     String
+    problems Problem[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Language {
+    id         Int          @id
+    name       String
+    TestCase   TestCase[]
+    Solution   Solution[]
+    Submission Submission[]
+
+    @@unique([name])
+}
+
 model TestCase {
-    id        String   @id @default(cuid())
-    fileUrl   String
-    language  Language
-    problem   Problem  @relation(fields: [problemId], references: [id])
-    problemId String
+    id         String   @id @default(cuid())
+    fileUrl    String
+    language   Language @relation(fields: [languageId], references: [id])
+    languageId Int
+    problem    Problem  @relation(fields: [problemId], references: [id])
+    problemId  String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -132,12 +152,13 @@ model TestCase {
 model Solution {
     id        String   @id @default(cuid())
     code      String
-    language  Language
+    language  Language @relation(fields: [languageId], references: [id])
     problem   Problem  @relation(fields: [problemId], references: [id])
     problemId String
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    languageId Int
 }
 
 model Submission {
@@ -146,12 +167,13 @@ model Submission {
     time      Int
     memory    Int
     code      String
-    language  Language
+    language  Language @relation(fields: [languageId], references: [id])
     problem   Problem  @relation(fields: [problemId], references: [id])
     problemId String
     user      User     @relation(fields: [userId], references: [id])
     userId    String
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    languageId Int
 }
