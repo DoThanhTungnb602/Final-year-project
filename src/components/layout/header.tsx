@@ -20,11 +20,12 @@ import {
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { UserInfo } from "~/components/shared/user-info";
+import { ProblemList } from "~/components/shared/problem-list";
 
 const Header = () => {
   return (
     <header className="sticky top-0 z-10 flex h-[57px] shrink-0 items-center gap-1 border-b bg-background px-4">
-      <h1 className="text-xl font-semibold">Playground</h1>
+      <ProblemList />
       <Drawer>
         <DrawerTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">

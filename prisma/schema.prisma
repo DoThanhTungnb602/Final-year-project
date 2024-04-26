@@ -105,6 +105,7 @@ model Problem {
     name           String
     difficulty     Difficulty
     topics         Topic[]
+    description    String?
     descriptionUrl String?
     timeLimit      Int?
     memoryLimit    Int?

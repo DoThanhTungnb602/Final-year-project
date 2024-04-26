@@ -27,7 +27,7 @@ export default function WhiteboardEditor() {
 
   return (
     <div className="h-full w-full">
-      <Tldraw inferDarkMode={theme === "dark"} components={components} />
+      <Tldraw inferDarkMode={theme === "dark"} components={components} className="z-10" />
     </div>
   );
 }
