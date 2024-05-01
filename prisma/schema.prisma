@@ -20,6 +20,15 @@ enum Difficulty {
     HARD
 }
 
+enum Verdict {
+    ACCEPTED
+    WRONG_ANSWER
+    TIME_LIMIT_EXCEEDED
+    MEMORY_LIMIT_EXCEEDED
+    RUNTIME_ERROR
+    COMPILATION_ERROR
+}
+
 model User {
     id                String       @id @default(cuid())
     name              String?
@@ -164,7 +173,7 @@ model Solution {
 
 model Submission {
     id        String   @id @default(cuid())
-    verdict   String
+    verdict   Verdict
     time      Int
     memory    Int
     code      String

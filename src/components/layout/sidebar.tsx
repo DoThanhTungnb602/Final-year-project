@@ -1,6 +1,13 @@
 "use client";
 
-import { Book, Bot, Code2, Settings2, SquareTerminal } from "lucide-react";
+import {
+  Book,
+  Bot,
+  Code2,
+  Settings2,
+  SquareTerminal,
+  Home,
+} from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "../shared/mode-toggle";
@@ -22,15 +29,28 @@ const Sidebar = () => {
         </Button>
       </div>
       <nav className="grid gap-1 p-2">
-        <CustomTooltip content="Playground" side="right">
+        <CustomTooltip content="Home" side="right">
           <Button
             variant="ghost"
             size="icon"
             className={cn("rounded-lg", pathname === "/" && "bg-muted")}
-            aria-label="Playground"
+            aria-label="Home"
             asChild
           >
             <Link href="/">
+              <Home className="size-5" />
+            </Link>
+          </Button>
+        </CustomTooltip>
+        <CustomTooltip content="Playground" side="right">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn("rounded-lg", pathname === "/playground" && "bg-muted")}
+            aria-label="Playground"
+            asChild
+          >
+            <Link href="/playground">
               <SquareTerminal className="size-5" />
             </Link>
           </Button>

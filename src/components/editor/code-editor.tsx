@@ -44,7 +44,7 @@ export function CodeEditor() {
           }
         />
       </div>
-      <div className="flex justify-between gap-3 p-3">
+      <div className="flex justify-between gap-3 p-2">
         <SelectLanguage />
         <div className="my-auto space-x-2">
           <Button size="sm">Submit</Button>
