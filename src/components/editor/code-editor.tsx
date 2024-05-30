@@ -7,6 +7,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useTheme } from "next-themes";
 import { SelectLanguage } from "~/components/shared/select-language";
 import { Button } from "~/components/ui/button";
+import { api } from "~/trpc/react";
 
 export function CodeEditor() {
   const languageCode = useEditorStore((state) => state.languageCode);
@@ -15,6 +16,11 @@ export function CodeEditor() {
   const [sourceCode, setSourceCode] = useState(languageCode.get(language.name));
   const debouncedSourceCode = useDebounce(sourceCode, 500);
   const { theme } = useTheme();
+  const runProblem = api.problem.run.useMutation({
+    onSuccess() {
+      console.log("success");
+    },
+  });
 
   useEffect(() => {
     if (debouncedSourceCode) {
@@ -47,7 +53,18 @@ export function CodeEditor() {
       <div className="flex justify-between gap-3 p-2">
         <SelectLanguage />
         <div className="my-auto space-x-2">
-          <Button size="sm">Submit</Button>
+          <Button
+            size="sm"
+            onClick={() => {
+              runProblem.mutate({
+                code: debouncedSourceCode || "",
+                languageId: language.id,
+                problemId: 1,
+              });
+            }}
+          >
+            Submit
+          </Button>
         </div>
       </div>
     </div>

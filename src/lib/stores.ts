@@ -21,15 +21,17 @@ defaultLanguageCode.set(
   "C++",
   `class Solution {
   public:
-      int removeElement(vector<int>& nums, int val) {
-          int l = 0;
-          for(int i=0;i<nums.size();i++){
-              if(nums[i] != val){
-                  nums[l++] = nums[i];
-              }
-          }
-          return l;
-      }
+    vector<int> twoSum(vector<int>& nums, int target) {
+        std::unordered_map<int, int> hash;
+        for (int i = 0; i < nums.size(); ++i) {
+            int x = target - nums[i];
+            if (hash.find(x) != hash.end()) {
+                return {i, hash[x]};
+            }
+            hash[nums[i]] = i;
+        }
+        return {};
+    }
   };`,
 );
 

@@ -75,3 +75,11 @@ export const NewPasswordSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
+export const SolutionSchema = z.object({
+  code: z.string().min(1, {
+    message: "Solution is required",
+  }),
+  languageId: z.number(),
+  problemId: z.number(),
+});
