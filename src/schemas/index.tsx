@@ -1,4 +1,11 @@
 import * as z from "zod";
+import { Difficulty } from "@prisma/client";
+
+enum Status {
+  TODO = "TODO",
+  SOLVED = "SOLVED",
+  ATTEMPTED = "ATTEMPTED",
+}
 
 export const ResetSchema = z.object({
   email: z.string().email({
@@ -82,4 +89,11 @@ export const SolutionSchema = z.object({
   }),
   languageId: z.number(),
   problemId: z.number(),
+});
+
+export const ProblemFilterSchema = z.object({
+  difficulty: z.nativeEnum(Difficulty).optional(),
+  tags: z.array(z.string()),
+  status: z.nativeEnum(Status).optional(),
+  search: z.string(),
 });

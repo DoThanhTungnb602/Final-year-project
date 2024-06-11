@@ -3,6 +3,15 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Problem } from "@prisma/client";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
+import { SiTarget } from "react-icons/si";
 import { Badge } from "~/components/ui/badge";
 import { GrDocumentVerified } from "react-icons/gr";
 import { MdNotInterested } from "react-icons/md";
@@ -37,14 +46,68 @@ export const columns: ColumnDef<ProblemWithStatus>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      if (status === "ACCEPTED") {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <IoMdCheckmarkCircleOutline className="h-6 w-6 text-green-400" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Solved</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      } else if (status === "ATTEMPTED") {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <SiTarget className="h-6 w-6 text-gray-300" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Attempted</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      } else {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <MdOutlineRadioButtonUnchecked className="h-6 w-6 text-gray-300" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>UnSolved</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
+    },
+  },
+  {
     accessorKey: "name",
-    header: "Title",
+    header: "Problem",
   },
   {
     accessorKey: "solution",
     header: "Solution",
     cell: ({ row }) => {
       const solution = row.original.solution;
+
       return (
         <>
           {solution ? (
@@ -61,6 +124,7 @@ export const columns: ColumnDef<ProblemWithStatus>[] = [
     header: "Difficulty",
     cell: ({ row }) => {
       const problem = row.original;
+
       return (
         <>
           {problem.difficulty === "EASY" && (

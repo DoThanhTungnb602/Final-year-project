@@ -17,8 +17,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r md:block">
+    <div className="grid w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] h-full">
+      <div className="hidden border-r md:block h-full">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center justify-between border-b px-4 lg:h-[60px] lg:px-6">
             <Link
@@ -35,7 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link
                 href="#"
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                  "flex items-center gap-3 rounded px-3 py-2 transition-all hover:text-primary",
                   pathname === "/admin/problemset"
                     ? "bg-muted text-primary"
                     : "text-muted-foreground",
@@ -47,7 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link
                 href="#"
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                  "flex items-center gap-3 rounded px-3 py-2 transition-all hover:text-primary",
                   pathname === "/admin/class"
                     ? "bg-muted text-primary"
                     : "text-muted-foreground",
@@ -59,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link
                 href="#"
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                  "flex items-center gap-3 rounded px-3 py-2 transition-all hover:text-primary",
                   pathname === "/admin/contest"
                     ? "bg-muted text-primary"
                     : "text-muted-foreground",
@@ -72,7 +72,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full overflow-hidden">
         <header className="flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
@@ -96,21 +96,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
                 <Link
                   href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  className={cn(
+                    "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground",
+                    pathname === "/admin/problemset"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground",
+                  )}
                 >
                   <FaClipboardList />
                   Problem
                 </Link>
                 <Link
                   href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+                  className={cn(
+                    "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground",
+                    pathname === "/admin/class"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground",
+                  )}
                 >
                   <SiGoogleclassroom />
                   Class
                 </Link>
                 <Link
                   href="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  className={cn(
+                    "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground",
+                    pathname === "/admin/contest"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground",
+                  )}
                 >
                   <FaTrophy />
                   Contest
@@ -123,7 +138,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Sheet>
           <UserInfo />
         </header>
-        <main className="flex flex-1 flex-col gap-3 p-4 lg:gap-4 lg:p-6">
+        <main className="flex flex-1 flex-col gap-3 p-4 lg:gap-4 lg:p-6 overflow-auto">
           {children}
         </main>
       </div>
