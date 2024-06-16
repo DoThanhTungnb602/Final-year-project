@@ -2,17 +2,13 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { ClassSchema } from "~/schemas";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+} from "~/server/api/trpc";
 
 export const classRouter = createTRPCRouter({
-  all: protectedProcedure.query(async ({ ctx }) => {
-    const role = ctx.session?.user.role;
-    if (role != "ADMIN") {
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "You are not authorized to fetch classes",
-      });
-    }
+  all: adminProcedure.query(async ({ ctx }) => {
     try {
       const classes = await ctx.db.class.findMany({
         include: {
@@ -28,70 +24,49 @@ export const classRouter = createTRPCRouter({
     }
   }),
 
-  getById: protectedProcedure
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      const role = ctx.session?.user.role;
-      if (role != "ADMIN") {
+  getById: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    try {
+      const class_ = await ctx.db.class.findUnique({
+        where: {
+          id: input,
+        },
+        include: {
+          students: true,
+        },
+      });
+
+      if (!class_) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You are not authorized to fetch classes",
+          code: "NOT_FOUND",
+          message: "Class not found",
         });
       }
 
-      try {
-        const class_ = await ctx.db.class.findUnique({
-          where: {
-            id: input,
-          },
-          include: {
-            students: true,
-          },
-        });
+      return class_;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch class",
+      });
+    }
+  }),
 
-        if (!class_) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Class not found",
-          });
-        }
+  create: adminProcedure.input(ClassSchema).mutation(async ({ ctx, input }) => {
+    try {
+      return await ctx.db.class.create({
+        data: {
+          ...input,
+        },
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to create problem",
+      });
+    }
+  }),
 
-        return class_;
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch class",
-        });
-      }
-    }),
-
-  create: protectedProcedure
-    .input(ClassSchema)
-    .mutation(async ({ ctx, input }) => {
-      const role = ctx.session?.user.role;
-
-      if (role != "ADMIN") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You are not authorized to create a class",
-        });
-      }
-
-      try {
-        return await ctx.db.class.create({
-          data: {
-            ...input,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create problem",
-        });
-      }
-    }),
-
-  update: protectedProcedure
+  update: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -99,15 +74,6 @@ export const classRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const role = ctx.session?.user.role;
-
-      if (role != "ADMIN") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You are not authorized to update a class",
-        });
-      }
-
       try {
         return await ctx.db.class.update({
           where: {
@@ -125,28 +91,46 @@ export const classRouter = createTRPCRouter({
       }
     }),
 
-  delete: protectedProcedure
-    .input(z.string())
+  delete: adminProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db.class.delete({
+        where: {
+          id: input,
+        },
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to delete class",
+      });
+    }
+  }),
+
+  deleteStudentById: adminProcedure
+    .input(
+      z.object({
+        classId: z.string(),
+        studentId: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const role = ctx.session?.user.role;
-
-      if (role != "ADMIN") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You are not authorized to delete a class",
-        });
-      }
-
       try {
-        await ctx.db.class.delete({
+        await ctx.db.class.update({
           where: {
-            id: input,
+            id: input.classId,
+          },
+          data: {
+            students: {
+              disconnect: {
+                id: input.studentId,
+              },
+            },
           },
         });
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to delete class",
+          message: "Failed to delete student from class",
         });
       }
     }),

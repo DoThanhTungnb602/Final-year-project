@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
@@ -27,12 +26,30 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FaPen, FaCheck } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
+import { DataTable } from "~/components/shared/data-table";
+import { Separator } from "~/components/ui/separator";
+import { ColumnDef } from "@tanstack/react-table";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
+import { FaTrash } from "react-icons/fa6";
+import { User } from "@prisma/client";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Page({ params }: { params: { id: string } }) {
   const [editMode, setEditMode] = useState(false);
   const { id } = params;
   const utils = api.useUtils();
-
   const classQuery = api.class.getById.useQuery(id);
 
   const classMutation = api.class.update.useMutation({
@@ -41,6 +58,13 @@ export default function Page({ params }: { params: { id: string } }) {
       utils.class.getById.invalidate();
       form.reset();
       setEditMode(false);
+    },
+  });
+
+  const studentMutation = api.class.deleteStudentById.useMutation({
+    onSettled: () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      utils.class.getById.invalidate();
     },
   });
 
@@ -54,6 +78,64 @@ export default function Page({ params }: { params: { id: string } }) {
       ...values,
     });
   };
+
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "image",
+      header: "Avatar",
+      cell: ({ row }) => (
+        <Avatar>
+          <AvatarImage src={`${row.original.image}`} alt="@shadcn" />
+          <AvatarFallback>
+            <FaUserCircle className="h-6 w-6" />
+          </AvatarFallback>
+        </Avatar>
+      ),
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      id: "actions",
+      header: () => <div className="text-end">Actions</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="text-end">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <FaTrash className="size-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    {` '${row.original?.name}'`} from this class.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      studentMutation.mutate({
+                        classId: id,
+                        studentId: row.original.id,
+                      });
+                    }}
+                  >
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <Tabs defaultValue="students" className="w-full">
@@ -139,8 +221,13 @@ export default function Page({ params }: { params: { id: string } }) {
               {classQuery.data?.students.length} students
             </CardDescription>
           </CardHeader>
-          <CardContent>Content</CardContent>
-          <CardFooter className="flex justify-between">Footer</CardFooter>
+          <Separator />
+          <CardContent>
+            <DataTable
+              data={classQuery?.data?.students ?? []}
+              columns={columns}
+            />
+          </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="exercises">Change your password here.</TabsContent>

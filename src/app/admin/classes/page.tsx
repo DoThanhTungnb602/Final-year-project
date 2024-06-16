@@ -1,8 +1,8 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { ClassItem } from "~/components/shared/classItem";
-import { NewClassDialog } from "~/components/shared/new-class-dialog";
+import { ClassItem } from "~/components/pages/classes/class-item";
+import { NewClassDialog } from "~/components/pages/classes/new-class-dialog";
 import { Spinner } from "~/components/shared/spinner";
 
 export default function Page() {

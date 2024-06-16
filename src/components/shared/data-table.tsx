@@ -2,8 +2,13 @@
 
 import {
   ColumnDef,
+  OnChangeFn,
+  RowSelectionState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -16,23 +21,39 @@ import {
   TableRow,
 } from "~/components/ui/table";
 
+import { DataTablePagination } from "./data-table-pagination";
+import { ProblemWithStatus } from "~/lib/types";
+
+const fallbackData: ProblemWithStatus[] = [];
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  rowSelection?: RowSelectionState;
+  setRowSelection?: OnChangeFn<RowSelectionState>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  rowSelection = {},
+  setRowSelection,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
-    data,
-    columns,
+    data: data ?? fallbackData,
+    columns: columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="w-full overflow-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -75,6 +96,11 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-end space-x-2 pb-1 pt-4">
+        <div>
+          <DataTablePagination table={table} />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,16 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { ProblemFilter } from "~/components/shared/problem-filter";
+import { ProblemFilter } from "~/components/pages/problemset/problem-filter";
 import { Toggle } from "~/components/ui/toggle";
 import { useState } from "react";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
-import { ProblemTable } from "./testtable";
-import Link from "next/link";
+import { DataTable } from "~/components/shared/data-table";
+import { problemColumns as columns } from "~/components/shared/columns";
+import { api } from "~/trpc/react";
 
 export default function ProblemSet() {
   const [filter, setFilter] = useState(false);
+  const query = api.problem.getProblemList.useQuery();
+  const [rowSelection, setRowSelection] = useState({});
 
   return (
     <>
@@ -42,7 +46,12 @@ export default function ProblemSet() {
       )}
       <Card x-chunk="dashboard-06-chunk-0" className="bg-dark">
         <CardContent className="overflow-auto pt-6">
-          <ProblemTable />
+          <DataTable
+            columns={columns}
+            data={query?.data ?? []}
+            rowSelection={rowSelection}
+            setRowSelection={setRowSelection}
+          />
         </CardContent>
       </Card>
     </>
