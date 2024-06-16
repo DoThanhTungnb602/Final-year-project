@@ -22,6 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import { NewExercisesDialog } from "../exercises/new-exercises-dialog";
 
 interface ClassWithExercises extends Class {
   exercises: Exercise[];
@@ -32,6 +34,7 @@ export default function ClassExercises({
 }: {
   classroom?: ClassWithExercises;
 }) {
+  const [rowSelection, setRowSelection] = useState({});
   const columns: ColumnDef<Exercise>[] = [
     {
       id: "select",
@@ -114,18 +117,28 @@ export default function ClassExercises({
     },
   ];
 
-  return (
+  return classroom ? (
     <Card className="bg-dark w-full">
       <CardHeader>
-        <CardTitle>List of exercises</CardTitle>
+        <CardTitle>
+          <div className="flex justify-between">
+            <div>List of exercises</div>
+            <NewExercisesDialog classroomId={classroom?.id} />
+          </div>
+        </CardTitle>
         <CardDescription>
           {classroom?.exercises.length} exercises
         </CardDescription>
       </CardHeader>
       <Separator />
       <CardContent>
-        <DataTable data={classroom?.exercises ?? []} columns={columns} />
+        <DataTable
+          data={classroom?.exercises ?? []}
+          columns={columns}
+          rowSelection={rowSelection}
+          setRowSelection={setRowSelection}
+        />
       </CardContent>
     </Card>
-  );
+  ) : null;
 }

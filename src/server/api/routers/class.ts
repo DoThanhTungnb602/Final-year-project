@@ -1,11 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { ClassSchema } from "~/schemas";
+import { ClassSchema, ExerciseSchema } from "~/schemas";
 
-import {
-  adminProcedure,
-  createTRPCRouter,
-} from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
 
 export const classRouter = createTRPCRouter({
   all: adminProcedure.query(async ({ ctx }) => {
@@ -33,7 +30,7 @@ export const classRouter = createTRPCRouter({
         include: {
           students: true,
           exercises: true,
-          tests: true
+          tests: true,
         },
       });
 
@@ -67,6 +64,41 @@ export const classRouter = createTRPCRouter({
       });
     }
   }),
+
+  addExercise: adminProcedure
+    .input(
+      z.object({
+        classroomId: z.string(),
+        ...ExerciseSchema.shape,
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { classroomId, problems, ...exercise } = input;
+      try {
+        return await ctx.db.class.update({
+          where: {
+            id: classroomId,
+          },
+          data: {
+            exercises: {
+              create: {
+                ...exercise,
+                problems: {
+                  connect: problems.map((problem) => ({
+                    id: problem,
+                  })),
+                },
+              },
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to add exercise to class",
+        });
+      }
+    }),
 
   update: adminProcedure
     .input(
