@@ -32,6 +32,8 @@ export const classRouter = createTRPCRouter({
         },
         include: {
           students: true,
+          exercises: true,
+          tests: true
         },
       });
 
