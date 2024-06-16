@@ -5,7 +5,7 @@ import {
   getUploadthingFile,
   jsonToStdin,
 } from "~/lib/utils";
-import { SolutionSchema } from "~/schemas";
+import { ProblemSchema, SolutionSchema } from "~/schemas";
 
 import {
   createTRPCRouter,
@@ -82,28 +82,21 @@ export const problemRouter = createTRPCRouter({
               verdict: true,
             },
           },
-          solution: {
-            select: {
-              code: true,
-            },
-          },
         },
       });
       return problems.map((problem) => {
         const hasAccepted = problem.submissions.some(
           (sub) => sub.verdict === "ACCEPTED",
         );
-        const hasAttempted = problem.submissions.length > 0;
-        const solution = problem.solution.length > 0;
         let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
         if (hasAccepted) {
           status = "ACCEPTED";
-        } else if (hasAttempted) {
-          status = "ATTEMPTED";
+        } else {
+          const hasAttempted = problem.submissions.length > 0;
+          if (hasAttempted) status = "ATTEMPTED";
         }
         return {
           ...problem,
-          solution,
           status,
         };
       });
@@ -114,4 +107,30 @@ export const problemRouter = createTRPCRouter({
       });
     }
   }),
+
+  create: protectedProcedure
+    .input(ProblemSchema)
+    .mutation(async ({ ctx, input }) => {
+      const role = ctx.session?.user.role;
+
+      if (role != "TEACHER" && role != "ADMIN") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not authorized to create a problem",
+        });
+      }
+
+      try {
+        return await ctx.db.problem.create({
+          data: {
+            ...input,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create problem",
+        });
+      }
+    }),
 });

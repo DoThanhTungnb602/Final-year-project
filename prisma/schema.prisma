@@ -10,7 +10,6 @@ datasource db {
 
 enum Role {
     USER
-    TEACHER
     ADMIN
 }
 
@@ -29,19 +28,92 @@ enum Verdict {
     COMPILATION_ERROR
 }
 
+enum Topic {
+    ARRAY
+    STRING
+    HASH_TABLE
+    DYNAMIC_PROGRAMMING
+    MATH
+    SORTING
+    GREEDY
+    DEPTH_FIRST_SEARCH
+    DATABASE
+    BINARY_SEARCH
+    TREE
+    BREADTH_FIRST_SEARCH
+    MATRIX
+    BIT_MANIPULATION
+    TWO_POINTERS
+    BINARY_TREE
+    HEAP
+    PREFIX_SUM
+    STACK
+    SIMULATION
+    GRAPH
+    COUNTING
+    DESIGN
+    SLIDING_WINDOW
+    BACKTRACKING
+    ENUMERATION
+    UNION_FIND
+    LINKED_LIST
+    ORDERED_SET
+    MONOTONIC_STACK
+    NUMBER_THEORY
+    TRIE
+    DIVIDE_AND_CONQUER
+    BITMASK
+    RECURSION
+    SEGMENT_TREE
+    QUEUE
+    BINARY_SEARCH_TREE
+    MEMOIZATION
+    GEOMETRY
+    BINARY_INDEXED_TREE
+    HASH_FUNCTION
+    COMBINATORICS
+    TOPOLOGICAL_SORT
+    STRING_MATCHING
+    SHORTEST_PATH
+    ROLLING_HASH
+    GAME_THEORY
+    INTERACTIVE
+    DATA_STREAM
+    BRAINTEASER
+    MONOTONIC_QUEUE
+    RANDOMIZED
+    MERGE_SORT
+    ITERATOR
+    CONCURRENCY
+    DOUBLY_LINKED_LIST
+    PROBABILITY_AND_STATISTICS
+    QUICKSELECT
+    BUCKET_SORT
+    SUFFIX_ARRAY
+    MINIMUM_SPANNING_TREE
+    COUNTING_SORT
+    SHELL
+    LINE_SWEEP
+    RESERVOIR_SAMPLING
+    STRONGLY_CONNECTED_COMPONENT
+    EULERIAN_CIRCUIT
+    RADIX_SORT
+    REJECTION_SAMPLING
+    BICONNECTED_COMPONENT
+}
+
 model User {
-    id                String       @id @default(cuid())
-    name              String?
-    email             String       @unique
-    emailVerified     DateTime?
-    password          String?
-    role              Role         @default(USER)
-    image             String?
-    accounts          Account[]
-    sessions          Session[]
-    enrolledClasses   Class[]      @relation("EnrolledClasses")
-    instructedClasses Class[]      @relation("InstructedClasses")
-    submissions       Submission[]
+    id              String       @id @default(cuid())
+    name            String?
+    email           String       @unique
+    emailVerified   DateTime?
+    password        String?
+    role            Role         @default(USER)
+    image           String?
+    accounts        Account[]
+    sessions        Session[]
+    submissions     Submission[]
+    enrolledClasses Class[]      @relation("EnrolledClasses")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -96,42 +168,60 @@ model PasswordResetToken {
     @@unique([email, token])
 }
 
-model Class {
-    id          String    @id @default(cuid())
-    name        String
-    description String?
-    image       String?
-    teacher     User      @relation(name: "InstructedClasses", fields: [teacherId], references: [id])
-    teacherId   String
-    students    User[]    @relation("EnrolledClasses")
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    Problem     Problem[]
-}
-
 model Problem {
-    id             String       @id @default(cuid())
-    name           String
-    difficulty     Difficulty
-    topics         Topic[]
-    description    String?
-    descriptionUrl String?
-    timeLimit      Int?
-    memoryLimit    Int?
-    class          Class?       @relation(fields: [classId], references: [id])
-    classId        String?
-    testcases      TestCase[]
-    solution       Solution[]
-    submissions    Submission[]
+    id          String       @id @default(cuid())
+    title       String
+    difficulty  Difficulty
+    tags        Topic[]
+    description String?
+    timeLimit   Int?
+    memoryLimit Int?
+    testcases   String?
+    solution    String?
+    submissions Submission[]
+    exercise    Exercise?    @relation(fields: [exerciseId], references: [id])
+    exerciseId  String?
+    test        Test?        @relation(fields: [testId], references: [id])
+    testId      String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
-model Topic {
-    id       String    @id @default(cuid())
-    name     String
-    problems Problem[]
+model Class {
+    id        String     @id @default(cuid())
+    name      String
+    students  User[]     @relation("EnrolledClasses")
+    exercises Exercise[]
+    tests     Test[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Exercise {
+    id           String       @id @default(cuid())
+    title        String
+    assignedDate DateTime
+    dueDate      DateTime
+    problems     Problem[]
+    submissions  Submission[]
+    Class        Class?       @relation(fields: [classId], references: [id])
+    classId      String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Test {
+    id          String       @id @default(cuid())
+    title       String
+    startTime   DateTime
+    endTime     DateTime
+    problems    Problem[]
+    submissions Submission[]
+    Class       Class?       @relation(fields: [classId], references: [id])
+    classId     String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -140,50 +230,28 @@ model Topic {
 model Language {
     id         Int          @id
     name       String
-    TestCase   TestCase[]
-    Solution   Solution[]
     Submission Submission[]
 
     @@unique([name])
 }
 
-model TestCase {
-    id         String   @id @default(cuid())
-    fileUrl    String
-    language   Language @relation(fields: [languageId], references: [id])
+model Submission {
+    id         String    @id @default(cuid())
+    verdict    Verdict
+    time       Int
+    memory     Int
+    code       String
     languageId Int
-    problem    Problem  @relation(fields: [problemId], references: [id])
+    language   Language  @relation(fields: [languageId], references: [id])
     problemId  String
+    problem    Problem   @relation(fields: [problemId], references: [id])
+    userId     String
+    user       User      @relation(fields: [userId], references: [id])
+    exercise   Exercise? @relation(fields: [exerciseId], references: [id])
+    exerciseId String?
+    test       Test?     @relation(fields: [testId], references: [id])
+    testId     String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-}
-
-model Solution {
-    id        String   @id @default(cuid())
-    code      String
-    language  Language @relation(fields: [languageId], references: [id])
-    problem   Problem  @relation(fields: [problemId], references: [id])
-    problemId String
-
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    languageId Int
-}
-
-model Submission {
-    id        String   @id @default(cuid())
-    verdict   Verdict
-    time      Int
-    memory    Int
-    code      String
-    language  Language @relation(fields: [languageId], references: [id])
-    problem   Problem  @relation(fields: [problemId], references: [id])
-    problemId String
-    user      User     @relation(fields: [userId], references: [id])
-    userId    String
-
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    languageId Int
 }

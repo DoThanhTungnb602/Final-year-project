@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Difficulty } from "@prisma/client";
+import { Difficulty, Topic } from "@prisma/client";
 
 enum Status {
   TODO = "TODO",
@@ -96,4 +96,46 @@ export const ProblemFilterSchema = z.object({
   tags: z.array(z.string()),
   status: z.nativeEnum(Status).optional(),
   search: z.string(),
+});
+
+export const ProblemSchema = z.object({
+  title: z.string().min(1, {
+    message: "Title is required",
+  }),
+  description: z.string().min(1, {
+    message: "Description is required",
+  }),
+  difficulty: z.nativeEnum(Difficulty),
+  tags: z.array(z.nativeEnum(Topic)).min(1, {
+    message: "At least one tag is required",
+  }),
+  timeLimit: z.number().optional(),
+  memoryLimit: z.number().optional(),
+  testcases: z
+    .string()
+    .min(1, {
+      message: "Test cases are required",
+    })
+    .refine(
+      (data) => {
+        try {
+          JSON.parse(data);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      {
+        message: "Invalid test cases. Please enter a valid JSON array",
+      },
+    ),
+  solution: z.string().min(1, {
+    message: "Solution is required",
+  }),
+});
+
+export const ClassSchema = z.object({
+  name: z.string().min(1, {
+    message: "Name is required",
+  }),
 });

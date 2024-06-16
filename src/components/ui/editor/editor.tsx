@@ -22,7 +22,11 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
     ],
     content: content,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      if (editor.isEmpty) {
+        onChange("");
+      } else {
+        onChange(editor.getHTML());
+      }
     },
     editorProps: {
       attributes: {
@@ -34,10 +38,10 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
   if (!editor) return <></>;
 
   return (
-    <div className="prose dark:prose-invert flex h-full w-full max-w-none flex-col bg-background">
+    <div className="prose flex h-full w-full max-w-none flex-col bg-background dark:prose-invert">
       <EditorToolbar editor={editor} />
       <EditorContent
-        className="min-h-0 flex-1 overflow-auto p-3"
+        className="max-h-[500px] flex-1 overflow-auto p-3"
         editor={editor}
       />
     </div>

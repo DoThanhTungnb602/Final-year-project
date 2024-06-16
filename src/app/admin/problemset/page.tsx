@@ -6,7 +6,8 @@ import { ProblemFilter } from "~/components/shared/problem-filter";
 import { Toggle } from "~/components/ui/toggle";
 import { useState } from "react";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
-import { DataTableDemo } from "./testtable";
+import { ProblemTable } from "./testtable";
+import Link from "next/link";
 
 export default function ProblemSet() {
   const [filter, setFilter] = useState(false);
@@ -27,7 +28,9 @@ export default function ProblemSet() {
               <MdFilterAltOff className="size-6" />
             )}
           </Toggle>
-          <Button>Add Problem</Button>
+          <Link href="/admin/problemset/create">
+            <Button>Add Problem</Button>
+          </Link>
         </div>
       </div>
       {filter && (
@@ -39,7 +42,7 @@ export default function ProblemSet() {
       )}
       <Card x-chunk="dashboard-06-chunk-0" className="bg-dark">
         <CardContent className="overflow-auto pt-6">
-          <DataTableDemo />
+          <ProblemTable />
         </CardContent>
       </Card>
     </>

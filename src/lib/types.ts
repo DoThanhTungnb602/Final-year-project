@@ -1,3 +1,5 @@
+import { Problem } from "@prisma/client";
+
 export type Language = {
   id: number;
   editorValue:
@@ -24,6 +26,12 @@ export type Language = {
 };
 
 export type Theme = "light" | "dark";
+
+export type ProblemStatus = "UNSOLVED" | "ACCEPTED" | "ATTEMPTED";
+
+export type ProblemWithStatus = Problem & {
+  status: ProblemStatus;
+};
 
 export const languagesExtra: Array<Language> = [
   {
