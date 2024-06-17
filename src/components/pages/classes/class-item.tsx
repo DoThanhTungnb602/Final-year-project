@@ -18,6 +18,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
+import { toast } from "sonner";
 
 interface ClassItemProps {
   id: string;
@@ -33,6 +34,7 @@ export function ClassItem({ id, name, studentCount }: ClassItemProps) {
     onSuccess() {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       utils.class.all.invalidate();
+      toast.success("Class deleted successfully");
     },
   });
 

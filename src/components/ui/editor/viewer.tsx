@@ -3,10 +3,9 @@ import StarterKit from "@tiptap/starter-kit";
 
 interface ViewerProps {
   content: string;
-  style?: "default" | "prose";
 }
 
-const Viewer = ({ content, style }: ViewerProps) => {
+const Viewer = ({ content }: ViewerProps) => {
   const editor = useEditor({
     extensions: [StarterKit],
     content: content,
@@ -15,11 +14,8 @@ const Viewer = ({ content, style }: ViewerProps) => {
 
   if (!editor) return <></>;
 
-  const className: string =
-    style === "prose" ? "prose-mt-0 prose max-w-none dark:prose-invert" : "";
-
   return (
-    <article className={className}>
+    <article className="prose-mt-0 prose max-w-none p-4 dark:prose-invert overflow-scroll">
       <EditorContent editor={editor} readOnly={true} />
     </article>
   );

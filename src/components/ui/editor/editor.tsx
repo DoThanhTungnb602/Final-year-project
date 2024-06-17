@@ -5,14 +5,16 @@ import Placeholder from "@tiptap/extension-placeholder";
 import StarterKit from "@tiptap/starter-kit";
 
 import EditorToolbar from "./toolbar/editor-toolbar";
+import { useEffect } from "react";
 
 interface EditorProps {
   content: string;
   placeholder?: string;
   onChange: (value: string) => void;
+  editable?: boolean;
 }
 
-const Editor = ({ content, placeholder, onChange }: EditorProps) => {
+const Editor = ({ content, placeholder, onChange, editable }: EditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -28,6 +30,7 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
         onChange(editor.getHTML());
       }
     },
+    editable: editable,
     editorProps: {
       attributes: {
         class: "h-full w-full focus:outline-none",
@@ -35,11 +38,19 @@ const Editor = ({ content, placeholder, onChange }: EditorProps) => {
     },
   });
 
+  useEffect(() => {
+    if (!editor) return;
+
+    editor.setOptions({
+      editable: editable,
+    });
+  }, [editable]);
+
   if (!editor) return <></>;
 
   return (
-    <div className="prose flex h-full w-full max-w-none flex-col bg-background dark:prose-invert">
-      <EditorToolbar editor={editor} />
+    <div className="prose flex h-full w-full max-w-none flex-col dark:prose-invert">
+      {editable && <EditorToolbar editor={editor} />}
       <EditorContent
         className="max-h-[500px] flex-1 overflow-auto p-3"
         editor={editor}

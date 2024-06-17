@@ -42,16 +42,22 @@ import { Switch } from "~/components/ui/switch";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Problem } from "@prisma/client";
+import { FaPen, FaCheck } from "react-icons/fa";
 
 interface ProblemFormProps {
-  problem: Problem;
+  problem?: Problem;
+  _mode: "view" | "edit" | "create";
 }
 
-export function ProblemForm({ problem }: ProblemFormProps) {
-  const [tags, setTags] = useState<Option[]>();
+export function ProblemForm({ problem, _mode }: ProblemFormProps) {
+  const [tags, setTags] = useState<Option[]>(
+    problem?.tags.map((tag) => ({ value: tag, label: tag })) ?? [],
+  );
+  const [mode, setMode] = useState(_mode);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof ProblemSchema>>({
+    disabled: mode === "view",
     resolver: zodResolver(ProblemSchema),
     defaultValues: {
       title: problem?.title ?? "",
@@ -66,6 +72,16 @@ export function ProblemForm({ problem }: ProblemFormProps) {
     },
   });
 
+  const problemCreator = api.problem.create.useMutation({
+    onSuccess: () => {
+      toast.success("Problem created successfully");
+      router.push("/admin/problemset");
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
   const problemEditor = api.problem.update.useMutation({
     onSuccess: () => {
       toast.success("Problem updated successfully");
@@ -77,10 +93,51 @@ export function ProblemForm({ problem }: ProblemFormProps) {
   });
 
   const onSubmit = (values: z.infer<typeof ProblemSchema>) => {
-    problemEditor.mutate({
-      id: problem?.id,
-      ...values,
-    });
+    if (mode === "create") {
+      problemCreator.mutate(values);
+    } else if (mode === "edit" && problem) {
+      problemEditor.mutate({ ...values, id: problem?.id });
+    } else {
+      // Do nothing
+    }
+  };
+
+  const renderActionsButton = () => {
+    if (mode === "view") {
+      return (
+        <Button size="sm" type="button" onClick={() => setMode("edit")}>
+          <FaPen className="mr-2 h-4 w-4" />
+          Edit
+        </Button>
+      );
+    } else if (mode === "edit") {
+      return (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            type="button"
+            onClick={() => setMode("view")}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            type="submit"
+            disabled={problemEditor.isPending || !form.formState.isDirty}
+          >
+            <FaCheck className="mr-2 h-4 w-4" />
+            Update
+          </Button>
+        </>
+      );
+    } else {
+      return (
+        <Button size="sm" type="submit" disabled={problemCreator.isPending}>
+          Create Problem
+        </Button>
+      );
+    }
   };
 
   return (
@@ -99,20 +156,16 @@ export function ProblemForm({ problem }: ProblemFormProps) {
             </Button>
           </Link>
           <h1 className="flex-1 shrink-0 whitespace-nowrap text-3xl font-semibold tracking-tight sm:grow-0">
-            New Problem
+            {
+              {
+                view: "View Problem",
+                edit: "Edit Problem",
+                create: "Create Problem",
+              }[mode]
+            }
           </h1>
           <div className="hidden items-center gap-2 md:ml-auto md:flex">
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => router.push("/admin/problemset")}
-            >
-              Cancel
-            </Button>
-            <Button size="sm" type="submit" disabled={problemEditor.isPending}>
-              Update
-            </Button>
+            {renderActionsButton()}
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
@@ -152,6 +205,7 @@ export function ProblemForm({ problem }: ProblemFormProps) {
                         <FormControl>
                           <div className="h-80 overflow-hidden rounded-md border">
                             <Editor
+                              editable={mode !== "view"}
                               content={field.value}
                               onChange={(e) => {
                                 field.onChange(e);
@@ -210,6 +264,7 @@ export function ProblemForm({ problem }: ProblemFormProps) {
                       <FormControl>
                         <div className="h-80 overflow-hidden rounded-md border">
                           <Editor
+                            editable={mode !== "view"}
                             content={field.value}
                             onChange={field.onChange}
                             placeholder="Enter solution of the problem"
@@ -241,6 +296,7 @@ export function ProblemForm({ problem }: ProblemFormProps) {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={mode === "view"}
                       >
                         <FormControl>
                           <SelectTrigger
@@ -285,6 +341,7 @@ export function ProblemForm({ problem }: ProblemFormProps) {
                       </div>
                       <FormControl>
                         <Switch
+                          disabled={mode === "view"}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -313,6 +370,7 @@ export function ProblemForm({ problem }: ProblemFormProps) {
                       <FormItem className="h-full">
                         <FormControl>
                           <MultipleSelector
+                            disabled={mode === "view"}
                             options={tagOptions}
                             defaultOptions={defaultOptions}
                             value={tags}

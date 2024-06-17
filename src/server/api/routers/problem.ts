@@ -7,7 +7,6 @@ import {
   jsonToStdin,
 } from "~/lib/utils";
 import { ProblemSchema, SolutionSchema } from "~/schemas";
-import { Problem } from "@prisma/client";
 
 import {
   adminProcedure,
@@ -188,6 +187,21 @@ export const problemRouter = createTRPCRouter({
         });
       }
     }),
+
+  delete: adminProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    try {
+      return await ctx.db.problem.delete({
+        where: {
+          id: input,
+        },
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to delete problem",
+      });
+    }
+  }),
 
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     try {
