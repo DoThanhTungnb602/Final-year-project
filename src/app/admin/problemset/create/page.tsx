@@ -39,9 +39,12 @@ import {
 import Editor from "~/components/ui/editor/editor";
 import { api } from "~/trpc/react";
 import { Switch } from "~/components/ui/switch";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Page() {
   const [tags, setTags] = useState<Option[]>();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof ProblemSchema>>({
     resolver: zodResolver(ProblemSchema),
@@ -59,8 +62,9 @@ export default function Page() {
   });
 
   const problemCreator = api.problem.create.useMutation({
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
+      toast.success("Problem created successfully");
+      router.push("/admin/problemset");
     },
     onError: (error) => {
       console.error(error);
@@ -91,10 +95,19 @@ export default function Page() {
               New Problem
             </h1>
             <div className="hidden items-center gap-2 md:ml-auto md:flex">
-              <Button variant="outline" size="sm" type="button">
+              <Button
+                variant="outline"
+                size="sm"
+                type="button"
+                onClick={() => router.push("/admin/problemset")}
+              >
                 Cancel
               </Button>
-              <Button size="sm" type="submit">
+              <Button
+                size="sm"
+                type="submit"
+                disabled={problemCreator.isPending}
+              >
                 Create Problem
               </Button>
             </div>
@@ -137,7 +150,10 @@ export default function Page() {
                             <div className="h-80 overflow-hidden rounded-md border">
                               <Editor
                                 content={field.value}
-                                onChange={field.onChange}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  console.log(field.value);
+                                }}
                                 placeholder="Enter description of the problem"
                               />
                             </div>

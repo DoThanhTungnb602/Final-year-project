@@ -11,7 +11,11 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "migrate:postgres": "dotenv -e .env.sample -- npx prisma migrate deploy"
+    "migrate:postgres": "dotenv -e .env.sample -- npx prisma migrate deploy",
+    "db-seed": "NODE_ENV=development prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.6.0",
@@ -83,6 +87,7 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "tldraw": "^2.0.2",
+    "tsx": "^4.15.6",
     "uploadthing": "^6.9.0",
     "uuid": "^9.0.1",
     "vaul": "^0.9.0",
@@ -93,7 +98,7 @@
     "@tailwindcss/typography": "latest",
     "@types/bcryptjs": "^2.4.6",
     "@types/eslint": "^8.56.2",
-    "@types/node": "^20.11.20",
+    "@types/node": "^20.14.2",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
     "@types/uuid": "^9.0.8",
@@ -106,7 +111,8 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "prisma": "latest",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   },
   "ct3aMetadata": {
     "initVersion": "7.30.1"

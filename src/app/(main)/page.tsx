@@ -125,7 +125,7 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
 ];
 
 export default function Home() {
-  const { data } = api.problem.all.useQuery();
+  const { data } = api.problem.allPublic.useQuery();
   const [filter, setFilter] = useState(false);
 
   return (

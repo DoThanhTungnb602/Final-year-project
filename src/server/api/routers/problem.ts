@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { axiosInstance } from "~/lib/axios";
 import {
   consolidateIncludes,
@@ -6,6 +7,7 @@ import {
   jsonToStdin,
 } from "~/lib/utils";
 import { ProblemSchema, SolutionSchema } from "~/schemas";
+import { Problem } from "@prisma/client";
 
 import {
   adminProcedure,
@@ -15,7 +17,7 @@ import {
 } from "~/server/api/trpc";
 
 export const problemRouter = createTRPCRouter({
-  getDescription: publicProcedure.query(async ({ input }) => {
+  getDescription: publicProcedure.query(async () => {
     const res = await fetch(
       `https://utfs.io/f/b382960c-13ed-46c2-8207-f9b0143adb79-v4aa8i.md`,
     );
@@ -71,9 +73,50 @@ export const problemRouter = createTRPCRouter({
       }
     }),
 
-  all: adminProcedure.query(async ({ ctx, input }) => {
+  all: adminProcedure.query(async ({ ctx }) => {
     try {
       const problems = await ctx.db.problem.findMany({
+        include: {
+          submissions: {
+            where: {
+              userId: ctx.session?.user.id,
+            },
+            select: {
+              verdict: true,
+            },
+          },
+        },
+      });
+      return problems.map((problem) => {
+        const hasAccepted = problem.submissions.some(
+          (sub) => sub.verdict === "ACCEPTED",
+        );
+        let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
+        if (hasAccepted) {
+          status = "ACCEPTED";
+        } else {
+          const hasAttempted = problem.submissions.length > 0;
+          if (hasAttempted) status = "ATTEMPTED";
+        }
+        return {
+          ...problem,
+          status,
+        };
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch problems",
+      });
+    }
+  }),
+
+  allPublic: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const problems = await ctx.db.problem.findMany({
+        where: {
+          isPublic: true,
+        },
         include: {
           submissions: {
             where: {
@@ -125,4 +168,40 @@ export const problemRouter = createTRPCRouter({
         });
       }
     }),
+
+  update: adminProcedure
+    .input(z.object({ id: z.string() }).merge(ProblemSchema))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.problem.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            ...input,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update problem",
+        });
+      }
+    }),
+
+  getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    try {
+      const problem = await ctx.db.problem.findUnique({
+        where: {
+          id: input,
+        },
+      });
+      return problem;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch problem",
+      });
+    }
+  }),
 });

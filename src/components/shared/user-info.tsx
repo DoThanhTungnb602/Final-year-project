@@ -24,15 +24,20 @@ import { Button } from "~/components/ui/button";
 import { FaUserCircle } from "react-icons/fa";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
+import { AiFillDashboard } from "react-icons/ai";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useCurrentUser } from "~/hooks/use-current-user";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCurrentRole } from "~/hooks/use-current-role";
 
 export function UserInfo() {
   const currentUser = useCurrentUser();
   const [showModal, setShowModal] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const router = useRouter();
+  const isAdmin = useCurrentRole() === "ADMIN";
   // TODO: Add user preferences
 
   return currentUser ? (
@@ -51,22 +56,42 @@ export function UserInfo() {
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48 z-[10000]">
+        <DropdownMenuContent className="z-[10000] w-48">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Link href="/settings/profile">Profile</Link>
+            <DropdownMenuItem
+              onClick={() => {
+                router.push("/settings/profile");
+              }}
+            >
+              Profile
               <DropdownMenuShortcut>
                 <FaUserCircle />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href="/settings/profile">Settings</Link>
+            <DropdownMenuItem
+              onClick={() => {
+                router.push("/settings");
+              }}
+            >
+              Settings
               <DropdownMenuShortcut>
                 <FaGear />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
+            {isAdmin && (
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push("/admin/problemset");
+                }}
+              >
+                Dashboard
+                <DropdownMenuShortcut>
+                  <AiFillDashboard />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem

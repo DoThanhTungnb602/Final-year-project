@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaCheckCircle, FaExclamationCircle, FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import * as z from "zod";
 import CardWrapper from "~/components/shared/card-wrapper";
 import { Spinner } from "~/components/shared/spinner";
@@ -20,6 +19,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { RegisterSchema } from "~/schemas";
 import { api } from "~/trpc/react";
+import Social from "./social";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -145,18 +145,7 @@ export function RegisterForm() {
           </Button>
         </form>
       </Form>
-      <div className="mt-5 flex gap-3">
-        <Button size="sm" variant="outline" className="w-full" asChild>
-          <Link href="/">
-            <FcGoogle className="size-5" />
-          </Link>
-        </Button>
-        <Button size="sm" variant="outline" className="w-full" asChild>
-          <Link href="/">
-            <FaGithub className="size-5" />
-          </Link>
-        </Button>
-      </div>
+      <Social />
       <div className="mt-4 text-center text-sm">
         Already have an account?{" "}
         <Link href="/auth/login" className="underline">
