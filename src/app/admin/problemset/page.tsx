@@ -13,7 +13,7 @@ import { api } from "~/trpc/react";
 
 export default function ProblemSet() {
   const [filter, setFilter] = useState(false);
-  const query = api.problem.getProblemList.useQuery();
+  const query = api.problem.all.useQuery();
   const [rowSelection, setRowSelection] = useState({});
 
   return (

@@ -30,6 +30,7 @@ import { ProblemSchema } from "~/schemas";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,6 +38,7 @@ import {
 } from "~/components/ui/form";
 import Editor from "~/components/ui/editor/editor";
 import { api } from "~/trpc/react";
+import { Switch } from "~/components/ui/switch";
 
 export default function Page() {
   const [tags, setTags] = useState<Option[]>();
@@ -49,6 +51,7 @@ export default function Page() {
       testcases: "",
       solution: "",
       difficulty: undefined,
+      isPublic: true,
       tags: [],
       timeLimit: undefined,
       memoryLimit: undefined,
@@ -205,6 +208,9 @@ export default function Page() {
               <Card x-chunk="dashboard-07-chunk-3">
                 <CardHeader>
                   <CardTitle>Problem Difficulty</CardTitle>
+                  <CardDescription>
+                    Select the difficulty level of the problem
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -232,6 +238,38 @@ export default function Page() {
                           </SelectContent>
                         </Select>
                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card x-chunk="dashboard-07-chunk-3">
+                <CardHeader>
+                  <CardTitle>Problem Visibility</CardTitle>
+                  <CardDescription>
+                    Set the visibility of the problem
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="isPublic"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">
+                            Make problem public
+                          </FormLabel>
+                          <FormDescription>
+                            This will make the problem visible to all users
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
                       </FormItem>
                     )}
                   />

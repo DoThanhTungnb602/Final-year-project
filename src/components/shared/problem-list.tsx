@@ -16,7 +16,7 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 
 export function ProblemList() {
-  const { data } = api.problem.getProblemList.useQuery();
+  const { data } = api.problem.all.useQuery();
 
   return (
     <Sheet>

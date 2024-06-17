@@ -5,6 +5,7 @@ import { api } from "~/trpc/react";
 
 import ClassOverview from "~/components/pages/classes/class-overview";
 import ClassExercises from "~/components/pages/classes/class-exercises";
+import ClassTests from "~/components/pages/classes/class-tests";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -23,7 +24,9 @@ export default function Page({ params }: { params: { id: string } }) {
       <TabsContent value="exercises">
         <ClassExercises classroom={classQuery.data} />
       </TabsContent>
-      <TabsContent value="tests">Test here</TabsContent>
+      <TabsContent value="tests">
+        <ClassTests classroom={classQuery.data} />
+      </TabsContent>
     </Tabs>
   );
 }

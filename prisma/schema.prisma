@@ -172,6 +172,7 @@ model Problem {
     id          String       @id @default(cuid())
     title       String
     difficulty  Difficulty
+    isPublic    Boolean
     tags        Topic[]
     description String?
     timeLimit   Int?

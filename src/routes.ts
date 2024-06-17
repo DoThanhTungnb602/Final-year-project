@@ -10,6 +10,8 @@ export const authRoutes = [
 
 export const protectedRoutes = ["/settings/profile"];
 
+export const adminRoutePrefix = "/admin";
+
 export const apiAuthPrefix = "/api/auth";
 
 export const DEFAULT_LOGIN_REDIRECT = "/settings/profile";

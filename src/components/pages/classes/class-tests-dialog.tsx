@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import { ExerciseSchema } from "~/schemas";
+import { TestSchema } from "~/schemas";
 import {
   Form,
   FormField,
@@ -30,7 +30,7 @@ import { toast } from "sonner";
 import { DateTimePicker } from "~/components/shared/datetime-picker";
 import MultipleSelector, { Option } from "~/components/shared/multiselect";
 
-export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
+export function ClassTestsDialog({ classroomId }: { classroomId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [problems, setProblems] = useState<Option[]>();
   const utils = api.useUtils();
@@ -42,7 +42,7 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
     value: problem.id,
   }));
 
-  const exerciseCreator = api.class.addExercise.useMutation({
+  const testCreator = api.class.addTest.useMutation({
     onSuccess(data) {
       toast.success(`Class ${data.name} created successfully`);
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -55,18 +55,18 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
     },
   });
 
-  const form = useForm<z.infer<typeof ExerciseSchema>>({
-    resolver: zodResolver(ExerciseSchema),
+  const form = useForm<z.infer<typeof TestSchema>>({
+    resolver: zodResolver(TestSchema),
     defaultValues: {
       title: "",
-      assignedDate: undefined,
-      dueDate: undefined,
+      startTime: undefined,
+      endTime: undefined,
       problems: [],
     },
   });
 
-  const onSubmit = (values: z.infer<typeof ExerciseSchema>) => {
-    exerciseCreator.mutate({
+  const onSubmit = (values: z.infer<typeof TestSchema>) => {
+    testCreator.mutate({
       classroomId,
       ...values,
     });
@@ -75,15 +75,15 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">Create Exercise</Button>
+        <Button size="sm">Create Test</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create new exercise</DialogTitle>
+              <DialogTitle>Create new test</DialogTitle>
               <DialogDescription>
-                Fill out the form below to add a new exercise
+                Fill out the form below to add a new test
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-2 py-4">
@@ -94,7 +94,7 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter exercise title" {...field} />
+                      <Input placeholder="Enter test title" {...field} />
                     </FormControl>
                     <FormDescription />
                     <FormMessage />
@@ -103,10 +103,10 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
               />
               <FormField
                 control={form.control}
-                name="assignedDate"
+                name="startTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="assignedDate">Assigned Date</FormLabel>
+                    <FormLabel htmlFor="startTime">Start Time</FormLabel>
                     <FormControl>
                       <DateTimePicker
                         granularity="second"
@@ -120,10 +120,10 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
               />
               <FormField
                 control={form.control}
-                name="dueDate"
+                name="endTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="dueDate">Due Date</FormLabel>
+                    <FormLabel htmlFor="endTime">End Time</FormLabel>
                     <FormControl>
                       <DateTimePicker
                         granularity="second"
@@ -149,7 +149,7 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
                           setProblems(options);
                           field.onChange(options.map((option) => option.value));
                         }}
-                        placeholder="Select problems for the exercise"
+                        placeholder="Select problems for the test"
                       />
                     </FormControl>
                     <FormMessage />
@@ -158,7 +158,7 @@ export function NewExercisesDialog({ classroomId }: { classroomId: string }) {
               />
             </div>
             <DialogFooter>
-              <Button type="submit">Create Exercise</Button>
+              <Button type="submit">Create Test</Button>
             </DialogFooter>
           </form>
         </Form>

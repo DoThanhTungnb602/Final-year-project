@@ -8,6 +8,7 @@ import {
 import { ProblemSchema, SolutionSchema } from "~/schemas";
 
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
@@ -70,7 +71,7 @@ export const problemRouter = createTRPCRouter({
       }
     }),
 
-  getProblemList: publicProcedure.query(async ({ ctx, input }) => {
+  all: adminProcedure.query(async ({ ctx, input }) => {
     try {
       const problems = await ctx.db.problem.findMany({
         include: {
@@ -103,23 +104,14 @@ export const problemRouter = createTRPCRouter({
     } catch (error) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch problem list",
+        message: "Failed to fetch problems",
       });
     }
   }),
 
-  create: protectedProcedure
+  create: adminProcedure
     .input(ProblemSchema)
     .mutation(async ({ ctx, input }) => {
-      const role = ctx.session?.user.role;
-
-      if (role != "TEACHER" && role != "ADMIN") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You are not authorized to create a problem",
-        });
-      }
-
       try {
         return await ctx.db.problem.create({
           data: {

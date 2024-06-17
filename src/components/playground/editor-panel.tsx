@@ -10,13 +10,13 @@ import { CodeEditor } from "~/components/editor/code-editor";
 import dynamic from "next/dynamic";
 
 
-const RichEditor = dynamic(
-  () => import("~/components/editor/rich-editor").then((mod) => mod.default),
-  {
-    // TODO: Add a loading component
-    loading: () => <div>Loading...</div>,
-  },
-);
+// const RichEditor = dynamic(
+//   () => import("~/components/editor/rich-editor").then((mod) => mod.default),
+//   {
+//     // TODO: Add a loading component
+//     loading: () => <div>Loading...</div>,
+//   },
+// );
 
 const WhiteboardEditor = dynamic(
   () =>
@@ -73,7 +73,7 @@ const EditorPanel = () => {
       <TabsContent value="note" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
           <CardContent className="h-full min-h-0 p-0">
-            {tab === "note" && <RichEditor />}
+            {tab === "note" && <div>Note</div>}
           </CardContent>
         </Card>
       </TabsContent>

@@ -106,6 +106,7 @@ export const ProblemSchema = z.object({
     message: "Description is required",
   }),
   difficulty: z.nativeEnum(Difficulty),
+  isPublic: z.boolean(),
   tags: z.array(z.nativeEnum(Topic)).min(1, {
     message: "At least one tag is required",
   }),
@@ -155,9 +156,28 @@ export const ExerciseSchema = z.object({
   dueDate: z.date({
     errorMap: (issue, { defaultError }) => ({
       message:
-        issue.code === "invalid_type"
-          ? "Due date is required"
-          : defaultError,
+        issue.code === "invalid_type" ? "Due date is required" : defaultError,
+    }),
+  }),
+  problems: z.array(z.string()).min(1, {
+    message: "At least one problem is required",
+  }),
+});
+
+export const TestSchema = z.object({
+  title: z.string().min(1, {
+    message: "Title is required",
+  }),
+  startTime: z.date({
+    errorMap: (issue, { defaultError }) => ({
+      message:
+        issue.code === "invalid_type" ? "Start time is required" : defaultError,
+    }),
+  }),
+  endTime: z.date({
+    errorMap: (issue, { defaultError }) => ({
+      message:
+        issue.code === "invalid_type" ? "End time is required" : defaultError,
     }),
   }),
   problems: z.array(z.string()).min(1, {
