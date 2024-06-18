@@ -143,7 +143,7 @@ export default function ClassOverview({
   ];
 
   return (
-    <Card className="bg-dark w-full">
+    <Card className="bg-dark w-full h-full flex flex-col">
       <CardHeader>
         <CardTitle>
           <Form {...form}>
@@ -218,7 +218,7 @@ export default function ClassOverview({
         <CardDescription>{classroom?.students.length} students</CardDescription>
       </CardHeader>
       <Separator />
-      <CardContent>
+      <CardContent className="flex-1">
         <DataTable data={classroom?.students ?? []} columns={columns} />
       </CardContent>
     </Card>

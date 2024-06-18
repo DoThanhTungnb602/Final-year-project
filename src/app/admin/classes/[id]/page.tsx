@@ -12,19 +12,19 @@ export default function Page({ params }: { params: { id: string } }) {
   const classQuery = api.class.getById.useQuery(id);
 
   return (
-    <Tabs defaultValue="students" className="w-full">
+    <Tabs defaultValue="students" className="w-full h-full flex flex-col">
       <TabsList className="w-full justify-start">
         <TabsTrigger value="students">Overview</TabsTrigger>
         <TabsTrigger value="exercises">Exercises</TabsTrigger>
         <TabsTrigger value="tests">Tests</TabsTrigger>
       </TabsList>
-      <TabsContent value="students">
+      <TabsContent value="students" className="flex-1">
         <ClassOverview classroom={classQuery.data} />
       </TabsContent>
-      <TabsContent value="exercises">
+      <TabsContent value="exercises" className="flex-1">
         <ClassExercises classroom={classQuery.data} />
       </TabsContent>
-      <TabsContent value="tests">
+      <TabsContent value="tests" className="flex-1">
         <ClassTests classroom={classQuery.data} />
       </TabsContent>
     </Tabs>

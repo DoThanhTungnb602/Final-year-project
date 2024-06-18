@@ -86,10 +86,8 @@ model Problem {
     testcases   String?
     solution    String?
     submissions Submission[]
-    exercise    Exercise?    @relation(fields: [exerciseId], references: [id])
-    exerciseId  String?
-    test        Test?        @relation(fields: [testId], references: [id])
-    testId      String?
+    exercises   Exercise[]
+    tests       Test[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -118,7 +118,7 @@ export default function ClassTests({
   ];
 
   return classroom ? (
-    <Card className="bg-dark w-full">
+    <Card className="bg-dark w-full h-full">
       <CardHeader>
         <CardTitle>
           <div className="flex justify-between">

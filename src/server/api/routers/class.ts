@@ -28,9 +28,21 @@ export const classRouter = createTRPCRouter({
           id: input,
         },
         include: {
-          students: true,
-          exercises: true,
-          tests: true,
+          students: {
+            orderBy: {
+              id: "asc",
+            },
+          },
+          exercises: {
+            orderBy: {
+              id: "asc",
+            },
+          },
+          tests: {
+            orderBy: {
+              id: "asc",
+            },
+          },
         },
       });
 
@@ -65,6 +77,40 @@ export const classRouter = createTRPCRouter({
     }
   }),
 
+  getExerciseById: adminProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const exercise = await ctx.db.exercise.findUnique({
+          where: {
+            id: input,
+          },
+          include: {
+            problems: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+        });
+
+        if (!exercise) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Exercise not found",
+          });
+        }
+
+        return exercise;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch exercise",
+        });
+      }
+    }),
+
   addExercise: adminProcedure
     .input(
       z.object({
@@ -85,7 +131,7 @@ export const classRouter = createTRPCRouter({
                 ...exercise,
                 problems: {
                   connect: problems.map((problem) => ({
-                    id: problem,
+                    id: problem.id,
                   })),
                 },
               },
@@ -96,6 +142,68 @@ export const classRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to add exercise to class",
+        });
+      }
+    }),
+
+  editExercise: adminProcedure
+    .input(z.object({ id: z.string(), ...ExerciseSchema.shape }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { problems, ...exercise } = input;
+        return await ctx.db.exercise.update({
+          where: {
+            id: exercise.id,
+          },
+          data: {
+            ...exercise,
+            problems: {
+              set: problems.map((problem) => ({
+                id: problem.id,
+              })),
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update exercise",
+        });
+      }
+    }),
+
+  deleteExercise: adminProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.exercise.delete({
+          where: {
+            id: input,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete exercise",
+        });
+      }
+    }),
+
+  deleteManyExercises: adminProcedure
+    .input(z.array(z.string()))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.exercise.deleteMany({
+          where: {
+            id: {
+              in: input,
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete exercises",
         });
       }
     }),
