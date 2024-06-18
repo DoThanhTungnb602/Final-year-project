@@ -5,11 +5,11 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProblemFilter } from "~/components/pages/problemset/problem-filter";
 import { Toggle } from "~/components/ui/toggle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { DataTable } from "~/components/shared/data-table";
 import { api } from "~/trpc/react";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 
 import { Badge } from "~/components/ui/badge";
 import { GrDocumentVerified } from "react-icons/gr";
@@ -33,28 +33,79 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { FaTrash } from "react-icons/fa6";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import { ProblemFilterSchema } from "~/schemas";
+import { z } from "zod";
 
 export default function ProblemSet() {
   const [filter, setFilter] = useState(false);
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
   const query = api.problem.all.useQuery();
+  const [filteredData, setFilteredData] = useState<ProblemWithStatus[]>([]);
   const router = useRouter();
   const utils = api.useUtils();
+
+  useEffect(() => {
+    if (query.data) {
+      setFilteredData(query.data);
+    }
+  }, [query.data]);
 
   const problemMutation = api.problem.delete.useMutation({
     onSuccess() {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       utils.problem.invalidate();
+      setRowSelection({});
       toast.success("Problem deleted successfully");
     },
     onError: (error) => {
       console.error(error);
     },
   });
+
+  const deleteManyProblemsMutation = api.problem.deleteMany.useMutation({
+    onSuccess() {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      utils.problem.invalidate();
+      setRowSelection({});
+      toast.success("Problems deleted successfully");
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleFilterChange = (filter: z.infer<typeof ProblemFilterSchema>) => {
+    const filtered = query.data?.filter((problem) => {
+      if (filter.difficulty && problem.difficulty !== filter.difficulty) {
+        return false;
+      }
+      if (filter.status && problem.solution !== filter.status) {
+        return false;
+      }
+      if (filter.tags && filter.tags.length > 0) {
+        const problemTags = problem.tags.map((tag) => tag);
+        const selectedTags = filter.tags.map((tag) => tag);
+        if (!selectedTags.every((tag) => problemTags.includes(tag))) {
+          return false;
+        }
+      }
+      if (
+        filter.search &&
+        !problem.title.toLowerCase().includes(filter.search.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+    setFilteredData(filtered ?? []);
+  };
 
   const columns: ColumnDef<ProblemWithStatus>[] = [
     {
@@ -208,6 +259,39 @@ export default function ProblemSet() {
               <MdFilterAltOff className="size-6" />
             )}
           </Toggle>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={Object.keys(rowSelection).length === 0}
+              >
+                <FaTrash className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  selected problems.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    const selectedRowIds = Object.keys(rowSelection).filter(
+                      (key) => rowSelection[key],
+                    );
+                    deleteManyProblemsMutation.mutate(selectedRowIds);
+                  }}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Link href="/admin/problemset/create">
             <Button>Add Problem</Button>
           </Link>
@@ -216,20 +300,27 @@ export default function ProblemSet() {
       {filter && (
         <Card className="bg-dark">
           <CardContent className="p-3">
-            <ProblemFilter />
+            <ProblemFilter
+              onFilterChange={handleFilterChange}
+              statusFilter={false}
+            />
           </CardContent>
         </Card>
       )}
-      <Card x-chunk="dashboard-06-chunk-0" className="bg-dark">
-        <CardContent className="overflow-auto pt-6">
-          <DataTable
-            columns={columns}
-            data={query?.data ?? []}
-            rowSelection={rowSelection}
-            setRowSelection={setRowSelection}
-          />
-        </CardContent>
-      </Card>
+      {query.isPending ? (
+        <DefaultLoadingPage />
+      ) : (
+        <Card x-chunk="dashboard-06-chunk-0" className="bg-dark">
+          <CardContent className="overflow-auto pt-6">
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
+            />
+          </CardContent>
+        </Card>
+      )}
     </>
   );
 }

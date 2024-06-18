@@ -22,7 +22,7 @@ import MultipleSelector, { Option } from "~/components/shared/multiselect";
 import { useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
 import Link from "next/link";
-import { tagOptions } from "~/lib/utils";
+import { tagOptions } from "~/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";

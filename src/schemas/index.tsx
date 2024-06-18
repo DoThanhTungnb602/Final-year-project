@@ -93,9 +93,9 @@ export const SolutionSchema = z.object({
 
 export const ProblemFilterSchema = z.object({
   difficulty: z.nativeEnum(Difficulty).optional(),
-  tags: z.array(z.string()),
+  tags: z.array(z.nativeEnum(Topic)).optional(),
   status: z.nativeEnum(Status).optional(),
-  search: z.string(),
+  search: z.string().optional(),
 });
 
 export const ProblemSchema = z.object({

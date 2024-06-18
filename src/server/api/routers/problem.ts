@@ -203,6 +203,25 @@ export const problemRouter = createTRPCRouter({
     }
   }),
 
+  deleteMany: adminProcedure
+    .input(z.array(z.string()))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.problem.deleteMany({
+          where: {
+            id: {
+              in: input,
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete problems",
+        });
+      }
+    }),
+
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     try {
       const problem = await ctx.db.problem.findUnique({

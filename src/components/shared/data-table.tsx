@@ -26,20 +26,21 @@ import { ProblemWithStatus } from "~/lib/types";
 
 const fallbackData: ProblemWithStatus[] = [];
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends { id?: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   rowSelection?: RowSelectionState;
   setRowSelection?: OnChangeFn<RowSelectionState>;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id?: string }, TValue>({
   columns,
   data,
   rowSelection = {},
   setRowSelection,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
+    getRowId: (row, index) => row.id ?? index.toString(),
     data: data ?? fallbackData,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
