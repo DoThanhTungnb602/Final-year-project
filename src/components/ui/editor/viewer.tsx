@@ -15,7 +15,7 @@ const Viewer = ({ content }: ViewerProps) => {
   if (!editor) return <></>;
 
   return (
-    <article className="prose-mt-0 prose max-w-none p-4 dark:prose-invert overflow-scroll">
+    <article className="prose-mt-0 prose max-w-none dark:prose-invert">
       <EditorContent editor={editor} readOnly={true} />
     </article>
   );

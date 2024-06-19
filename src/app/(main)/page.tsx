@@ -12,7 +12,7 @@ import Link from "next/link";
 import { Toggle } from "~/components/ui/toggle";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProblemFilter } from "~/components/pages/problemset/problem-filter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { SiTarget } from "react-icons/si";
 import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
@@ -22,6 +22,9 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "~/components/ui/tooltip";
+import { z } from "zod";
+import { ProblemFilterSchema } from "~/schemas";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
 
 const columns: ColumnDef<ProblemWithStatus>[] = [
   {
@@ -82,7 +85,7 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
     header: "Title",
     cell: ({ row }) => (
       <Link
-        href={`/admin/problemset/${row.original.id}`}
+        href={`/playground/${row.original.id}`}
         className="transition hover:underline"
       >
         {row.original.title}
@@ -95,9 +98,9 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
     cell: ({ row }) => (
       <>
         {row.original.solution ? (
-          <GrDocumentVerified className="size-4 text-green-400" />
+          <GrDocumentVerified className="size-5 text-green-400" />
         ) : (
-          <MdNotInterested className="size-4 text-gray-300" />
+          <MdNotInterested className="size-6 text-gray-300" />
         )}
       </>
     ),
@@ -125,39 +128,71 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
 ];
 
 export default function Home() {
-  const { data } = api.problem.allPublic.useQuery();
+  const { data, isPending } = api.problem.allPublic.useQuery();
   const [filter, setFilter] = useState(false);
+  const [filteredData, setFilteredData] = useState<ProblemWithStatus[]>([]);
 
-  return (
-    <main className="grid flex-1 items-start gap-4 p-6">
-      <div className="flex items-center ">
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            className="px-2"
-            variant="outline"
-            pressed={filter}
-            onPressedChange={() => setFilter(!filter)}
-          >
-            {filter ? (
-              <MdFilterAlt className="size-6" />
-            ) : (
-              <MdFilterAltOff className="size-6" />
-            )}
-          </Toggle>
-        </div>
+  useEffect(() => {
+    setFilteredData(data ?? []);
+  }, [data]);
+
+  const handleFilterChange = (filter: z.infer<typeof ProblemFilterSchema>) => {
+    const filtered = data?.filter((problem) => {
+      if (filter.difficulty && problem.difficulty !== filter.difficulty) {
+        return false;
+      }
+      if (filter.status && problem.status !== filter.status) {
+        return false;
+      }
+      if (filter.tags && filter.tags.length > 0) {
+        const problemTags = problem.tags.map((tag) => tag);
+        const selectedTags = filter.tags.map((tag) => tag);
+        if (!selectedTags.every((tag) => problemTags.includes(tag))) {
+          return false;
+        }
+      }
+      if (
+        filter.search &&
+        !problem.title.toLowerCase().includes(filter.search.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+    setFilteredData(filtered ?? []);
+  };
+
+  return isPending ? (
+    <DefaultLoadingPage />
+  ) : (
+    <div className="flex h-full w-full flex-col gap-4 p-6">
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold">List of Problems</h1>
+        <Toggle
+          className="px-2"
+          variant="outline"
+          pressed={filter}
+          onPressedChange={() => setFilter(!filter)}
+        >
+          {filter ? (
+            <MdFilterAlt className="size-6" />
+          ) : (
+            <MdFilterAltOff className="size-6" />
+          )}
+        </Toggle>
       </div>
       {filter && (
         <Card className="bg-dark">
           <CardContent className="p-3">
-            <ProblemFilter />
+            <ProblemFilter onFilterChange={handleFilterChange} />
           </CardContent>
         </Card>
       )}
-      <Card x-chunk="dashboard-06-chunk-0" className="bg-dark">
-        <CardContent className="overflow-auto pt-6">
-          <DataTable columns={columns} data={data ?? []} />
+      <Card x-chunk="dashboard-06-chunk-0" className="bg-dark flex-1">
+        <CardContent className="h-full overflow-auto pt-6">
+          <DataTable columns={columns} data={filteredData} />
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }

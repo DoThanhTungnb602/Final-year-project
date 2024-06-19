@@ -3,12 +3,45 @@ import { z } from "zod";
 import { ClassSchema, ExerciseSchema, TestSchema } from "~/schemas";
 import { v4 as uuidv4 } from "uuid";
 
-import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 
 export const classRouter = createTRPCRouter({
   all: adminProcedure.query(async ({ ctx }) => {
     try {
       const classes = await ctx.db.class.findMany({
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          students: true,
+        },
+      });
+      return classes;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch classes",
+      });
+    }
+  }),
+
+  getEnrolledClasses: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const classes = await ctx.db.class.findMany({
+        where: {
+          students: {
+            some: {
+              id: ctx.session.user.id,
+            },
+          },
+        },
+        orderBy: {
+          id: "asc",
+        },
         include: {
           students: true,
         },
@@ -429,6 +462,64 @@ export const classRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to generate invite link",
+        });
+      }
+    }),
+
+  existingClass: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      return await ctx.db.class.findFirst({
+        where: {
+          students: {
+            some: {
+              id: ctx.session.user.id,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to check if student is enrolled",
+      });
+    }
+  }),
+
+  enroll: protectedProcedure
+    .input(
+      z.object({
+        inviteCode: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const user = await ctx.db.user.findUnique({
+          where: {
+            id: ctx.session.user.id,
+          },
+        });
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+        }
+        return await ctx.db.class.update({
+          where: {
+            inviteCode: input.inviteCode,
+          },
+          data: {
+            students: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to enroll student",
         });
       }
     }),

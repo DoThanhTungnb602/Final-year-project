@@ -1,16 +1,14 @@
-"use server";
+"use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
 import { IoDocumentText } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
-import { api } from "~/trpc/server";
-import ErrorBoundary from "~/components/shared/error-boundary";
-import { convertMdToHtml } from "~/lib/utils";
+import Viewer from "../ui/editor/viewer";
+import { useProblemStore } from "~/hooks/use-problem-store";
 
-const ProblemDescriptionPanel = async () => {
-  const mdxSource = await api.problem.getDescription();
-  const html = await convertMdToHtml(mdxSource.text);
+const ProblemDescriptionPanel = () => {
+  const { problem } = useProblemStore();
 
   return (
     <Tabs defaultValue="description" className="flex h-full w-full flex-col">
@@ -25,11 +23,9 @@ const ProblemDescriptionPanel = async () => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="description" className="min-h-0 flex-1">
-        <Card className="h-full min-h-0 overflow-y-auto">
-          <CardContent className="prose h-full min-h-0 p-3 dark:prose-invert prose-code:rounded-md prose-code:bg-gray-300 prose-code:p-0.5 before:prose-code:content-none after:prose-code:content-none dark:prose-code:bg-gray-700">
-            <ErrorBoundary>
-              <div dangerouslySetInnerHTML={{ __html: html }} />
-            </ErrorBoundary>
+        <Card className="h-full min-h-0 overflow-hidden">
+          <CardContent className="h-full min-h-0 overflow-y-auto p-3">
+            {problem && <Viewer content={problem?.description ?? ""} />}
           </CardContent>
         </Card>
       </TabsContent>

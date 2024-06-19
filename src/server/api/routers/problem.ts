@@ -34,17 +34,17 @@ export const problemRouter = createTRPCRouter({
   run: protectedProcedure
     .input(SolutionSchema)
     .mutation(async ({ ctx, input }) => {
-      const judge = await getUploadthingFile(
-        "6637e899-f8ee-430c-a6ef-2b21c1c6a136-e8f1xd.cpp",
-      );
-      const code = consolidateIncludes(input.code, judge);
-      const data = await fetch(
-        `https://utfs.io/f/ac4bd4df-b52a-4607-8616-b6efaebd6fa5-e8f1xd.json`,
-      );
-      const testCases = await data.json();
-      const stdin = jsonToStdin(testCases[0].input);
-      console.log("code: ", code);
-      console.log("stdin: ", testCases);
+      // const judge = await getUploadthingFile(
+      //   "6637e899-f8ee-430c-a6ef-2b21c1c6a136-e8f1xd.cpp",
+      // );
+      // const code = consolidateIncludes(input.code, judge);
+      // const data = await fetch(
+      //   `https://utfs.io/f/ac4bd4df-b52a-4607-8616-b6efaebd6fa5-e8f1xd.json`,
+      // );
+      // const testCases = await data.json();
+      // const stdin = jsonToStdin(testCases[0].input);
+      // console.log("code: ", code);
+      // console.log("stdin: ", testCases);
     }),
 
   submit: protectedProcedure
@@ -75,6 +75,9 @@ export const problemRouter = createTRPCRouter({
   all: adminProcedure.query(async ({ ctx }) => {
     try {
       const problems = await ctx.db.problem.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
         include: {
           submissions: {
             where: {

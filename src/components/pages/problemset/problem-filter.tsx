@@ -53,8 +53,8 @@ export function ProblemFilter({
 
   return (
     <Form {...form}>
-      <form className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
+      <form className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <FormField
             control={form.control}
             name="difficulty"
@@ -102,9 +102,9 @@ export function ProblemFilter({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="todo">Todo</SelectItem>
-                      <SelectItem value="solved">Solved</SelectItem>
-                      <SelectItem value="attempted">Attempted</SelectItem>
+                      <SelectItem value="UNSOLVED">Todo</SelectItem>
+                      <SelectItem value="SOLVED">Solved</SelectItem>
+                      <SelectItem value="ATTEMPTED">Attempted</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormItem>

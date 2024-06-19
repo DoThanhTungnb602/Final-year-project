@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  Book,
-  Bot,
-  Code2,
-  Settings2,
-  SquareTerminal,
-  Home,
-} from "lucide-react";
+import { Code2, Settings2, Home } from "lucide-react";
+import { SiGoogleclassroom } from "react-icons/si";
+import { BiTask } from "react-icons/bi";
 
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "../shared/mode-toggle";
@@ -42,55 +37,29 @@ const Sidebar = () => {
             </Link>
           </Button>
         </CustomTooltip>
-        <CustomTooltip content="Playground" side="right">
+        <CustomTooltip content="Classes" side="right">
           <Button
             variant="ghost"
             size="icon"
-            className={cn("rounded-lg", pathname === "/playground" && "bg-muted")}
-            aria-label="Playground"
+            className={cn("rounded-lg", pathname === "/classes" && "bg-muted")}
+            aria-label="Classes"
             asChild
           >
-            <Link href="/playground">
-              <SquareTerminal className="size-5" />
+            <Link href="/classes">
+              <SiGoogleclassroom className="size-5" />
             </Link>
           </Button>
         </CustomTooltip>
-        <CustomTooltip content="Models" side="right">
+        <CustomTooltip content="Tasks" side="right">
           <Button
             variant="ghost"
             size="icon"
-            className={cn("rounded-lg", pathname === "/models" && "bg-muted")}
-            aria-label="Models"
+            className={cn("rounded-lg", pathname === "/tasks" && "bg-muted")}
+            aria-label="Tasks"
+            asChild
           >
-            <Link href="/">
-              <Bot className="size-5" />
-            </Link>
-          </Button>
-        </CustomTooltip>
-        <CustomTooltip content="API" side="right">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn("rounded-lg", pathname === "/api" && "bg-muted")}
-            aria-label="API"
-          >
-            <Link href="/">
-              <Code2 className="size-5" />
-            </Link>
-          </Button>
-        </CustomTooltip>
-        <CustomTooltip content="Documentation" side="right">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "rounded-lg",
-              pathname === "/documentation" && "bg-muted",
-            )}
-            aria-label="Documentation"
-          >
-            <Link href="/">
-              <Book className="size-5" />
+            <Link href="/tasks">
+              <BiTask className="size-5" />
             </Link>
           </Button>
         </CustomTooltip>

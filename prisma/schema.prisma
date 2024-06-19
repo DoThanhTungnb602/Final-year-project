@@ -96,7 +96,7 @@ model Problem {
 model Class {
     id         String     @id @default(cuid())
     name       String
-    inviteCode String?    @default(cuid())
+    inviteCode String?    @default(cuid()) @unique
     students   User[]     @relation("EnrolledClasses")
     exercises  Exercise[]
     tests      Test[]

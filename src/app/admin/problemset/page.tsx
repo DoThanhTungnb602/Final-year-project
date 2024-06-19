@@ -148,9 +148,9 @@ export default function ProblemSet() {
       cell: ({ row }) => (
         <>
           {row.original.solution ? (
-            <GrDocumentVerified className="size-4 text-green-400" />
+            <GrDocumentVerified className="size-6 text-green-400" />
           ) : (
-            <MdNotInterested className="size-4 text-gray-300" />
+            <MdNotInterested className="size-5 text-gray-300" />
           )}
         </>
       ),
