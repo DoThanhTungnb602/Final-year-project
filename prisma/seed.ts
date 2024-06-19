@@ -1,6 +1,12 @@
 import { db } from "~/server/db";
 
 async function main() {
+  // Delete all data in the database
+  await db.$executeRaw`TRUNCATE "User" CASCADE;`;
+  await db.$executeRaw`TRUNCATE "Problem" CASCADE;`;
+  await db.$executeRaw`TRUNCATE "Class" CASCADE;`;
+  await db.$executeRaw`TRUNCATE "Language" CASCADE;`;
+
   await db.user.createMany({
     data: [
       {

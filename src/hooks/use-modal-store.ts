@@ -12,7 +12,7 @@ interface ModalState {
   type: ModalType | null;
   data: ModalData;
   isOpen: boolean;
-  onOpen: (type: ModalType, data?: ModalData) => void;
+  onOpen: ({ type, data }: { type: ModalType; data?: ModalData }) => void;
   onClose: () => void;
 }
 
@@ -20,6 +20,6 @@ export const useModalStore = create<ModalState>()((set) => ({
   type: null,
   data: {},
   isOpen: false,
-  onOpen: (type, data = {}) => set({ type, isOpen: true, data }),
+  onOpen: ({ type, data = {} }) => set({ type, data, isOpen: true }),
   onClose: () => set({ type: null, isOpen: false }),
 }));

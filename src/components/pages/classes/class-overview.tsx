@@ -219,7 +219,10 @@ export default function ClassOverview({
           </Form>
           <Button
             onClick={() => {
-              onOpen("invite", { classroom });
+              onOpen({
+                type: "invite",
+                data: { classroom },
+              });
             }}
           >
             <UserRoundPlus className="mr-2 h-4 w-4" /> Invite students

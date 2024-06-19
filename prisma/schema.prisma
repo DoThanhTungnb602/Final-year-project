@@ -94,11 +94,12 @@ model Problem {
 }
 
 model Class {
-    id        String     @id @default(cuid())
-    name      String
-    students  User[]     @relation("EnrolledClasses")
-    exercises Exercise[]
-    tests     Test[]
+    id         String     @id @default(cuid())
+    name       String
+    inviteCode String?    @default(cuid())
+    students   User[]     @relation("EnrolledClasses")
+    exercises  Exercise[]
+    tests      Test[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

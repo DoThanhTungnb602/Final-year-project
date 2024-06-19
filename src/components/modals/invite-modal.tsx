@@ -2,7 +2,6 @@
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -12,19 +11,41 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, RefreshCw } from "lucide-react";
 import { useModalStore } from "~/hooks/use-modal-store";
 import { useOrigin } from "~/hooks/use-origin";
 import { useState } from "react";
+import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
+import { toast } from "sonner";
 
 export const InviteModal = () => {
   const [isCopied, setIsCopied] = useState(false);
-  const { isOpen, onClose, type, data } = useModalStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const { isOpen, onClose, onOpen, type, data } = useModalStore();
   const origin = useOrigin();
+
+  const inviteCodeMutation = api.class.generateInviteCode.useMutation({
+    onSuccess: (data) => {
+      toast.success("Invite link generated");
+      onOpen({
+        type: "invite",
+        data: {
+          classroom: data,
+        },
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    },
+  });
 
   const isModalOpen = isOpen && type === "invite";
   const { classroom } = data;
-  const inviteLink = `${origin}/invite/${classroom?.id}`;
+  const inviteLink = `${origin}/invite/${classroom?.inviteCode}`;
 
   const handleCopy = () => {
     navigator.clipboard
@@ -41,6 +62,12 @@ export const InviteModal = () => {
     }, 2000);
   };
 
+  const handleGenerateInviteCode = () => {
+    setIsLoading(true);
+    if (!classroom) return;
+    inviteCodeMutation.mutate({ id: classroom?.id });
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -55,14 +82,14 @@ export const InviteModal = () => {
             <Label htmlFor="link" className="sr-only">
               Link
             </Label>
-            <Input
-              id="link"
-              defaultValue={inviteLink}
-              value={inviteLink}
-              readOnly
-            />
+            <Input id="link" value={inviteLink} readOnly disabled={isLoading} />
           </div>
-          <Button size="sm" className="px-3" onClick={handleCopy}>
+          <Button
+            size="sm"
+            className="px-3"
+            onClick={handleCopy}
+            disabled={isLoading}
+          >
             {isCopied ? (
               <Check className="h-4 w-4" />
             ) : (
@@ -72,11 +99,12 @@ export const InviteModal = () => {
           </Button>
         </div>
         <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
+          <Button variant="link" size="sm" onClick={handleGenerateInviteCode}>
+            Generate a new link
+            <RefreshCw
+              className={cn("ml-2 size-4", isLoading && "animate-spin")}
+            />
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

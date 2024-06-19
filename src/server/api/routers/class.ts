@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { ClassSchema, ExerciseSchema, TestSchema } from "~/schemas";
+import { v4 as uuidv4 } from "uuid";
 
 import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
 
@@ -404,6 +405,30 @@ export const classRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to delete student from class",
+        });
+      }
+    }),
+
+  generateInviteCode: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.class.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            inviteCode: uuidv4(),
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate invite link",
         });
       }
     }),
