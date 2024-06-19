@@ -1,5 +1,4 @@
-"use client";
-
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { TestSchema } from "~/schemas";
@@ -25,17 +23,45 @@ import {
   FormLabel,
 } from "~/components/ui/form";
 import { api } from "~/trpc/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DateTimePicker } from "~/components/shared/datetime-picker";
 import MultipleSelector, { Option } from "~/components/shared/multiselect";
+import { FaCheck, FaPen } from "react-icons/fa6";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
 
-export function ClassTestsDialog({ classroomId }: { classroomId: string }) {
-  const [isOpen, setIsOpen] = useState(false);
+interface TestDialogProps {
+  classroomId: string;
+  testId: string;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  mode: "view" | "create" | "edit";
+  setMode: (mode: "view" | "create" | "edit") => void;
+}
+
+const DEFAULT_VALUES = {
+  title: "",
+  startTime: undefined,
+  endTime: undefined,
+  problems: [],
+};
+
+export function TestDialog({
+  classroomId,
+  mode,
+  setMode,
+  isOpen,
+  setIsOpen,
+  testId,
+}: TestDialogProps) {
   const [problems, setProblems] = useState<Option[]>();
   const utils = api.useUtils();
 
   const problemQuery = api.problem.all.useQuery();
+
+  const testQuery = api.class.getTestById.useQuery(testId, {
+    enabled: mode !== "create",
+  });
 
   const tagOptions = problemQuery.data?.map((problem) => ({
     label: problem.title,
@@ -45,9 +71,23 @@ export function ClassTestsDialog({ classroomId }: { classroomId: string }) {
   const testCreator = api.class.addTest.useMutation({
     onSuccess(data) {
       toast.success(`Class ${data.name} created successfully`);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      utils.class.all.invalidate();
-      form.reset();
+      utils.class.getById.invalidate();
+      form.reset(DEFAULT_VALUES);
+      setProblems([]);
+      setIsOpen(false);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const testEditor = api.class.editTest.useMutation({
+    onSuccess() {
+      toast.success(`Test was updated successfully`);
+      form.reset(DEFAULT_VALUES);
+      setProblems([]);
+      utils.class.getById.invalidate();
+      utils.class.getTestById.invalidate();
       setIsOpen(false);
     },
     onError: (error) => {
@@ -57,6 +97,7 @@ export function ClassTestsDialog({ classroomId }: { classroomId: string }) {
 
   const form = useForm<z.infer<typeof TestSchema>>({
     resolver: zodResolver(TestSchema),
+    values: testQuery?.data,
     defaultValues: {
       title: "",
       startTime: undefined,
@@ -65,103 +106,231 @@ export function ClassTestsDialog({ classroomId }: { classroomId: string }) {
     },
   });
 
+  useEffect(() => {
+    if (testQuery?.data) {
+      setProblems(
+        testQuery.data.problems.map((problem) => ({
+          label: problem.title,
+          value: problem.id,
+        })),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testQuery?.data]);
+
+  useEffect(() => {
+    if (mode === "create") {
+      form.reset(DEFAULT_VALUES);
+      setProblems([]);
+    }
+    if (mode === "edit" || mode === "view") {
+      form.reset(testQuery?.data);
+      setProblems(
+        testQuery?.data?.problems.map((problem) => ({
+          label: problem.title,
+          value: problem.id,
+        })),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   const onSubmit = (values: z.infer<typeof TestSchema>) => {
-    testCreator.mutate({
-      classroomId,
-      ...values,
-    });
+    if (mode === "create") {
+      testCreator.mutate({
+        classroomId,
+        ...values,
+      });
+    }
+    if (mode === "edit") {
+      testEditor.mutate({
+        id: testId,
+        ...values,
+      });
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">Create Test</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>Create new test</DialogTitle>
-              <DialogDescription>
-                Fill out the form below to add a new test
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-2 py-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter test title" {...field} />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        setIsOpen(!isOpen);
+      }}
+    >
+      <DialogContent className="min-h-80 sm:max-w-[425px]">
+        {testQuery?.isPending && mode !== "create" ? (
+          <DefaultLoadingPage />
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <DialogHeader>
+                <DialogTitle>
+                  {mode === "create"
+                    ? "Create Test"
+                    : mode === "edit"
+                      ? "Edit Test"
+                      : "View Test"}
+                </DialogTitle>
+                <DialogDescription>
+                  Fill out the form below to add a new test
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-2 py-4">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter test title"
+                          {...field}
+                          readOnly={mode === "view"}
+                        />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {mode === "view" ? (
+                  <FormField
+                    control={form.control}
+                    name="startTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Time</FormLabel>
+                        <FormControl>
+                          <Input
+                            readOnly={true}
+                            defaultValue=""
+                            value={field.value?.toLocaleString()}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="startTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel htmlFor="startTime">Start Time</FormLabel>
+                        <FormControl>
+                          <DateTimePicker
+                            granularity="second"
+                            jsDate={field.value}
+                            onJsDateChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="startTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="startTime">Start Time</FormLabel>
-                    <FormControl>
-                      <DateTimePicker
-                        granularity="second"
-                        jsDate={field.value}
-                        onJsDateChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                {mode === "view" ? (
+                  <FormField
+                    control={form.control}
+                    name="endTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Time</FormLabel>
+                        <FormControl>
+                          <Input
+                            readOnly={true}
+                            defaultValue=""
+                            value={field.value?.toLocaleString()}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="endTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel htmlFor="endTime">End Time</FormLabel>
+                        <FormControl>
+                          <DateTimePicker
+                            granularity="second"
+                            jsDate={field.value}
+                            onJsDateChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="endTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="endTime">End Time</FormLabel>
-                    <FormControl>
-                      <DateTimePicker
-                        granularity="second"
-                        jsDate={field.value}
-                        onJsDateChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                <FormField
+                  control={form.control}
+                  name="problems"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="problems">Problems</FormLabel>
+                      <FormControl>
+                        <MultipleSelector
+                          disabled={mode === "view"}
+                          options={tagOptions}
+                          value={problems}
+                          onChange={(options) => {
+                            setProblems(options);
+                            field.onChange(
+                              options.map((option) => ({
+                                id: option.value,
+                              })),
+                            );
+                          }}
+                          placeholder="Select problems for the test"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                {mode === "create" && (
+                  <Button type="submit">Create Test</Button>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="problems"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="problems">Problems</FormLabel>
-                    <FormControl>
-                      <MultipleSelector
-                        options={tagOptions}
-                        value={problems}
-                        onChange={(options) => {
-                          setProblems(options);
-                          field.onChange(options.map((option) => option.value));
-                        }}
-                        placeholder="Select problems for the test"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                {mode === "view" && (
+                  <Button
+                    size="sm"
+                    type="button"
+                    onClick={() => setMode("edit")}
+                  >
+                    <FaPen className="mr-2 h-4 w-4" />
+                    Edit
+                  </Button>
                 )}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit">Create Test</Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                {mode === "edit" && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      type="button"
+                      onClick={() => setMode("view")}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      type="submit"
+                      disabled={testEditor.isPending || !form.formState.isDirty}
+                    >
+                      <FaCheck className="mr-2 h-4 w-4" />
+                      Update
+                    </Button>
+                  </>
+                )}
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
       </DialogContent>
     </Dialog>
   );

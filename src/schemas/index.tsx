@@ -145,22 +145,20 @@ export const ExerciseSchema = z.object({
   title: z.string().min(1, {
     message: "Title is required",
   }),
-  assignedDate: z
-    .date({
-      errorMap: (issue, { defaultError }) => ({
-        message:
-          issue.code === "invalid_type"
-            ? "Assigned date is required"
-            : defaultError,
-      }),
+  assignedDate: z.date({
+    errorMap: (issue, { defaultError }) => ({
+      message:
+        issue.code === "invalid_type"
+          ? "Assigned date is required"
+          : defaultError,
     }),
-  dueDate: z
-    .date({
-      errorMap: (issue, { defaultError }) => ({
-        message:
-          issue.code === "invalid_type" ? "Due date is required" : defaultError,
-      }),
+  }),
+  dueDate: z.date({
+    errorMap: (issue, { defaultError }) => ({
+      message:
+        issue.code === "invalid_type" ? "Due date is required" : defaultError,
     }),
+  }),
   problems: z.array(z.object({ id: z.string() })).min(1, {
     message: "At least one problem is required",
   }),
@@ -182,7 +180,7 @@ export const TestSchema = z.object({
         issue.code === "invalid_type" ? "End time is required" : defaultError,
     }),
   }),
-  problems: z.array(z.string()).min(1, {
+  problems: z.array(z.object({ id: z.string() })).min(1, {
     message: "At least one problem is required",
   }),
 });

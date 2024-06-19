@@ -35,7 +35,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
-import { ExerciseDialog } from "../exercises/exercise-dialog";
+import { ExerciseDialog } from "./class-exercise-dialog";
 import { FaTrash } from "react-icons/fa6";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
@@ -60,7 +60,7 @@ export default function ClassExercises({
   const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
   const utils = api.useUtils();
 
-  const deleteManyProblemsMutation = api.class.deleteManyExercises.useMutation({
+  const deleteManyExercisesMutation = api.class.deleteManyExercises.useMutation({
     onSuccess: () => {
       utils.class.getById.invalidate();
       setRowSelection({});
@@ -71,7 +71,7 @@ export default function ClassExercises({
     },
   });
 
-  const problemMutation = api.class.deleteExercise.useMutation({
+  const exerciseMutation = api.class.deleteExercise.useMutation({
     onSuccess: () => {
       utils.class.getById.invalidate();
       toast.success("Exercise deleted successfully");
@@ -173,7 +173,7 @@ export default function ClassExercises({
   ];
 
   return (
-    <Card className="bg-dark h-full w-full">
+    <Card className="bg-dark flex h-full w-full flex-col">
       {classroom ? (
         <>
           <ExerciseDialog
@@ -202,9 +202,9 @@ export default function ClassExercises({
                   Cancel
                 </AlertDialogCancel>
                 <AlertDialogAction
-                  disabled={problemMutation.isPending}
+                  disabled={exerciseMutation.isPending}
                   onClick={() => {
-                    problemMutation.mutate(deleteId);
+                    exerciseMutation.mutate(deleteId);
                   }}
                 >
                   Continue
@@ -244,7 +244,7 @@ export default function ClassExercises({
                             const selectedRowIds = Object.keys(
                               rowSelection,
                             ).filter((key) => rowSelection[key]);
-                            deleteManyProblemsMutation.mutate(selectedRowIds);
+                            deleteManyExercisesMutation.mutate(selectedRowIds);
                           }}
                         >
                           Continue
@@ -269,7 +269,7 @@ export default function ClassExercises({
             </CardDescription>
           </CardHeader>
           <Separator />
-          <CardContent>
+          <CardContent className="flex-1">
             <DataTable
               data={classroom?.exercises ?? []}
               columns={columns}

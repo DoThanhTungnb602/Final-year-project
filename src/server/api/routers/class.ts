@@ -228,7 +228,7 @@ export const classRouter = createTRPCRouter({
                 ...test,
                 problems: {
                   connect: problems.map((problem) => ({
-                    id: problem,
+                    id: problem.id,
                   })),
                 },
               },
@@ -239,6 +239,102 @@ export const classRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to add test to class",
+        });
+      }
+    }),
+
+  getTestById: adminProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const test = await ctx.db.test.findUnique({
+          where: {
+            id: input,
+          },
+          include: {
+            problems: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+        });
+
+        if (!test) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Test not found",
+          });
+        }
+
+        return test;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch test",
+        });
+      }
+    }),
+
+  editTest: adminProcedure
+    .input(z.object({ id: z.string(), ...TestSchema.shape }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { problems, ...test } = input;
+        return await ctx.db.test.update({
+          where: {
+            id: test.id,
+          },
+          data: {
+            ...test,
+            problems: {
+              set: problems.map((problem) => ({
+                id: problem.id,
+              })),
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update test",
+        });
+      }
+    }),
+
+  deleteTest: adminProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.test.delete({
+          where: {
+            id: input,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete test",
+        });
+      }
+    }),
+
+  deleteManyTests: adminProcedure
+    .input(z.array(z.string()))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.test.deleteMany({
+          where: {
+            id: {
+              in: input,
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete tests",
         });
       }
     }),
