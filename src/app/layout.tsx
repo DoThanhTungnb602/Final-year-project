@@ -14,6 +14,7 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 
 import { ourFileRouter } from "~/app/api/uploadthing/core";
+import { ModalProvider } from "~/components/shared/modal-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default async function RootLayout({
               <NextSSRPlugin
                 routerConfig={extractRouterConfig(ourFileRouter)}
               />
+              <ModalProvider />
               {children}
               <Toaster />
             </TRPCReactProvider>

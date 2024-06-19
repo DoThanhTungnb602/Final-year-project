@@ -222,7 +222,8 @@ export function ExerciseDialog({
                         </FormLabel>
                         <FormControl>
                           <DateTimePicker
-                            granularity="second"
+                            granularity="minute"
+                            hourCycle={24}
                             jsDate={field.value}
                             onJsDateChange={field.onChange}
                           />
@@ -258,7 +259,8 @@ export function ExerciseDialog({
                         <FormLabel htmlFor="dueDate">Due Date</FormLabel>
                         <FormControl>
                           <DateTimePicker
-                            granularity="second"
+                            hourCycle={24}
+                            granularity="minute"
                             jsDate={field.value}
                             onJsDateChange={field.onChange}
                           />

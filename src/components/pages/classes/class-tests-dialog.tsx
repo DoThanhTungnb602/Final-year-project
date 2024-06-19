@@ -220,7 +220,8 @@ export function TestDialog({
                         <FormLabel htmlFor="startTime">Start Time</FormLabel>
                         <FormControl>
                           <DateTimePicker
-                            granularity="second"
+                            hourCycle={24}
+                            granularity="minute"
                             jsDate={field.value}
                             onJsDateChange={field.onChange}
                           />
@@ -256,7 +257,8 @@ export function TestDialog({
                         <FormLabel htmlFor="endTime">End Time</FormLabel>
                         <FormControl>
                           <DateTimePicker
-                            granularity="second"
+                            hourCycle={24}
+                            granularity="minute"
                             jsDate={field.value}
                             onJsDateChange={field.onChange}
                           />

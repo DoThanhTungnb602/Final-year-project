@@ -44,6 +44,8 @@ import { FaTrash } from "react-icons/fa6";
 import { Class, User } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { FaUserCircle } from "react-icons/fa";
+import { UserRoundPlus } from "lucide-react";
+import { useModalStore } from "~/hooks/use-modal-store";
 
 interface ClassWithStudents extends Class {
   students: User[];
@@ -55,6 +57,7 @@ export default function ClassOverview({
   classroom?: ClassWithStudents;
 }) {
   const [editMode, setEditMode] = useState(false);
+  const { onOpen } = useModalStore();
   const utils = api.useUtils();
 
   const classMutation = api.class.update.useMutation({
@@ -143,20 +146,20 @@ export default function ClassOverview({
   ];
 
   return (
-    <Card className="bg-dark w-full h-full flex flex-col">
+    <Card className="bg-dark flex h-full w-full flex-col">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="flex justify-between">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="flex justify-between"
+              className="flex items-center gap-5"
             >
               {editMode ? (
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="!space-y-0">
                       <FormControl>
                         <Input
                           type="text"
@@ -171,7 +174,7 @@ export default function ClassOverview({
                   )}
                 />
               ) : (
-                <p>{classroom?.name}</p>
+                <p className="text-center">{classroom?.name}</p>
               )}
               <div>
                 {!editMode ? (
@@ -214,6 +217,13 @@ export default function ClassOverview({
               </div>
             </form>
           </Form>
+          <Button
+            onClick={() => {
+              onOpen("invite", { classroom });
+            }}
+          >
+            <UserRoundPlus className="mr-2 h-4 w-4" /> Invite students
+          </Button>
         </CardTitle>
         <CardDescription>{classroom?.students.length} students</CardDescription>
       </CardHeader>
