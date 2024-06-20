@@ -16,7 +16,7 @@ import {
 } from "~/server/api/trpc";
 
 export const problemRouter = createTRPCRouter({
-  getDescription: publicProcedure.query(async () => {
+  getDescription: protectedProcedure.query(async () => {
     const res = await fetch(
       `https://utfs.io/f/b382960c-13ed-46c2-8207-f9b0143adb79-v4aa8i.md`,
     );
@@ -113,7 +113,7 @@ export const problemRouter = createTRPCRouter({
     }
   }),
 
-  allPublic: publicProcedure.query(async ({ ctx }) => {
+  allPublic: protectedProcedure.query(async ({ ctx }) => {
     try {
       const problems = await ctx.db.problem.findMany({
         where: {
@@ -225,19 +225,21 @@ export const problemRouter = createTRPCRouter({
       }
     }),
 
-  getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    try {
-      const problem = await ctx.db.problem.findUnique({
-        where: {
-          id: input,
-        },
-      });
-      return problem;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch problem",
-      });
-    }
-  }),
+  getById: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const problem = await ctx.db.problem.findUnique({
+          where: {
+            id: input,
+          },
+        });
+        return problem;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch problem",
+        });
+      }
+    }),
 });

@@ -48,20 +48,19 @@ export const consolidateIncludes = (userCode: string, judgeCode: string) => {
   };
 };
 
-export const jsonToStdin = (input: any) => {
+export const jsonToStdin = (input: string) => {
   const stdin = Object.values(input)
-    .map((item: any) => {
+    .map((item: number | string | object) => {
       if (typeof item === "number") {
         return item;
       }
       if (typeof item === "string") {
         return item;
       }
-      if (typeof item === "object") {
+      if (typeof item === "object" && Array.isArray(item)) {
         return item.join(" ");
       }
     })
     .join("\n");
   return stdin;
 };
-

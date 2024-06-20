@@ -8,10 +8,49 @@ export const exerciseRouter = createTRPCRouter({
     .input(z.object({ exerciseId: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
-        return await ctx.db.exercise.findUnique({
+        const exercise = await ctx.db.exercise.findUnique({
           where: { id: input.exerciseId },
-          include: { problems: true },
+          include: {
+            problems: {
+              include: {
+                submissions: {
+                  where: {
+                    userId: ctx.session?.user.id,
+                  },
+                  select: {
+                    verdict: true,
+                  },
+                },
+              },
+            },
+          },
         });
+        if (!exercise) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Exercise not found",
+          });
+        }
+        const problems = exercise.problems.map((problem) => {
+          const hasAccepted = problem.submissions.some(
+            (sub) => sub.verdict === "ACCEPTED",
+          );
+          let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
+          if (hasAccepted) {
+            status = "ACCEPTED";
+          } else {
+            const hasAttempted = problem.submissions.length > 0;
+            if (hasAttempted) status = "ATTEMPTED";
+          }
+          return {
+            ...problem,
+            status,
+          };
+        });
+        return {
+          ...exercise,
+          problems,
+        };
       } catch (error) {
         throw new TRPCError({
           code: "NOT_FOUND",

@@ -16,15 +16,10 @@ import { useEffect, useState } from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { SiTarget } from "react-icons/si";
 import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "~/components/ui/tooltip";
 import { z } from "zod";
 import { ProblemFilterSchema } from "~/schemas";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import CustomTooltip from "~/components/shared/custom-tooltip";
 
 const columns: ColumnDef<ProblemWithStatus>[] = [
   {
@@ -34,48 +29,27 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
       const status = row.original.status;
       if (status === "ACCEPTED") {
         return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <IoMdCheckmarkCircleOutline className="h-6 w-6 text-green-400" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Solved</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CustomTooltip content="Solved" side="top">
+            <span>
+              <IoMdCheckmarkCircleOutline className="h-6 w-6 text-green-400" />
+            </span>
+          </CustomTooltip>
         );
       } else if (status === "ATTEMPTED") {
         return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <SiTarget className="h-6 w-6 text-gray-300" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Attempted</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CustomTooltip content="Attempted" side="top">
+            <span>
+              <SiTarget className="h-6 w-6 text-gray-300" />
+            </span>
+          </CustomTooltip>
         );
       } else {
         return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <MdOutlineRadioButtonUnchecked className="h-6 w-6 text-gray-300" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>UnSolved</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CustomTooltip content="UnSolved" side="top">
+            <span>
+              <MdOutlineRadioButtonUnchecked className="h-6 w-6 text-gray-300" />
+            </span>
+          </CustomTooltip>
         );
       }
     },

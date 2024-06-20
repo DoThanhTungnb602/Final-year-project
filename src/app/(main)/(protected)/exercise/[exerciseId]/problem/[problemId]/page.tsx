@@ -8,24 +8,29 @@ import { useProblemStore } from "~/hooks/use-problem-store";
 import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { ProblemComponent } from "~/components/shared/problem";
 
-export default function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const { data, isPending } = api.problem.getById.useQuery(id);
-  const { data: problems } = api.problem.allPublic.useQuery();
+export default function Page({
+  params,
+}: {
+  params: { exerciseId: string; problemId: string };
+}) {
+  const { exerciseId, problemId } = params;
+  const { data: problem, isPending } = api.problem.getById.useQuery(problemId);
+  const { data: exercise } = api.exercise.getById.useQuery({ exerciseId });
   const { setProblem } = useProblemStore();
-  const { setProblems } = useSidebarStore();
+  const { setProblems, setExercise } = useSidebarStore();
 
   useEffect(() => {
-    if (problems) {
-      setProblems(problems);
+    if (exercise) {
+      setProblems(exercise.problems ?? []);
+      setExercise(exercise);
     }
-  }, [problems]);
+  }, [exercise]);
 
   useEffect(() => {
-    if (data) {
-      setProblem(data);
+    if (problem) {
+      setProblem(problem);
     }
-  }, [data]);
+  }, [problem]);
 
   return (
     <div className="h-full flex-1 overflow-auto">
