@@ -11,21 +11,26 @@ export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
   const classQuery = api.class.getById.useQuery(id);
 
+  // TODO: Design overview page
   return (
-    <Tabs defaultValue="students" className="w-full h-full flex flex-col">
+    <Tabs defaultValue="overview" className="flex h-full w-full flex-col">
       <TabsList className="w-full justify-start">
-        <TabsTrigger value="students">Overview</TabsTrigger>
+        <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="exercises">Exercises</TabsTrigger>
         <TabsTrigger value="tests">Tests</TabsTrigger>
+        <TabsTrigger value="students">Students</TabsTrigger>
       </TabsList>
-      <TabsContent value="students" className="flex-1">
-        <ClassOverview classroom={classQuery.data} />
+      <TabsContent value="overview" className="flex-1">
+        <div>Overview page</div>
       </TabsContent>
       <TabsContent value="exercises" className="flex-1">
         <ClassExercises classroom={classQuery.data} />
       </TabsContent>
       <TabsContent value="tests" className="flex-1">
         <ClassTests classroom={classQuery.data} />
+      </TabsContent>
+      <TabsContent value="students" className="flex-1">
+        <ClassOverview classroom={classQuery.data} />
       </TabsContent>
     </Tabs>
   );

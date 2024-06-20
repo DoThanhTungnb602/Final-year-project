@@ -3,9 +3,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/react";
 
-import ClassOverview from "~/components/pages/classes/class-overview";
-import ClassExercises from "~/components/pages/classes/class-exercises";
-import ClassTests from "~/components/pages/classes/class-tests";
+import ClassOverview from "~/components/pages/admin/classes/class-overview";
+import ClassExercises from "~/components/pages/admin/classes/class-exercises";
+import ClassTests from "~/components/pages/admin/classes/class-tests";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;

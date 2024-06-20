@@ -34,7 +34,7 @@ export function ClassItem({ id, name, studentCount }: ClassItemProps) {
       <Card
         className="w-80 cursor-pointer"
         onClick={() => {
-          router.push(`/admin/classes/${id}`);
+          router.push(`/classes/${id}`);
         }}
       >
         <CardHeader>

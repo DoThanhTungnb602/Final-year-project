@@ -41,7 +41,7 @@ export function UserInfo() {
   // TODO: Add user preferences
 
   return currentUser ? (
-    <div className="ml-auto">
+    <div className="flex items-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="m-0 h-fit w-fit rounded-full p-0">

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { ProblemFilter } from "~/components/pages/problemset/problem-filter";
+import { ProblemFilter } from "~/components/shared/problem-filter";
 import { Toggle } from "~/components/ui/toggle";
 import { useEffect, useState } from "react";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";

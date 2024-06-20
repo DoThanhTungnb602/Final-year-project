@@ -83,7 +83,7 @@ model Problem {
     description String?
     timeLimit   Int?
     memoryLimit Int?
-    testcases   String?
+    testcases   Json?
     solution    String?
     submissions Submission[]
     exercises   Exercise[]

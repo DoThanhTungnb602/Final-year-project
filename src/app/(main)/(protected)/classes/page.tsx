@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { ClassItem } from "~/components/pages/classes/class-item";
+import { ClassItem } from "~/components/pages/admin/classes/class-item";
 import {
   Card,
   CardContent,

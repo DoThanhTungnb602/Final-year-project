@@ -11,7 +11,7 @@ import { ProblemWithStatus } from "~/lib/types";
 import Link from "next/link";
 import { Toggle } from "~/components/ui/toggle";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { ProblemFilter } from "~/components/pages/problemset/problem-filter";
+import { ProblemFilter } from "~/components/shared/problem-filter";
 import { useEffect, useState } from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { SiTarget } from "react-icons/si";
@@ -85,7 +85,7 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
     header: "Title",
     cell: ({ row }) => (
       <Link
-        href={`/playground/${row.original.id}`}
+        href={`/problem/${row.original.id}`}
         className="transition hover:underline"
       >
         {row.original.title}

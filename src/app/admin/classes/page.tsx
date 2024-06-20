@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { NewClassDialog } from "~/components/pages/classes/new-class-dialog";
+import { NewClassDialog } from "~/components/pages/admin/classes/new-class-dialog";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { Button } from "~/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
