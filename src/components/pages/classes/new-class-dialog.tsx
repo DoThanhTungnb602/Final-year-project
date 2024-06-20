@@ -35,8 +35,7 @@ export function NewClassDialog() {
   const classCreator = api.class.create.useMutation({
     onSuccess(data) {
       toast.success(`Class ${data.name} created successfully`);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      utils.class.all.invalidate();
+      utils.class.all.invalidate().catch(console.error);
       form.reset();
       setIsOpen(false);
     },

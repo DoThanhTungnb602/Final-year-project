@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -71,7 +70,7 @@ export function TestDialog({
   const testCreator = api.class.addTest.useMutation({
     onSuccess(data) {
       toast.success(`Class ${data.name} created successfully`);
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       form.reset(DEFAULT_VALUES);
       setProblems([]);
       setIsOpen(false);
@@ -86,8 +85,8 @@ export function TestDialog({
       toast.success(`Test was updated successfully`);
       form.reset(DEFAULT_VALUES);
       setProblems([]);
-      utils.class.getById.invalidate();
-      utils.class.getTestById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
+      utils.class.getTestById.invalidate().catch(console.error);
       setIsOpen(false);
     },
     onError: (error) => {

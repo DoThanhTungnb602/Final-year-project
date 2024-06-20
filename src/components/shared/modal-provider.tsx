@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { InviteModal } from "../modals/invite-modal";
 import { useCurrentRole } from "~/hooks/use-current-role";
+import { DeleteClassModal } from "../modals/delete-class-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -16,5 +17,10 @@ export const ModalProvider = () => {
     return null;
   }
 
-  return <>{role === "ADMIN" && <InviteModal />}</>;
+  return (
+    <>
+      {role === "ADMIN" && <InviteModal />}
+      {role === "ADMIN" && <DeleteClassModal />}
+    </>
+  );
 };

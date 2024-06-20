@@ -62,8 +62,7 @@ export default function ClassOverview({
 
   const classMutation = api.class.update.useMutation({
     onSettled: () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       form.reset();
       setEditMode(false);
     },
@@ -71,8 +70,7 @@ export default function ClassOverview({
 
   const studentMutation = api.class.deleteStudentById.useMutation({
     onSettled: () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
     },
   });
 

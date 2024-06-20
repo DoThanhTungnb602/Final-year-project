@@ -398,20 +398,22 @@ export const classRouter = createTRPCRouter({
       }
     }),
 
-  delete: adminProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-    try {
-      await ctx.db.class.delete({
-        where: {
-          id: input,
-        },
-      });
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to delete class",
-      });
-    }
-  }),
+  delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.class.delete({
+          where: {
+            id: input.id,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete class",
+        });
+      }
+    }),
 
   deleteStudentById: adminProcedure
     .input(

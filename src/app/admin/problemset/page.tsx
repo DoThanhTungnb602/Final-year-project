@@ -59,8 +59,7 @@ export default function ProblemSet() {
 
   const problemMutation = api.problem.delete.useMutation({
     onSuccess() {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      utils.problem.invalidate();
+      utils.problem.invalidate().catch(console.error);
       setRowSelection({});
       toast.success("Problem deleted successfully");
     },
@@ -71,8 +70,7 @@ export default function ProblemSet() {
 
   const deleteManyProblemsMutation = api.problem.deleteMany.useMutation({
     onSuccess() {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      utils.problem.invalidate();
+      utils.problem.invalidate().catch(console.error);
       setRowSelection({});
       toast.success("Problems deleted successfully");
     },

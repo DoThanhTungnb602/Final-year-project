@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -71,7 +70,7 @@ export function ExerciseDialog({
   const exerciseCreator = api.class.addExercise.useMutation({
     onSuccess(data) {
       toast.success(`Class ${data.name} created successfully`);
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       form.reset(DEFAULT_VALUES);
       setProblems([]);
       setIsOpen(false);
@@ -86,8 +85,8 @@ export function ExerciseDialog({
       toast.success(`Exercise was updated successfully`);
       form.reset(DEFAULT_VALUES);
       setProblems([]);
-      utils.class.getById.invalidate();
-      utils.class.getExerciseById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
+      utils.class.getExerciseById.invalidate().catch(console.error);
       setIsOpen(false);
     },
     onError: (error) => {

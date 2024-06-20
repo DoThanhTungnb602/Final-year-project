@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 "use client";
 
 import {
@@ -62,7 +61,7 @@ export default function ClassExercises({
 
   const deleteManyExercisesMutation = api.class.deleteManyExercises.useMutation({
     onSuccess: () => {
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       setRowSelection({});
       toast.success("Exercises deleted successfully");
     },
@@ -73,7 +72,7 @@ export default function ClassExercises({
 
   const exerciseMutation = api.class.deleteExercise.useMutation({
     onSuccess: () => {
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       toast.success("Exercise deleted successfully");
     },
     onError: (error) => {

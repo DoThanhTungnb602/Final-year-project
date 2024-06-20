@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-2 font-semibold"
             >
               <Code2 className="size-5" />
-              <span className="">Teet Code</span>
+              <span className="">Dashboard</span>
             </Link>
             <ModeToggle />
           </div>

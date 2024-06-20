@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 "use client";
 
 import {
@@ -62,7 +61,7 @@ export default function ClassTests({
 
   const deleteManyTestsMutation = api.class.deleteManyTests.useMutation({
     onSuccess: () => {
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       setRowSelection({});
       toast.success("Tests deleted successfully");
     },
@@ -73,7 +72,7 @@ export default function ClassTests({
 
   const testMutation = api.class.deleteTest.useMutation({
     onSuccess: () => {
-      utils.class.getById.invalidate();
+      utils.class.getById.invalidate().catch(console.error);
       toast.success("Test deleted successfully");
     },
     onError: (error) => {

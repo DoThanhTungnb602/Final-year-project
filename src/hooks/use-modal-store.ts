@@ -2,10 +2,11 @@ import { create } from "zustand";
 
 import { Class } from "@prisma/client";
 
-export type ModalType = "invite";
+export type ModalType = "invite" | "deleteClass";
 
 interface ModalData {
   classroom?: Class;
+  classId?: string;
 }
 
 interface ModalState {
