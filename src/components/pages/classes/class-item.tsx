@@ -17,6 +17,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useModalStore } from "~/hooks/use-modal-store";
 
 interface ClassItemProps {
   id: string;
@@ -26,6 +27,7 @@ interface ClassItemProps {
 
 export function ClassItem({ id, name, studentCount }: ClassItemProps) {
   const router = useRouter();
+  const { onOpen } = useModalStore();
 
   return (
     <>
@@ -55,7 +57,19 @@ export function ClassItem({ id, name, studentCount }: ClassItemProps) {
                 <DropdownMenuItem>
                   <Link href={`/classes/${id}`}>View</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen({
+                      type: "leaveClass",
+                      data: {
+                        classId: id,
+                      },
+                    });
+                  }}
+                >
+                  Leave
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

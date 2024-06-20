@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [data]);
 
   return (
-    <div className="h-full flex-1 overflow-auto p-3">
+    <div className="h-full flex-1 overflow-auto">
       <div className="h-full">
         {isPending ? (
           <DefaultLoadingPage />

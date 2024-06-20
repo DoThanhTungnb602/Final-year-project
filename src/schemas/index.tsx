@@ -184,3 +184,7 @@ export const TestSchema = z.object({
     message: "At least one problem is required",
   }),
 });
+
+export const JoinClassSchema = z.object({
+  inviteCode: z.string().nonempty(),
+});

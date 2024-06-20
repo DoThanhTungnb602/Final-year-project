@@ -10,7 +10,7 @@ import { MdFilterAlt, MdFilterAltOff, MdNotInterested } from "react-icons/md";
 import { ProblemWithStatus } from "~/lib/types";
 import Link from "next/link";
 import { Toggle } from "~/components/ui/toggle";
-import { Card, CardContent } from "~/components/ui/card";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ProblemFilter } from "~/components/pages/problemset/problem-filter";
 import { useEffect, useState } from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -165,34 +165,37 @@ export default function Home() {
   return isPending ? (
     <DefaultLoadingPage />
   ) : (
-    <div className="flex h-full w-full flex-col gap-4 p-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">List of Problems</h1>
-        <Toggle
-          className="px-2"
-          variant="outline"
-          pressed={filter}
-          onPressedChange={() => setFilter(!filter)}
-        >
-          {filter ? (
-            <MdFilterAlt className="size-6" />
-          ) : (
-            <MdFilterAltOff className="size-6" />
-          )}
-        </Toggle>
-      </div>
-      {filter && (
-        <Card className="bg-dark">
-          <CardContent className="p-3">
-            <ProblemFilter onFilterChange={handleFilterChange} />
-          </CardContent>
-        </Card>
-      )}
-      <Card x-chunk="dashboard-06-chunk-0" className="bg-dark flex-1">
-        <CardContent className="h-full overflow-auto pt-6">
-          <DataTable columns={columns} data={filteredData} />
-        </CardContent>
-      </Card>
-    </div>
+    <Card
+      x-chunk="dashboard-06-chunk-0"
+      className="bg-dark flex h-full w-full flex-1 flex-col gap-4"
+    >
+      <CardHeader>
+        <div className="flex justify-between">
+          <div className="text-2xl font-bold">List of Problems</div>
+          <Toggle
+            className="px-2"
+            variant="outline"
+            pressed={filter}
+            onPressedChange={() => setFilter(!filter)}
+          >
+            {filter ? (
+              <MdFilterAlt className="size-6" />
+            ) : (
+              <MdFilterAltOff className="size-6" />
+            )}
+          </Toggle>
+        </div>
+        {filter && (
+          <Card className="bg-dark">
+            <CardContent className="p-3">
+              <ProblemFilter onFilterChange={handleFilterChange} />
+            </CardContent>
+          </Card>
+        )}
+      </CardHeader>
+      <CardContent className="h-full overflow-auto">
+        <DataTable columns={columns} data={filteredData} />
+      </CardContent>
+    </Card>
   );
 }

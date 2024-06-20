@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <Sidebar />
       <div className="flex h-full flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto p-3">{children}</main>
       </div>
     </div>
   );

@@ -10,12 +10,6 @@ export default async function Page({
 }) {
   const { inviteCode } = params;
 
-  const existingClass = await api.class.existingClass();
-
-  if (existingClass) {
-    redirect(`/classes/${existingClass.id}`);
-  }
-
   const _class = await api.class.enroll({
     inviteCode,
   });

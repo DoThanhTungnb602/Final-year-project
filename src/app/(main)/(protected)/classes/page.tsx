@@ -2,34 +2,55 @@
 
 import { api } from "~/trpc/react";
 import { ClassItem } from "~/components/pages/classes/class-item";
-import { NewClassDialog } from "~/components/pages/classes/new-class-dialog";
-import { Spinner } from "~/components/shared/spinner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Separator } from "~/components/ui/separator";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import { Button } from "~/components/ui/button";
+import { GoPlusCircle } from "react-icons/go";
+import { useModalStore } from "~/hooks/use-modal-store";
 
 export default function Page() {
-  const classesQuery = api.class.all.useQuery();
+  const { data, isPending } = api.class.getEnrolledClasses.useQuery();
+  const { onOpen } = useModalStore();
 
-  return (
-    <>
-      <div className="ml-auto">
-        <NewClassDialog />
-      </div>
-      <div className="flex flex-wrap gap-6">
-        {
-          classesQuery.isPending ? <Spinner className="size-6" /> : null
-          // TODO: Fix skeleton loading
-        }
-        {classesQuery.data?.map((c) => {
-          const studentCount = c.students.length;
-          return (
-            <ClassItem
-              key={c.id}
-              id={c.id}
-              name={c.name}
-              studentCount={studentCount}
-            />
-          );
-        })}
-      </div>
-    </>
+  return isPending ? (
+    <DefaultLoadingPage />
+  ) : (
+    <Card className="bg-dark flex h-full w-full flex-col">
+      <CardHeader>
+        <CardTitle className="flex justify-between">
+          <div>Your Classes</div>
+          <Button
+            onClick={() => {
+              onOpen({
+                type: "joinClass",
+              });
+            }}
+          >
+            <GoPlusCircle className="mr-2 size-5" /> Join a Class
+          </Button>
+        </CardTitle>
+        <CardDescription>
+          Here you can view all the classes you have enrolled in.
+        </CardDescription>
+      </CardHeader>
+      <Separator />
+      <CardContent className="flex flex-wrap gap-4 pt-6">
+        {data?.map((classItem) => (
+          <ClassItem
+            key={classItem.id}
+            id={classItem.id}
+            name={classItem.name}
+            studentCount={classItem.students.length}
+          />
+        ))}
+      </CardContent>
+    </Card>
   );
 }

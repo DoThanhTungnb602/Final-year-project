@@ -103,7 +103,7 @@ export default function Page() {
         <Card className="bg-dark flex h-full w-full flex-col">
           <CardHeader>
             <CardTitle className="flex justify-between">
-              <h2>List of classes</h2>
+              <div>List of classes</div>
               <NewClassDialog />
             </CardTitle>
             <CardDescription>You can manage your classes here</CardDescription>

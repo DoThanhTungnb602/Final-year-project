@@ -8,6 +8,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { protectedRoutes } from "~/routes";
 
 export const classRouter = createTRPCRouter({
   all: adminProcedure.query(async ({ ctx }) => {
@@ -55,46 +56,48 @@ export const classRouter = createTRPCRouter({
     }
   }),
 
-  getById: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    try {
-      const class_ = await ctx.db.class.findUnique({
-        where: {
-          id: input,
-        },
-        include: {
-          students: {
-            orderBy: {
-              id: "asc",
+  getById: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const class_ = await ctx.db.class.findUnique({
+          where: {
+            id: input,
+          },
+          include: {
+            students: {
+              orderBy: {
+                id: "asc",
+              },
+            },
+            exercises: {
+              orderBy: {
+                id: "asc",
+              },
+            },
+            tests: {
+              orderBy: {
+                id: "asc",
+              },
             },
           },
-          exercises: {
-            orderBy: {
-              id: "asc",
-            },
-          },
-          tests: {
-            orderBy: {
-              id: "asc",
-            },
-          },
-        },
-      });
+        });
 
-      if (!class_) {
+        if (!class_) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Class not found",
+          });
+        }
+
+        return class_;
+      } catch (error) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Class not found",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch class",
         });
       }
-
-      return class_;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch class",
-      });
-    }
-  }),
+    }),
 
   create: adminProcedure.input(ClassSchema).mutation(async ({ ctx, input }) => {
     try {
@@ -468,25 +471,6 @@ export const classRouter = createTRPCRouter({
       }
     }),
 
-  existingClass: protectedProcedure.query(async ({ ctx }) => {
-    try {
-      return await ctx.db.class.findFirst({
-        where: {
-          students: {
-            some: {
-              id: ctx.session.user.id,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to check if student is enrolled",
-      });
-    }
-  }),
-
   enroll: protectedProcedure
     .input(
       z.object({
@@ -506,7 +490,23 @@ export const classRouter = createTRPCRouter({
             message: "User not found",
           });
         }
-        return await ctx.db.class.update({
+        const existingClass = await ctx.db.class.findUnique({
+          where: {
+            inviteCode: input.inviteCode,
+            students: {
+              some: {
+                id: user.id,
+              },
+            },
+          },
+        });
+        if (existingClass) {
+          return {
+            message: "You are already enrolled in this class",
+            ...existingClass,
+          };
+        }
+        const class_ = await ctx.db.class.update({
           where: {
             inviteCode: input.inviteCode,
           },
@@ -518,10 +518,49 @@ export const classRouter = createTRPCRouter({
             },
           },
         });
+        return {
+          message: "Successfully enrolled in class",
+          ...class_,
+        };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to enroll student",
+          message: "Failed to enroll class",
+        });
+      }
+    }),
+
+  leave: protectedProcedure
+    .input(z.object({ classId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const user = await ctx.db.user.findUnique({
+          where: {
+            id: ctx.session.user.id,
+          },
+        });
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+        }
+        await ctx.db.class.update({
+          where: {
+            id: input.classId,
+          },
+          data: {
+            students: {
+              disconnect: {
+                id: user.id,
+              },
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to leave class",
         });
       }
     }),

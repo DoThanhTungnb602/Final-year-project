@@ -18,9 +18,11 @@ import { useState } from "react";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
+import CustomTooltip from "../shared/custom-tooltip";
 
 export const InviteModal = () => {
   const [isCopied, setIsCopied] = useState(false);
+  const [isCodeCopied, setIsCodeCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onClose, onOpen, type, data } = useModalStore();
   const origin = useOrigin();
@@ -46,19 +48,33 @@ export const InviteModal = () => {
   const isModalOpen = isOpen && type === "invite";
   const { classroom } = data;
   const inviteLink = `${origin}/invite/${classroom?.inviteCode}`;
+  const inviteCode = classroom?.inviteCode ?? "";
 
   const handleCopy = () => {
+    if (isCopied) return;
     navigator.clipboard
       .writeText(inviteLink)
       .then(() => {
         setIsCopied(true);
       })
-      .catch((error) => {
-        console.error("Failed to copy invite link", error);
-      });
+      .catch(console.error);
 
     setTimeout(() => {
       setIsCopied(false);
+    }, 2000);
+  };
+
+  const handleCodeCopy = () => {
+    if (isCodeCopied) return;
+    navigator.clipboard
+      .writeText(inviteCode)
+      .then(() => {
+        setIsCodeCopied(true);
+      })
+      .catch(console.error);
+
+    setTimeout(() => {
+      setIsCodeCopied(false);
     }, 2000);
   };
 
@@ -72,9 +88,9 @@ export const InviteModal = () => {
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Invite link</DialogTitle>
+          <DialogTitle>Invite people</DialogTitle>
           <DialogDescription>
-            Anyone who has this link will be able to join this class.
+            Anyone who has this link or code will be able to join this class.
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center space-x-2">
@@ -84,19 +100,49 @@ export const InviteModal = () => {
             </Label>
             <Input id="link" value={inviteLink} readOnly disabled={isLoading} />
           </div>
-          <Button
-            size="sm"
-            className="px-3"
-            onClick={handleCopy}
-            disabled={isLoading}
-          >
-            {isCopied ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
-            <span className="sr-only">Copy</span>
-          </Button>
+          <CustomTooltip content="Copy Invite Link" side="right">
+            <Button
+              size="sm"
+              className="px-3"
+              onClick={handleCopy}
+              disabled={isLoading}
+            >
+              {isCopied ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+              <span className="sr-only">Copy</span>
+            </Button>
+          </CustomTooltip>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="grid flex-1 gap-2">
+            <Label htmlFor="inviteCode" className="sr-only">
+              Invite Code
+            </Label>
+            <Input
+              id="inviteCode"
+              value={inviteCode}
+              readOnly
+              disabled={isLoading}
+            />
+          </div>
+          <CustomTooltip content="Copy Invite Code" side="right">
+            <Button
+              size="sm"
+              className="px-3"
+              onClick={handleCodeCopy}
+              disabled={isLoading}
+            >
+              {isCodeCopied ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+              <span className="sr-only">Copy</span>
+            </Button>
+          </CustomTooltip>
         </div>
         <DialogFooter className="sm:justify-start">
           <Button variant="link" size="sm" onClick={handleGenerateInviteCode}>
