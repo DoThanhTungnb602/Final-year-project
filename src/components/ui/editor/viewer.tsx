@@ -1,5 +1,8 @@
+"use client";
+
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useEffect } from "react";
 
 interface ViewerProps {
   content: string;
@@ -11,6 +14,11 @@ const Viewer = ({ content }: ViewerProps) => {
     content: content,
     editable: false,
   });
+
+  useEffect(() => {
+    editor?.commands.setContent(content);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
 
   if (!editor) return <></>;
 

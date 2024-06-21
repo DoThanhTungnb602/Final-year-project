@@ -2,18 +2,14 @@
 
 import { UserInfo } from "~/components/shared/user-info";
 import { ProblemSidebar } from "./problem-sidebar";
-import { usePathname } from "next/navigation";
+import { useSidebarStore } from "~/hooks/use-sidebar-store";
 
 const Header = () => {
-  const pathname = usePathname();
-  const isRenderProblemSidebar =
-    pathname.startsWith("/problem") ||
-    pathname.startsWith("/test") ||
-    pathname.startsWith("/exercise");
+  const { isShow } = useSidebarStore();
 
   return (
     <header className="sticky top-0 z-10 flex h-[57px] shrink-0 items-center justify-between gap-1 border-b bg-background px-4">
-      {isRenderProblemSidebar ? <ProblemSidebar /> : <div></div>}
+      {isShow ? <ProblemSidebar /> : <div></div>}
       <UserInfo />
     </header>
   );

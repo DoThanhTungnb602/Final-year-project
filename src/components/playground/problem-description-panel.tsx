@@ -4,8 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
 import { IoDocumentText } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
-import Viewer from "../ui/editor/viewer";
+import Viewer from "~/components/ui/editor/viewer";
 import { useProblemStore } from "~/hooks/use-problem-store";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
 
 const ProblemDescriptionPanel = () => {
   const { problem } = useProblemStore();
@@ -25,7 +26,11 @@ const ProblemDescriptionPanel = () => {
       <TabsContent value="description" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
           <CardContent className="h-full min-h-0 overflow-y-auto p-3">
-            {problem && <Viewer content={problem?.description ?? ""} />}
+            {problem ? (
+              <Viewer content={problem.description ?? ""} />
+            ) : (
+              <DefaultLoadingPage />
+            )}
           </CardContent>
         </Card>
       </TabsContent>

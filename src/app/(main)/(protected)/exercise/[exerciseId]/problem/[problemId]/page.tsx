@@ -17,19 +17,38 @@ export default function Page({
   const { data: problem, isPending } = api.problem.getById.useQuery(problemId);
   const { data: exercise } = api.exercise.getById.useQuery({ exerciseId });
   const { setProblem } = useProblemStore();
-  const { setProblems, setExercise } = useSidebarStore();
+  const { setIsShow, setTitle, setProblems, setExercise } = useSidebarStore();
+
+  useEffect(() => {
+    setIsShow(true);
+
+    return () => {
+      setIsShow(false);
+    };
+  }, []);
 
   useEffect(() => {
     if (exercise) {
       setProblems(exercise.problems ?? []);
       setExercise(exercise);
+      setTitle(exercise.title);
     }
+
+    return () => {
+      setProblems([]);
+      setExercise(null);
+      setTitle("");
+    };
   }, [exercise]);
 
   useEffect(() => {
     if (problem) {
       setProblem(problem);
     }
+
+    return () => {
+      setProblem(null);
+    };
   }, [problem]);
 
   return (

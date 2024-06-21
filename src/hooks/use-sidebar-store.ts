@@ -4,15 +4,23 @@ import { Test, Exercise } from "@prisma/client";
 import { ProblemWithStatus } from "~/lib/types";
 
 interface SidebarState {
-  problems?: ProblemWithStatus[];
-  setProblems: (problems: ProblemWithStatus[]) => void;
+  title: string;
+  setTitle: (title: string) => void;
+  isShow: boolean;
+  setIsShow: (isShow: boolean) => void;
+  problems?: ProblemWithStatus[] | null;
+  setProblems: (problems: ProblemWithStatus[] | null) => void;
   test?: Test | null;
-  setTest: (test: Test) => void;
+  setTest: (test: Test | null) => void;
   exercise?: Exercise | null;
-  setExercise: (exercise: Exercise) => void;
+  setExercise: (exercise: Exercise | null) => void;
 }
 
 export const useSidebarStore = create<SidebarState>()((set) => ({
+  title: "",
+  setTitle: (title) => set({ title }),
+  isShow: false,
+  setIsShow: (isShow) => set({ isShow }),
   problems: [],
   setProblems: (problems) => set({ problems }),
   test: null,

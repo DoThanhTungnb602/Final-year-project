@@ -1,15 +1,6 @@
 "use client";
 
-import { Button } from "~/components/ui/button";
-import { FaList } from "react-icons/fa6";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-} from "~/components/ui/sheet";
 import { Separator } from "~/components/ui/separator";
-import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { Progress } from "~/components/ui/progress";
 import { useState } from "react";
 import { ProblemDataTable } from "~/components/shared/problem-data-table";
@@ -21,12 +12,14 @@ import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import CustomTooltip from "~/components/shared/custom-tooltip";
+import { api } from "~/trpc/react";
+import moment from "moment";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
 
-export function ProblemSidebar() {
-  const { title, problems, test, exercise } = useSidebarStore();
+export default function Page({ params }: { params: { exerciseId: string } }) {
+  const { exerciseId } = params;
+  const { data: exercise } = api.exercise.getById.useQuery({ exerciseId });
   const [score, setScore] = useState(40);
-  const [totalScore, setTotalScore] = useState(100);
-  const [progress, setProgress] = useState(20);
 
   const columns: ColumnDef<ProblemWithStatus>[] = [
     {
@@ -66,17 +59,13 @@ export function ProblemSidebar() {
       header: "Title",
       cell: ({ row }) => {
         const problem = row.original;
-        const url = test
-          ? `/test/${test.id}/problem/${problem.id}`
-          : exercise
-            ? `/exercise/${exercise.id}/problem/${problem.id}`
-            : `/problem/${problem.id}`;
         return (
-          <SheetClose asChild>
-            <Link href={url} className="transition-all hover:underline">
-              {problem.title}
-            </Link>
-          </SheetClose>
+          <Link
+            href={`/exercise/${exerciseId}/problem/${row.original.id}`}
+            className="transition-all hover:underline"
+          >
+            {problem.title}
+          </Link>
         );
       },
     },
@@ -104,48 +93,34 @@ export function ProblemSidebar() {
     },
   ];
 
-  const ProgressBar = () => {
-    if (test) {
-      return (
-        <div>
-          <p className="mb-2 text-lg font-semibold">Total score</p>
-          <div className="flex items-center gap-5">
-            <Progress value={score} className="h-3 w-3/4" max={totalScore} />
-            <span className="text-muted-foreground">
-              {score} / {totalScore}
-            </span>
-          </div>
+  const RenderScoreBar = () => {
+    return (
+      <div>
+        <p className="mb-2 text-lg font-semibold">Progress</p>
+        <div className="flex items-center gap-5">
+          <Progress value={score} className="h-3 w-3/4" />
+          <span className="text-muted-foreground">{score}%</span>
         </div>
-      );
-    }
-    if (exercise) {
-      return (
-        <div>
-          <p className="mb-2 text-lg font-semibold">Progress</p>
-          <div className="flex items-center gap-5">
-            <Progress value={progress} className="h-3 w-3/4" />
-            <span className="text-muted-foreground">{progress}%</span>
-          </div>
-        </div>
-      );
-    }
+      </div>
+    );
   };
 
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button size="sm" variant="outline">
-          <FaList className="mr-2 size-4" />
-          {title}
-          <span className="sr-only">Toggle Menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="flex flex-col gap-5 sm:max-w-lg">
-        <p className="text-2xl font-semibold">{title}</p>
-        <Separator />
-        <ProgressBar />
-        <ProblemDataTable columns={columns} data={problems ?? []} />
-      </SheetContent>
-    </Sheet>
+  return exercise ? (
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 bg-background md:gap-8 md:p-10">
+      <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-3">
+        <p className="text-2xl font-semibold">{exercise?.title}</p>
+        <p className="text-sm text-muted-foreground">
+          Due date: {moment(exercise.dueDate).format("HH:mm - MMM D, YYYY")}
+        </p>
+      </div>
+      <Separator />
+      <RenderScoreBar />
+      <div className="flex flex-col gap-2">
+        <p className="text-md font-semibold">Problem list</p>
+        <ProblemDataTable columns={columns} data={exercise.problems ?? []} />
+      </div>
+    </div>
+  ) : (
+    <DefaultLoadingPage />
   );
 }
