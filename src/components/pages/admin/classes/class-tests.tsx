@@ -118,10 +118,9 @@ export default function ClassTests({
       header: "Start Time",
     },
     {
-      accessorKey: "endTime",
-      accessorFn: (row) =>
-        moment(row?.endTime).local().format("DD-MM-YYYY hh:mm:ss a"),
-      header: "End Time",
+      accessorKey: "duration",
+      accessorFn: (row) => `${row?.duration} minutes`,
+      header: "Duration",
     },
     {
       id: "actions",

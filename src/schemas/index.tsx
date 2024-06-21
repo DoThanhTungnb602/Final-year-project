@@ -102,9 +102,7 @@ export const ProblemSchema = z.object({
   title: z.string().min(1, {
     message: "Title is required",
   }),
-  description: z.string().min(1, {
-    message: "Description is required",
-  }),
+  description: z.string().nonempty(),
   difficulty: z.nativeEnum(Difficulty),
   isPublic: z.boolean(),
   tags: z.array(z.nativeEnum(Topic)).min(1, {
@@ -145,19 +143,8 @@ export const ExerciseSchema = z.object({
   title: z.string().min(1, {
     message: "Title is required",
   }),
-  assignedDate: z.date({
-    errorMap: (issue, { defaultError }) => ({
-      message:
-        issue.code === "invalid_type"
-          ? "Assigned date is required"
-          : defaultError,
-    }),
-  }),
   dueDate: z.date({
-    errorMap: (issue, { defaultError }) => ({
-      message:
-        issue.code === "invalid_type" ? "Due date is required" : defaultError,
-    }),
+    invalid_type_error: "Due date is required",
   }),
   problems: z.array(z.object({ id: z.string() })).min(1, {
     message: "At least one problem is required",
@@ -169,17 +156,11 @@ export const TestSchema = z.object({
     message: "Title is required",
   }),
   startTime: z.date({
-    errorMap: (issue, { defaultError }) => ({
-      message:
-        issue.code === "invalid_type" ? "Start time is required" : defaultError,
-    }),
+    invalid_type_error: "Start time is required",
   }),
-  endTime: z.date({
-    errorMap: (issue, { defaultError }) => ({
-      message:
-        issue.code === "invalid_type" ? "End time is required" : defaultError,
-    }),
-  }),
+  duration: z.coerce.number({
+    invalid_type_error: "Duration is required",
+  }).int().positive(),
   problems: z.array(z.object({ id: z.string() })).min(1, {
     message: "At least one problem is required",
   }),

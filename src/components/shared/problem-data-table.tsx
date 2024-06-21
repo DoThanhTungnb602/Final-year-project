@@ -2,7 +2,6 @@
 
 import {
   ColumnDef,
-  RowSelectionState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,32 +10,20 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 
 import { ProblemWithStatus } from "~/lib/types";
-import { OnChangeFn } from "@tanstack/react-table";
 
 const fallbackData: ProblemWithStatus[] = [];
 
 interface ProblemDataTableProps<TData extends { id?: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowSelection?: RowSelectionState;
-  setRowSelection?: OnChangeFn<RowSelectionState>;
 }
 
 export function ProblemDataTable<TData extends { id?: string }, TValue>({
   columns,
   data,
-  rowSelection = {},
-  setRowSelection,
 }: ProblemDataTableProps<TData, TValue>) {
   const table = useReactTable({
     getRowId: (row, index) => row.id ?? index.toString(),
@@ -46,14 +33,10 @@ export function ProblemDataTable<TData extends { id?: string }, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      rowSelection,
-    },
   });
 
   return (
-    <div className="flex w-full flex-col justify-between overflow-auto border rounded-md">
+    <div className="flex w-full flex-col justify-between overflow-auto rounded-md border">
       <Table>
         <TableBody>
           {table.getRowModel().rows?.length ? (

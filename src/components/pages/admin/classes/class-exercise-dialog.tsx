@@ -38,9 +38,8 @@ interface ExerciseDialogProps {
   setMode: (mode: "view" | "create" | "edit") => void;
 }
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: Partial<z.infer<typeof ExerciseSchema>> = {
   title: "",
-  assignedDate: undefined,
   dueDate: undefined,
   problems: [],
 };
@@ -97,12 +96,7 @@ export function ExerciseDialog({
   const form = useForm<z.infer<typeof ExerciseSchema>>({
     resolver: zodResolver(ExerciseSchema),
     values: exerciseQuery?.data,
-    defaultValues: {
-      title: "",
-      assignedDate: undefined,
-      dueDate: undefined,
-      problems: [],
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
   useEffect(() => {
@@ -193,45 +187,6 @@ export function ExerciseDialog({
                     </FormItem>
                   )}
                 />
-                {mode === "view" ? (
-                  <FormField
-                    control={form.control}
-                    name="assignedDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Assigned Date</FormLabel>
-                        <FormControl>
-                          <Input
-                            readOnly={true}
-                            defaultValue=""
-                            value={field.value?.toLocaleString()}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name="assignedDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor="assignedDate">
-                          Assigned Date
-                        </FormLabel>
-                        <FormControl>
-                          <DateTimePicker
-                            granularity="minute"
-                            hourCycle={24}
-                            jsDate={field.value}
-                            onJsDateChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
                 {mode === "view" ? (
                   <FormField
                     control={form.control}

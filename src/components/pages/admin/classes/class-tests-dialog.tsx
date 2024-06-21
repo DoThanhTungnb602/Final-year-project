@@ -38,10 +38,10 @@ interface TestDialogProps {
   setMode: (mode: "view" | "create" | "edit") => void;
 }
 
-const DEFAULT_VALUES = {
+const DEFAULT_VALUES: Partial<z.infer<typeof TestSchema>> = {
   title: "",
   startTime: undefined,
-  endTime: undefined,
+  duration: 0,
   problems: [],
 };
 
@@ -68,8 +68,8 @@ export function TestDialog({
   }));
 
   const testCreator = api.class.addTest.useMutation({
-    onSuccess(data) {
-      toast.success(`Class ${data.name} created successfully`);
+    onSuccess() {
+      toast.success(`Test was created successfully`);
       utils.class.getById.invalidate().catch(console.error);
       form.reset(DEFAULT_VALUES);
       setProblems([]);
@@ -97,12 +97,7 @@ export function TestDialog({
   const form = useForm<z.infer<typeof TestSchema>>({
     resolver: zodResolver(TestSchema),
     values: testQuery?.data,
-    defaultValues: {
-      title: "",
-      startTime: undefined,
-      endTime: undefined,
-      problems: [],
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
   useEffect(() => {
@@ -230,43 +225,30 @@ export function TestDialog({
                     )}
                   />
                 )}
-                {mode === "view" ? (
-                  <FormField
-                    control={form.control}
-                    name="endTime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Time</FormLabel>
-                        <FormControl>
-                          <Input
-                            readOnly={true}
-                            defaultValue=""
-                            value={field.value?.toLocaleString()}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name="endTime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor="endTime">End Time</FormLabel>
-                        <FormControl>
-                          <DateTimePicker
-                            hourCycle={24}
-                            granularity="minute"
-                            jsDate={field.value}
-                            onJsDateChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
+                <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="duration">
+                        Duration (in minutes)
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          readOnly={mode === "view"}
+                          type="number"
+                          id="duration"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(parseInt(e.target.value, 10));
+                          }}
+                          placeholder="Minutes"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="problems"

@@ -112,12 +112,6 @@ export default function ClassExercises({
       header: "Title",
     },
     {
-      accessorKey: "assignedDate",
-      accessorFn: (row) =>
-        moment(row?.assignedDate).local().format("DD-MM-YYYY hh:mm:ss a"),
-      header: "Assigned Date",
-    },
-    {
       accessorKey: "dueDate",
       accessorFn: (row) =>
         moment(row?.dueDate).local().format("DD-MM-YYYY hh:mm:ss a"),

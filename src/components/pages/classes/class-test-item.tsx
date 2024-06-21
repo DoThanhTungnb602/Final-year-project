@@ -35,9 +35,7 @@ export function ClassTestItem({ test }: ClassTestItemProps) {
             <p>
               Start time: {moment(test.startTime).format("HH:mm - MMM D, YYYY")}
             </p>
-            <p>
-              End time: {moment(test.endTime).format("HH:mm - MMM D, YYYY")}
-            </p>
+            <p>Duration: {test.duration} minutes</p>
           </div>
         </CardContent>
       </Card>

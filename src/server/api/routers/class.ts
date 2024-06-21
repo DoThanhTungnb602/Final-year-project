@@ -60,7 +60,7 @@ export const classRouter = createTRPCRouter({
     .input(z.string())
     .query(async ({ ctx, input }) => {
       try {
-        const class_ = await ctx.db.class.findUnique({
+        return await ctx.db.class.findUnique({
           where: {
             id: input,
           },
@@ -82,15 +82,6 @@ export const classRouter = createTRPCRouter({
             },
           },
         });
-
-        if (!class_) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Class not found",
-          });
-        }
-
-        return class_;
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
