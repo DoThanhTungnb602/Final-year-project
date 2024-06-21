@@ -19,10 +19,10 @@ import Timer from "~/components/shared/timer";
 
 export default function Page({ params }: { params: { testId: string } }) {
   const { testId } = params;
-  const [isStarted, setIsStarted] = useState(false);
   const [score, setScore] = useState(40);
   const [totalScore, setTotalScore] = useState(100);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [isStarted, setIsStarted] = useState(false);
 
   const { data: test } = api.test.getById.useQuery({ testId });
   const { data: problems } = api.test.getProblems.useQuery(

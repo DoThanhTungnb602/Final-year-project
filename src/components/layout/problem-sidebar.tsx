@@ -21,6 +21,7 @@ import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import CustomTooltip from "~/components/shared/custom-tooltip";
+import Timer from "~/components/shared/timer";
 
 export function ProblemSidebar() {
   const { title, problems, test, exercise } = useSidebarStore();
@@ -107,15 +108,21 @@ export function ProblemSidebar() {
   const ProgressBar = () => {
     if (test) {
       return (
-        <div>
-          <p className="mb-2 text-lg font-semibold">Total score</p>
-          <div className="flex items-center gap-5">
-            <Progress value={score} className="h-3 w-3/4" max={totalScore} />
-            <span className="text-muted-foreground">
-              {score} / {totalScore}
-            </span>
+        <>
+          <Timer
+            startTime={test.startTime.toString()}
+            duration={test.duration * 1}
+          />
+          <div>
+            <p className="mb-2 text-lg font-semibold">Total score</p>
+            <div className="flex items-center gap-5">
+              <Progress value={score} className="h-3 w-3/4" max={totalScore} />
+              <span className="text-muted-foreground">
+                {score} / {totalScore}
+              </span>
+            </div>
           </div>
-        </div>
+        </>
       );
     }
     if (exercise) {
