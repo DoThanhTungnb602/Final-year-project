@@ -89,6 +89,19 @@ model Problem {
     exercises   Exercise[]
     tests       Test[]
 
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Skeleton  Skeleton[]
+}
+
+model Skeleton {
+    id         String   @id @default(cuid())
+    languageId String
+    language   Language @relation(fields: [languageId], references: [id])
+    problemId  String
+    problem    Problem  @relation(fields: [problemId], references: [id])
+    code       String
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -96,7 +109,7 @@ model Problem {
 model Class {
     id         String     @id @default(cuid())
     name       String
-    inviteCode String?    @default(cuid()) @unique
+    inviteCode String?    @unique @default(cuid())
     students   User[]     @relation("EnrolledClasses")
     exercises  Exercise[]
     tests      Test[]
@@ -106,13 +119,13 @@ model Class {
 }
 
 model Exercise {
-    id           String       @id @default(cuid())
-    title        String
-    dueDate      DateTime
-    problems     Problem[]
-    submissions  Submission[]
-    Class        Class?       @relation(fields: [classId], references: [id])
-    classId      String?
+    id          String       @id @default(cuid())
+    title       String
+    dueDate     DateTime
+    problems    Problem[]
+    submissions Submission[]
+    Class       Class?       @relation(fields: [classId], references: [id])
+    classId     String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -133,10 +146,11 @@ model Test {
 }
 
 model Language {
-    id          Int          @id
+    id          String       @id
     name        String
     editorValue String
     Submission  Submission[]
+    Skeleton    Skeleton[]
 
     @@unique([name])
 }
@@ -147,7 +161,7 @@ model Submission {
     time       Int
     memory     Int
     code       String
-    languageId Int
+    languageId String
     language   Language  @relation(fields: [languageId], references: [id])
     problemId  String
     problem    Problem   @relation(fields: [problemId], references: [id])

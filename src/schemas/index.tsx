@@ -87,7 +87,7 @@ export const SolutionSchema = z.object({
   code: z.string().min(1, {
     message: "Solution is required",
   }),
-  languageId: z.number(),
+  languageId: z.string().nonempty(),
   problemId: z.number(),
 });
 
@@ -158,9 +158,12 @@ export const TestSchema = z.object({
   startTime: z.date({
     invalid_type_error: "Start time is required",
   }),
-  duration: z.coerce.number({
-    invalid_type_error: "Duration is required",
-  }).int().positive(),
+  duration: z.coerce
+    .number({
+      invalid_type_error: "Duration is required",
+    })
+    .int()
+    .positive(),
   problems: z.array(z.object({ id: z.string() })).min(1, {
     message: "At least one problem is required",
   }),

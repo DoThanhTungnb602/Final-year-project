@@ -42,7 +42,7 @@ export const useUserPreferencesStore = create<UserPreferencesStore>((set) => ({
 }));
 
 export const useEditorStore = create<EditorStore>((set) => ({
-  language: { id: 76, name: "C++", editorValue: "cpp" },
+  language: { id: "76", name: "C++", editorValue: "cpp" },
   setLanguage: (language) => set({ language }),
   languageCode: defaultLanguageCode,
   setLanguageCode: (language, code) => {

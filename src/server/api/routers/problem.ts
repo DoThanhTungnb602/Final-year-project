@@ -1,3 +1,4 @@
+import { Skeleton } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { axiosInstance } from "~/lib/axios";
@@ -271,6 +272,35 @@ export const problemRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch problem",
+        });
+      }
+    }),
+
+  getSkeletonCode: protectedProcedure
+    .input(z.object({ languageId: z.string(), problemId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const skeleton = await ctx.db.skeleton.findFirst({
+          where: {
+            languageId: input.languageId,
+            problemId: input.problemId,
+          },
+        });
+        if (skeleton) {
+          return skeleton.code;
+        } else {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Skeleton code not found",
+          });
+        }
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch skeleton code",
         });
       }
     }),

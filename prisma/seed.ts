@@ -227,47 +227,47 @@ Output: [0,1]
   await db.language.createMany({
     data: [
       {
-        id: 15,
+        id: "15",
         name: "C++",
         editorValue: "cpp",
       },
+      // {
+      //   id: 51,
+      //   name: "C#",
+      //   editorValue: "csharp",
+      // },
       {
-        id: 51,
-        name: "C#",
-        editorValue: "csharp",
-      },
-      {
-        id: 91,
+        id: "91",
         name: "Java",
         editorValue: "java",
       },
       {
-        id: 92,
+        id: "92",
         name: "Python",
         editorValue: "python",
       },
       {
-        id: 93,
+        id: "93",
         name: "JavaScript",
         editorValue: "javascript",
       },
+      // {
+      //   id: 68,
+      //   name: "PHP",
+      //   editorValue: "php",
+      // },
+      // {
+      //   id: 73,
+      //   name: "Rust",
+      //   editorValue: "rust",
+      // },
+      // {
+      //   id: 95,
+      //   name: "Go",
+      //   editorValue: "go",
+      // },
       {
-        id: 68,
-        name: "PHP",
-        editorValue: "php",
-      },
-      {
-        id: 73,
-        name: "Rust",
-        editorValue: "rust",
-      },
-      {
-        id: 95,
-        name: "Go",
-        editorValue: "go",
-      },
-      {
-        id: 94,
+        id: "94",
         name: "TypeScript",
         editorValue: "typescript",
       },

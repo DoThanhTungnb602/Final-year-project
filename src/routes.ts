@@ -15,3 +15,5 @@ export const adminRoutePrefix = "/admin";
 export const apiAuthPrefix = "/api/auth";
 
 export const DEFAULT_LOGIN_REDIRECT = "/settings/profile";
+
+export const DEFAULT_LANGUAGE = "C++";

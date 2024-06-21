@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEditorStore } from "~/lib/stores";
+import { useEditorStore } from "~/hooks/use-editor-store";
 import { Editor } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -8,29 +9,43 @@ import { useTheme } from "next-themes";
 import { SelectLanguage } from "~/components/shared/select-language";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import { useProblemStore } from "~/hooks/use-problem-store";
 
 export function CodeEditor() {
-  const languageCode = useEditorStore((state) => state.languageCode);
-  const language = useEditorStore((state) => state.language);
-  const setLanguageCode = useEditorStore((state) => state.setLanguageCode);
-  const [sourceCode, setSourceCode] = useState(languageCode.get(language.name));
-  const debouncedSourceCode = useDebounce(sourceCode, 500);
   const { theme } = useTheme();
+  const { selectedLanguage: language, codeMap, setCodeMap } = useEditorStore();
+  const [sourceCode, setSourceCode] = useState(codeMap.get(language.name));
+  const debouncedSourceCode = useDebounce(sourceCode, 500);
+  const { problem } = useProblemStore();
+
   const runProblem = api.problem.run.useMutation({
     onSuccess() {
       console.log("success");
     },
   });
 
-  useEffect(() => {
-    if (debouncedSourceCode) {
-      setLanguageCode(language.name, debouncedSourceCode);
-    }
-  }, [debouncedSourceCode, language.name, setLanguageCode]);
+  // useEffect(() => {
+  //   if (problem) {
+  //     setCodeMap({
+  //       language: language.name,
+  //       code: problem?.skeletonCode as string,
+  //     });
+  //     setSourceCode(codeMap.get(language.name));
+  //   }
+  // }, [problem]);
 
   useEffect(() => {
-    setSourceCode(languageCode.get(language.name));
-  }, [language, languageCode]);
+    if (debouncedSourceCode) {
+      setCodeMap({ language: language.name, code: debouncedSourceCode });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSourceCode]);
+
+  useEffect(() => {
+    setSourceCode(codeMap.get(language.name));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
@@ -38,16 +53,10 @@ export function CodeEditor() {
         <Editor
           theme={theme === "dark" ? "vs-dark" : "vs-light"}
           defaultLanguage={language.editorValue}
-          defaultValue={sourceCode}
           value={sourceCode}
           options={{ minimap: { enabled: false } }}
-          onChange={(value) => setSourceCode(value)}
-          loading={
-            <div>
-              {/* TODO: loading component */}
-              Loading...
-            </div>
-          }
+          onChange={setSourceCode}
+          loading={<DefaultLoadingPage />}
         />
       </div>
       <div className="flex justify-between gap-3 p-2">
@@ -56,11 +65,11 @@ export function CodeEditor() {
           <Button
             size="sm"
             onClick={() => {
-              runProblem.mutate({
-                code: debouncedSourceCode || "",
-                languageId: language.id,
-                problemId: 1,
-              });
+              // runProblem.mutate({
+              //   code: debouncedSourceCode ?? "",
+              //   languageId: language.id,
+              //   problemId: 1,
+              // });
             }}
           >
             Submit
