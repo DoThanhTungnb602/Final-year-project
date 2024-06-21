@@ -9,7 +9,6 @@ import { useState } from "react";
 import { CodeEditor } from "~/components/editor/code-editor";
 import dynamic from "next/dynamic";
 
-
 // const RichEditor = dynamic(
 //   () => import("~/components/editor/rich-editor").then((mod) => mod.default),
 //   {
@@ -46,6 +45,7 @@ const EditorPanel = () => {
           <Code2 className="h-4 w-4" />
           Code
         </TabsTrigger>
+        {/*
         <TabsTrigger
           value="note"
           className="flex gap-2"
@@ -62,6 +62,7 @@ const EditorPanel = () => {
           <MdDraw className="h-4 w-4" />
           White Board
         </TabsTrigger>
+           */}
       </TabsList>
       <TabsContent value="code" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
@@ -70,6 +71,7 @@ const EditorPanel = () => {
           </CardContent>
         </Card>
       </TabsContent>
+      {/*
       <TabsContent value="note" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
           <CardContent className="h-full min-h-0 p-0">
@@ -84,6 +86,7 @@ const EditorPanel = () => {
           </CardContent>
         </Card>
       </TabsContent>
+      */}
     </Tabs>
   );
 };

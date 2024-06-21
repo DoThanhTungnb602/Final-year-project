@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-import { Problem } from "@prisma/client";
+import { ProblemWithStatus } from "~/lib/types";
 
 interface ProblemState {
-  problem: Problem | null;
-  setProblem: (problem: Problem | null) => void;
+  problem: ProblemWithStatus | null;
+  setProblem: (problem: ProblemWithStatus | null) => void;
 }
 
 export const useProblemStore = create<ProblemState>()((set) => ({

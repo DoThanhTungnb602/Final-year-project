@@ -233,9 +233,41 @@ export const problemRouter = createTRPCRouter({
           where: {
             id: input,
           },
+          include: {
+            submissions: {
+              where: {
+                userId: ctx.session?.user.id,
+              },
+              select: {
+                verdict: true,
+              },
+            },
+          },
         });
-        return problem;
+        if (!problem) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Problem not found",
+          });
+        }
+        const hasAccepted = problem?.submissions.some(
+          (sub) => sub.verdict === "ACCEPTED",
+        );
+        let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
+        if (hasAccepted) {
+          status = "ACCEPTED";
+        } else {
+          const hasAttempted = problem?.submissions.length > 0;
+          if (hasAttempted) status = "ATTEMPTED";
+        }
+        return {
+          ...problem,
+          status,
+        };
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch problem",

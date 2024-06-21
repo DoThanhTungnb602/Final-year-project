@@ -7,9 +7,49 @@ import { FaHistory } from "react-icons/fa";
 import Viewer from "~/components/ui/editor/viewer";
 import { useProblemStore } from "~/hooks/use-problem-store";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { SiTarget } from "react-icons/si";
+import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
+import { Badge } from "~/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
 
 const ProblemDescriptionPanel = () => {
   const { problem } = useProblemStore();
+
+  const ProblemStatus = () => {
+    const status = problem?.status;
+    if (status === "ACCEPTED") {
+      return (
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-muted-foreground">Solved</p>
+          <IoMdCheckmarkCircleOutline className="size-5 text-green-400" />
+        </div>
+      );
+    } else if (status === "ATTEMPTED") {
+      return (
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-muted-foreground">
+            Attempted
+          </p>
+          <SiTarget className="size-5 text-gray-300" />
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-muted-foreground">
+            Unsolved
+          </p>
+          <MdOutlineRadioButtonUnchecked className="size-5 text-gray-300" />
+        </div>
+      );
+    }
+  };
 
   return (
     <Tabs defaultValue="description" className="flex h-full w-full flex-col">
@@ -27,7 +67,42 @@ const ProblemDescriptionPanel = () => {
         <Card className="h-full min-h-0 overflow-hidden">
           <CardContent className="h-full min-h-0 overflow-y-auto p-3">
             {problem ? (
-              <Viewer content={problem.description ?? ""} />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-10">
+                  <p className="truncate text-3xl font-semibold">
+                    {problem.title}
+                  </p>
+                  <ProblemStatus />
+                </div>
+                <div>
+                  {problem.difficulty === "EASY" && (
+                    <Badge className="bg-primary">Easy</Badge>
+                  )}
+                  {problem.difficulty === "MEDIUM" && (
+                    <Badge className="bg-amber-400 hover:bg-amber-400/80">
+                      Medium
+                    </Badge>
+                  )}
+                  {problem.difficulty === "HARD" && (
+                    <Badge variant="destructive">Hard</Badge>
+                  )}
+                </div>
+                <Viewer content={problem.description ?? ""} />
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger>Topics</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="flex flex-wrap gap-2">
+                        {problem.tags.map((topic) => (
+                          <Badge key={topic} variant="secondary">
+                            {topic}
+                          </Badge>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             ) : (
               <DefaultLoadingPage />
             )}

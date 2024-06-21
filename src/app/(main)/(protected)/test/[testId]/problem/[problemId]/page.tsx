@@ -8,6 +8,7 @@ import { useProblemStore } from "~/hooks/use-problem-store";
 import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { ProblemComponent } from "~/components/shared/problem";
 
+// TODO: Make a timer component for problem page
 export default function Page({
   params,
 }: {
