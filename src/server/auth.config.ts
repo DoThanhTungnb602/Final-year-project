@@ -25,6 +25,7 @@ export default {
           const user = await getUserByEmail(email);
           if (!user?.password) return null;
           // TODO: Change to hashed password when testing is done
+          
           // const passwordMatch = await bcrypt.compare(password, user.password);
           const passwordMatch = password === user.password;
           if (passwordMatch) return user as unknown as ExtendedUser;

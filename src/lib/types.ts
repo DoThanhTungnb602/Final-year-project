@@ -38,6 +38,7 @@ type ProblemSkeletonCode = {
 
 export type ProblemWithSkeletonCode = Problem & {
   skeletons: Array<ProblemSkeletonCode>;
+  status: ProblemStatus;
 };
 
 export type ProblemWithStatus = Problem & {

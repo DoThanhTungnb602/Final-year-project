@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-import { ProblemWithStatus } from "~/lib/types";
+import { ProblemWithSkeletonCode } from "~/lib/types";
 
 interface ProblemState {
-  problem: ProblemWithStatus | null;
-  setProblem: (problem: ProblemWithStatus | null) => void;
+  problem: ProblemWithSkeletonCode | null;
+  setProblem: (problem: ProblemWithSkeletonCode | null) => void;
 }
 
 export const useProblemStore = create<ProblemState>()((set) => ({

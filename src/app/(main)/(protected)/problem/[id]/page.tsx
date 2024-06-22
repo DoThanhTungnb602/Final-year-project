@@ -7,13 +7,15 @@ import { useEffect } from "react";
 import { useProblemStore } from "~/hooks/use-problem-store";
 import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { ProblemComponent } from "~/components/shared/problem";
+import { useEditorStore } from "~/hooks/use-editor-store";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
-  const { data, isPending } = api.problem.getById.useQuery(id);
+  const { data: problem, isPending } = api.problem.getById.useQuery(id);
   const { data: problems } = api.problem.allPublic.useQuery();
   const { setProblem } = useProblemStore();
   const { setProblems } = useSidebarStore();
+  const { setCodeMap } = useEditorStore();
 
   useEffect(() => {
     if (problems) {
@@ -22,10 +24,13 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [problems]);
 
   useEffect(() => {
-    if (data) {
-      setProblem(data);
+    if (problem) {
+      setProblem(problem);
+      problem.skeletons.forEach((skeleton) => {
+        setCodeMap({ language: skeleton.language.name, code: skeleton.code });
+      });
     }
-  }, [data]);
+  }, [problem]);
 
   return (
     <div className="h-full flex-1 overflow-auto">

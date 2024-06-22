@@ -65,7 +65,7 @@ const EditorPanel = () => {
            */}
       </TabsList>
       <TabsContent value="code" className="min-h-0 flex-1">
-        <Card className="h-full min-h-0 overflow-hidden">
+        <Card className="h-full min-h-0">
           <CardContent className="h-full min-h-0 p-0">
             <CodeEditor />
           </CardContent>

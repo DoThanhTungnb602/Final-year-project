@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -12,26 +11,9 @@ import {
 } from "~/components/ui/select";
 
 import { useEditorStore } from "~/hooks/use-editor-store";
-import { DEFAULT_LANGUAGE } from "~/routes";
-import { api } from "~/trpc/react";
 
 export function SelectLanguage() {
-  const { languages, setLanguages, selectedLanguage, setSelectedLanguage } =
-    useEditorStore();
-
-  const { data } = api.language.all.useQuery(undefined, {
-    enabled: !languages,
-  });
-
-  useEffect(() => {
-    if (data?.length) {
-      setLanguages(data);
-      setSelectedLanguage(
-        data.find((language) => language.name === DEFAULT_LANGUAGE) ?? data[0]!,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  const { languages, selectedLanguage, setSelectedLanguage } = useEditorStore();
 
   return (
     languages && (
