@@ -43,6 +43,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Problem } from "@prisma/client";
 import { FaPen, FaCheck } from "react-icons/fa";
+import { CodeEditor } from "./problem-code-editor";
 
 interface ProblemFormProps {
   problem?: Problem;
@@ -57,7 +58,6 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof ProblemSchema>>({
-    disabled: mode === "view",
     resolver: zodResolver(ProblemSchema),
     defaultValues: {
       title: problem?.title ?? "",
@@ -168,7 +168,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
             {renderActionsButton()}
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
+        <div className="grid gap-5 lg:grid-cols-3">
           <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
             <Card x-chunk="dashboard-07-chunk-0">
               <CardHeader>
@@ -187,6 +187,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                         <FormLabel>Title</FormLabel>
                         <FormControl>
                           <Input
+                            readOnly={mode === "view"}
                             placeholder="Enter title of the problem"
                             {...field}
                             type="text"
@@ -222,32 +223,6 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                 </div>
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-07-chunk-2">
-              <CardHeader>
-                <CardTitle>Problem Test Cases</CardTitle>
-                <CardDescription>
-                  Provide test cases for the problem
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FormField
-                  control={form.control}
-                  name="testcases"
-                  render={({ field }) => (
-                    <FormItem className="h-full">
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          rows={8}
-                          placeholder="Enter test cases in json format"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
             <Card x-chunk="dashboard-07-chunk-5">
               <CardHeader>
                 <CardTitle>Problem Solution</CardTitle>
@@ -277,6 +252,24 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                 />
               </CardContent>
             </Card>
+            <Card
+              x-chunk="dashboard-07-chunk-5"
+              className="h-full min-h-0 overflow-hidden"
+            >
+              <CardHeader>
+                <CardTitle>Problem Code Skeleton</CardTitle>
+                <CardDescription>
+                  Provide code skeleton of the problem for different languages
+                  <span className="block text-yellow-400">
+                    <strong>Note:</strong> You have to provide code skeleton for
+                    every language
+                  </span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="h-full min-h-0">
+                <CodeEditor />
+              </CardContent>
+            </Card>
           </div>
           <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
             <Card x-chunk="dashboard-07-chunk-3">
@@ -287,35 +280,50 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <FormField
-                  control={form.control}
-                  name="difficulty"
-                  render={({ field }) => (
-                    <FormItem className="h-full">
-                      <FormLabel>Difficulty</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={mode === "view"}
-                      >
+                {mode === "view" ? (
+                  <FormField
+                    control={form.control}
+                    name="difficulty"
+                    render={({ field }) => (
+                      <FormItem className="h-full">
                         <FormControl>
-                          <SelectTrigger
-                            id="difficulty"
-                            aria-label="Select difficulty"
-                          >
-                            <SelectValue placeholder="Select difficulty" />
-                          </SelectTrigger>
+                          <Input readOnly type="text" value={field.value} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="EASY">Easy</SelectItem>
-                          <SelectItem value="MEDIUM">Medium</SelectItem>
-                          <SelectItem value="HARD">Hard</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="difficulty"
+                    render={({ field }) => (
+                      <FormItem className="h-full">
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger
+                                id="difficulty"
+                                aria-label="Select difficulty"
+                              >
+                                <SelectValue placeholder="Select difficulty" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="EASY">EASY</SelectItem>
+                              <SelectItem value="MEDIUM">MEDIUM</SelectItem>
+                              <SelectItem value="HARD">HARD</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </CardContent>
             </Card>
             <Card x-chunk="dashboard-07-chunk-3">
@@ -330,7 +338,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                   control={form.control}
                   name="isPublic"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border p-4">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base">
                           Make problem public
@@ -390,6 +398,33 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                 />
               </CardContent>
             </Card>
+            <Card x-chunk="dashboard-07-chunk-2">
+              <CardHeader>
+                <CardTitle>Problem Test Cases</CardTitle>
+                <CardDescription>
+                  Provide test cases for the problem
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="testcases"
+                  render={({ field }) => (
+                    <FormItem className="h-full">
+                      <FormControl>
+                        <Textarea
+                          readOnly={mode === "view"}
+                          {...field}
+                          rows={12}
+                          placeholder="Enter test cases in json format"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
             <Card x-chunk="dashboard-07-chunk-1">
               <CardHeader>
                 <CardTitle>Time and Memory Limit</CardTitle>
@@ -406,6 +441,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                       <FormLabel>Time limit</FormLabel>
                       <FormControl>
                         <Input
+                          readOnly={mode === "view"}
                           type="number"
                           id="timeLimit"
                           {...field}
@@ -432,6 +468,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                       <FormLabel>Memory limit</FormLabel>
                       <FormControl>
                         <Input
+                          readOnly={mode === "view"}
                           type="number"
                           id="memoryLimit"
                           {...field}

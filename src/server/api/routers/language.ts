@@ -5,6 +5,8 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const languageRouter = createTRPCRouter({
   all: protectedProcedure.query(async ({ ctx }) => {
+    // TODO: Remove this timeout
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return await ctx.db.language.findMany();
   }),
 

@@ -88,20 +88,22 @@ const ProblemDescriptionPanel = () => {
                   )}
                 </div>
                 <Viewer content={problem.description ?? ""} />
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="item-1">
-                    <AccordionTrigger>Topics</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="flex flex-wrap gap-2">
-                        {problem.tags.map((topic) => (
-                          <Badge key={topic} variant="secondary">
-                            {topic}
-                          </Badge>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                {problem.tags.length > 0 && (
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1">
+                      <AccordionTrigger>Topics</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="flex flex-wrap gap-2">
+                          {problem.tags.map((topic) => (
+                            <Badge key={topic} variant="secondary">
+                              {topic}
+                            </Badge>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
               </div>
             ) : (
               <DefaultLoadingPage />
