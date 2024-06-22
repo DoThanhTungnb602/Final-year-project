@@ -11,8 +11,13 @@ import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { api } from "~/trpc/react";
 import { DEFAULT_LANGUAGE } from "~/routes";
 
-export function CodeEditor() {
+interface CodeEditorProps {
+  readOnly?: boolean;
+}
+
+export function CodeEditor({ readOnly }: CodeEditorProps) {
   const { theme } = useTheme();
+
   const {
     selectedLanguage,
     setLanguages,
@@ -21,13 +26,16 @@ export function CodeEditor() {
     setCodeMap,
     languages,
   } = useProblemSkeletonStore();
+
   const { data } = api.language.all.useQuery(undefined, {
     enabled: !languages,
   });
+
   const [sourceCode, setSourceCode] = useState(
     codeMap.get(selectedLanguage.name),
   );
-  const debouncedSourceCode = useDebounce(sourceCode, 500);
+
+  const debouncedSourceCode = useDebounce(sourceCode, 100);
 
   useEffect(() => {
     setCodeMap({
@@ -50,14 +58,15 @@ export function CodeEditor() {
   }, [data]);
 
   return languages ? (
-    <div className="flex h-96 min-h-0 rounded-md border bg-zinc-200 dark:bg-transparent">
+    <div className="flex h-96 min-h-0 overflow-hidden rounded-md border bg-zinc-200 dark:bg-transparent">
       <LanguageSelector />
       <div className="min-h-0 flex-1 overflow-hidden">
         <Editor
           theme={theme === "dark" ? "vs-dark" : "vs-light"}
           defaultLanguage={selectedLanguage.editorValue}
+          language={selectedLanguage.editorValue}
           value={sourceCode ?? ""}
-          options={{ minimap: { enabled: false }, contextmenu: true }}
+          options={{ minimap: { enabled: false }, contextmenu: true, readOnly }}
           onChange={setSourceCode}
           loading={<DefaultLoadingPage />}
         />

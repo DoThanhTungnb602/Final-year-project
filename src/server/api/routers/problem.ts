@@ -1,4 +1,3 @@
-import { Skeleton } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { axiosInstance } from "~/lib/axios";
@@ -13,7 +12,6 @@ import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "~/server/api/trpc";
 
 export const problemRouter = createTRPCRouter({
@@ -159,12 +157,39 @@ export const problemRouter = createTRPCRouter({
     .input(ProblemSchema)
     .mutation(async ({ ctx, input }) => {
       try {
+        const { skeletons, ...problem } = input;
+        const languages = await ctx.db.language.findMany();
+        const isSkeletonEmpty = languages?.some((language) => {
+          const skeleton = skeletons?.find((skeleton) => {
+            return skeleton?.languageId === language.id;
+          });
+          return !skeleton || skeleton?.code?.trim() === "";
+        });
+        if (isSkeletonEmpty) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Skeleton code is required for all languages",
+          });
+        }
         return await ctx.db.problem.create({
           data: {
-            ...input,
+            ...problem,
+            skeletons: {
+              create: skeletons.map((skeleton) => ({
+                code: skeleton.code,
+                language: {
+                  connect: {
+                    id: skeleton.languageId,
+                  },
+                },
+              })),
+            },
           },
         });
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create problem",
@@ -176,12 +201,26 @@ export const problemRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }).merge(ProblemSchema))
     .mutation(async ({ ctx, input }) => {
       try {
+        const { id, skeletons, ...problem } = input;
         return await ctx.db.problem.update({
           where: {
-            id: input.id,
+            id,
           },
           data: {
-            ...input,
+            ...problem,
+            skeletons: {
+              update: skeletons.map((skeleton) => ({
+                where: {
+                  languageId_problemId: {
+                    languageId: skeleton.languageId,
+                    problemId: id,
+                  },
+                },
+                data: {
+                  code: skeleton.code,
+                },
+              })),
+            },
           },
         });
       } catch (error) {
@@ -235,6 +274,17 @@ export const problemRouter = createTRPCRouter({
             id: input,
           },
           include: {
+            skeletons: {
+              select: {
+                languageId: true,
+                code: true,
+                language: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
             submissions: {
               where: {
                 userId: ctx.session?.user.id,
@@ -251,14 +301,14 @@ export const problemRouter = createTRPCRouter({
             message: "Problem not found",
           });
         }
-        const hasAccepted = problem?.submissions.some(
+        const hasAccepted = problem.submissions.some(
           (sub) => sub.verdict === "ACCEPTED",
         );
         let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
         if (hasAccepted) {
           status = "ACCEPTED";
         } else {
-          const hasAttempted = problem?.submissions.length > 0;
+          const hasAttempted = problem.submissions.length > 0;
           if (hasAttempted) status = "ATTEMPTED";
         }
         return {

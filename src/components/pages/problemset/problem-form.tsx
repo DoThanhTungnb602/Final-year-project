@@ -19,10 +19,10 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import MultipleSelector, { Option } from "~/components/shared/multiselect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "~/components/ui/textarea";
 import Link from "next/link";
-import { tagOptions } from "~/lib/types";
+import { ProblemWithSkeletonCode, tagOptions } from "~/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -41,12 +41,12 @@ import { api } from "~/trpc/react";
 import { Switch } from "~/components/ui/switch";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Problem } from "@prisma/client";
 import { FaPen, FaCheck } from "react-icons/fa";
 import { CodeEditor } from "./problem-code-editor";
+import { useProblemSkeletonStore } from "~/hooks/use-problem-skeleton-store";
 
 interface ProblemFormProps {
-  problem?: Problem;
+  problem?: ProblemWithSkeletonCode;
   _mode: "view" | "edit" | "create";
 }
 
@@ -56,6 +56,19 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
   );
   const [mode, setMode] = useState(_mode);
   const router = useRouter();
+  const { setCodeMap, codeMap, languages } = useProblemSkeletonStore();
+
+  useEffect(() => {
+    if (problem) {
+      problem.skeletons.map((skeleton) => {
+        setCodeMap({
+          language: skeleton.language.name,
+          code: skeleton.code,
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [problem]);
 
   const form = useForm<z.infer<typeof ProblemSchema>>({
     resolver: zodResolver(ProblemSchema),
@@ -69,8 +82,21 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
       tags: problem?.tags ?? [],
       timeLimit: problem?.timeLimit ?? undefined,
       memoryLimit: problem?.memoryLimit ?? undefined,
+      skeletons: problem?.skeletons ?? [],
     },
   });
+
+  useEffect(() => {
+    const skeletons = languages?.map((language) => {
+      const code = codeMap.get(language.name) ?? "";
+      return {
+        languageId: language.id,
+        code,
+      };
+    });
+    form.setValue("skeletons", skeletons ?? []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codeMap]);
 
   const problemCreator = api.problem.create.useMutation({
     onSuccess: () => {
@@ -93,6 +119,14 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
   });
 
   const onSubmit = (values: z.infer<typeof ProblemSchema>) => {
+    const isSkeletonEmpty = languages?.some((language) => {
+      const code = codeMap.get(language.name);
+      return !code || code.trim() === "";
+    });
+    if (isSkeletonEmpty) {
+      toast.error("Please provide code skeleton for all languages");
+      return;
+    }
     if (mode === "create") {
       problemCreator.mutate(values);
     } else if (mode === "edit" && problem) {
@@ -210,7 +244,6 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                               content={field.value}
                               onChange={(e) => {
                                 field.onChange(e);
-                                console.log(field.value);
                               }}
                               placeholder="Enter description of the problem"
                             />
@@ -267,7 +300,18 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-full min-h-0">
-                <CodeEditor />
+                <FormField
+                  control={form.control}
+                  name="skeletons"
+                  render={() => (
+                    <FormItem>
+                      <FormControl>
+                        <CodeEditor readOnly={mode === "view"} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
           </div>

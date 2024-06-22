@@ -110,6 +110,12 @@ export const ProblemSchema = z.object({
   }),
   timeLimit: z.number().optional(),
   memoryLimit: z.number().optional(),
+  skeletons: z.array(
+    z.object({
+      languageId: z.string(),
+      code: z.string(),
+    }),
+  ),
   testcases: z
     .string()
     .min(1, {

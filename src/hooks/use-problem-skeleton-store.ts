@@ -30,8 +30,9 @@ export const useProblemSkeletonStore = create<ProblemSkeletonStore>((set) => ({
     code: string;
   }) => {
     set((state) => {
-      state.codeMap.set(language, code);
-      return { ...state };
+      const codeMap = new Map(state.codeMap);
+      codeMap.set(language, code);
+      return { ...state, codeMap };
     });
   },
 }));

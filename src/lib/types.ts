@@ -26,7 +26,19 @@ export type Language = {
 
 export type Theme = "light" | "dark";
 
-export type ProblemStatus = "UNSOLVED" | "ACCEPTED" | "ATTEMPTED";
+type ProblemStatus = "UNSOLVED" | "ACCEPTED" | "ATTEMPTED";
+
+type ProblemSkeletonCode = {
+  language: {
+    name: string;
+  };
+  languageId: string;
+  code: string;
+};
+
+export type ProblemWithSkeletonCode = Problem & {
+  skeletons: Array<ProblemSkeletonCode>;
+};
 
 export type ProblemWithStatus = Problem & {
   status: ProblemStatus;

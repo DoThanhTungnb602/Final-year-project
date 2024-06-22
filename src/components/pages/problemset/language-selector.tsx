@@ -19,6 +19,7 @@ export function LanguageSelector() {
           const isCodeEmpty = !code || code.trim() === "";
           return (
             <Button
+              type="button"
               variant="outline"
               key={language.id}
               className={cn(
