@@ -85,6 +85,14 @@ export const jsonToStdin = (testcasesJson: string) => {
   return stdin;
 };
 
+export const jsonToInput = (testcasesJson: string) => {
+  const testcases = JSON.parse(testcasesJson) as TestCase[];
+  const inputs = testcases.map((testcase) => {
+    const { input } = testcase;
+  });
+  return inputs;
+};
+
 export const prepareSubmissionData = ({
   userCode,
   driverCode,
