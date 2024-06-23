@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { getPublicTestcases } from "~/lib/utils";
 import { ProblemSchema } from "~/schemas";
 
 import {
@@ -56,16 +57,6 @@ export const problemRouter = createTRPCRouter({
         where: {
           isPublic: true,
         },
-        // include: {
-        //   submissions: {
-        //     where: {
-        //       userId: ctx.session?.user.id,
-        //     },
-        //     select: {
-        //       verdict: true,
-        //     },
-        //   },
-        // },
         select: {
           id: true,
           title: true,
@@ -266,10 +257,54 @@ export const problemRouter = createTRPCRouter({
           const hasAttempted = problem.submissions.length > 0;
           if (hasAttempted) status = "ATTEMPTED";
         }
+        const { testcases, ...rest } = problem;
+        const publicTestcases = getPublicTestcases(testcases ?? "");
         return {
-          ...problem,
+          ...rest,
           status,
+          testcases: publicTestcases,
         };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch problem",
+        });
+      }
+    }),
+
+  getPrivateProblemById: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.problem.findUnique({
+          where: {
+            id: input,
+          },
+          include: {
+            skeletons: {
+              select: {
+                languageId: true,
+                code: true,
+                language: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            submissions: {
+              where: {
+                userId: ctx.session?.user.id,
+              },
+              select: {
+                verdict: true,
+              },
+            },
+          },
+        });
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

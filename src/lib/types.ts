@@ -1,120 +1,6 @@
-import { Problem, Topic } from "@prisma/client";
-
-export type Language = {
-  id: number;
-  editorValue:
-    | "cpp"
-    // | "csharp"
-    // | "java"
-    // | "python"
-    | "javascript";
-  // | "php"
-  // | "rust"
-  // | "go"
-  // | "typescript";
-  name: // | "C"
-  | "C++"
-    // | "C#"
-    // | "Java"
-    // | "Python"
-    | "JavaScript";
-  // | "PHP"
-  // | "Rust"
-  // | "Go"
-  // | "TypeScript";
-};
+import { Topic } from "@prisma/client";
 
 export type Theme = "light" | "dark";
-
-type ProblemStatus = "UNSOLVED" | "ACCEPTED" | "ATTEMPTED";
-
-type ProblemSkeletonCode = {
-  language: {
-    name: string;
-  };
-  languageId: string;
-  code: string;
-};
-
-export type ProblemWithSkeletonCode = Problem & {
-  skeletons: Array<ProblemSkeletonCode>;
-  status: ProblemStatus;
-};
-
-export type ProblemWithStatus = Problem & {
-  status: ProblemStatus;
-};
-
-// export const languagesExtra: Array<Language> = [
-//   {
-//     id: 2,
-//     name: "C++",
-//     editorValue: "cpp",
-//   },
-//   {
-//     id: 4,
-//     name: "Java",
-//     editorValue: "java",
-//   },
-//   {
-//     id: 28,
-//     name: "Python",
-//     editorValue: "python",
-//   },
-//   {
-//     id: 29,
-//     name: "C#",
-//     editorValue: "csharp",
-//   },
-// ];
-
-export const languages: Array<Language> = [
-  {
-    id: 54,
-    name: "C++",
-    editorValue: "cpp",
-  },
-  // {
-  //   id: 51,
-  //   name: "C#",
-  //   editorValue: "csharp",
-  // },
-  // {
-  //   id: 91,
-  //   name: "Java",
-  //   editorValue: "java",
-  // },
-  // {
-  //   id: 92,
-  //   name: "Python",
-  //   editorValue: "python",
-  // },
-  {
-    id: 93,
-    name: "JavaScript",
-    editorValue: "javascript",
-  },
-  // {
-  //   id: 68,
-  //   name: "PHP",
-  //   editorValue: "php",
-  // },
-  // {
-  //   id: 73,
-  //   name: "Rust",
-  //   editorValue: "rust",
-  // },
-  // {
-  //   id: 95,
-  //   name: "Go",
-  //   editorValue: "go",
-  // },
-  // {
-  //   id: 94,
-  //   name: "TypeScript",
-  //   editorValue: "typescript",
-  // },
-];
 
 export const tagOptions: Array<{
   value: Topic;
@@ -195,6 +81,7 @@ export const tagOptions: Array<{
   { value: "REJECTION_SAMPLING", label: "Rejection Sampling" },
   { value: "BICONNECTED_COMPONENT", label: "Biconnected Component" },
 ];
+
 interface IEditorHoverOptions {
   above?: boolean;
   delay?: number;
@@ -352,55 +239,15 @@ export interface TestCase {
 }
 
 export type SubmissionResponse = {
-  stdout: string | null;
+  stdout: string;
   time: string;
   memory: number;
-  stderr: string | null;
+  stderr: string;
   token: string;
-  compile_output: string | null;
-  message: string | null;
+  compile_output: string;
+  message: string;
   status: {
     id: number;
     description: string;
   };
 };
-//
-// const json = `[
-//   {
-//     "input": {
-//       "nums": [2, 7, 11, 15],
-//       "target": 9
-//     },
-//     "expected_output": {
-//       "nums": [0, 1]
-//     }
-//   },
-//   {
-//     "input": {
-//       "nums": [3, 2, 4],
-//       "target": 6
-//     },
-//     "expected_output": {
-//       "nums": [1, 2]
-//     }
-//   },
-//   {
-//     "input": {
-//       "nums": [3, 3],
-//       "target": 6
-//     },
-//     "expected_output": {
-//       "nums": [0, 1]
-//     }
-//   }
-// ]
-// `;
-
-// const testCases: TestCase[] = JSON.parse(json) as TestCase[];
-
-// testCases.forEach((testCase, index) => {
-//   console.log(`Test Case ${index + 1}:`);
-//   console.log("Nums: ", testCase.input.nums);
-//   console.log("Target: ", testCase.input.target);
-//   console.log("Expected Output: ", testCase.expected_output.nums);
-// });

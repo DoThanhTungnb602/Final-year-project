@@ -22,9 +22,9 @@ import {
 } from "~/components/ui/table";
 
 import { DataTablePagination } from "./data-table-pagination";
-import { ProblemWithStatus } from "~/lib/types";
+import { PublicProblems } from "~/server/api/client";
 
-const fallbackData: ProblemWithStatus[] = [];
+const fallbackData: PublicProblems[] = [];
 
 interface DataTableProps<TData extends { id?: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];

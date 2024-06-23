@@ -13,7 +13,6 @@ import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { Progress } from "~/components/ui/progress";
 import { useState } from "react";
 import { ProblemDataTable } from "~/components/shared/problem-data-table";
-import { ProblemWithStatus } from "~/lib/types";
 import { Badge } from "~/components/ui/badge";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { SiTarget } from "react-icons/si";
@@ -22,6 +21,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import CustomTooltip from "~/components/shared/custom-tooltip";
 import Timer from "~/components/shared/timer";
+import { PublicProblems } from "~/server/api/client";
 
 export function ProblemSidebar() {
   const { title, problems, test, exercise } = useSidebarStore();
@@ -29,7 +29,7 @@ export function ProblemSidebar() {
   const [totalScore, setTotalScore] = useState(100);
   const [progress, setProgress] = useState(20);
 
-  const columns: ColumnDef<ProblemWithStatus>[] = [
+  const columns: ColumnDef<PublicProblems>[] = [
     {
       accessorKey: "status",
       header: "Status",

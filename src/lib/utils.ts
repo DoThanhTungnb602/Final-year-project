@@ -52,6 +52,16 @@ using namespace std;
   return `${defaultIncludes}\n${userCode}\n${driverCode}`;
 };
 
+export const getPublicTestcases = (testcasesJson: string) => {
+  try {
+    const testcases = JSON.parse(testcasesJson) as TestCase[];
+    return JSON.stringify(testcases.slice(0, 2));
+  } catch (error) {
+    console.log(error);
+    return "";
+  }
+};
+
 export const jsonToStdin = (testcasesJson: string) => {
   const testcases = JSON.parse(testcasesJson) as TestCase[];
   const stdin = testcases

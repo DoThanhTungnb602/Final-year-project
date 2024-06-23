@@ -12,9 +12,9 @@ import {
 
 import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 
-import { ProblemWithStatus } from "~/lib/types";
+import { PublicProblems } from "~/server/api/client";
 
-const fallbackData: ProblemWithStatus[] = [];
+const fallbackData: PublicProblems[] = [];
 
 interface ProblemDataTableProps<TData extends { id?: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];

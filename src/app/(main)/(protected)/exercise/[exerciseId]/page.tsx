@@ -4,7 +4,6 @@ import { Separator } from "~/components/ui/separator";
 import { Progress } from "~/components/ui/progress";
 import { useState } from "react";
 import { ProblemDataTable } from "~/components/shared/problem-data-table";
-import { ProblemWithStatus } from "~/lib/types";
 import { Badge } from "~/components/ui/badge";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { SiTarget } from "react-icons/si";
@@ -15,13 +14,14 @@ import CustomTooltip from "~/components/shared/custom-tooltip";
 import { api } from "~/trpc/react";
 import moment from "moment";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import { PublicProblems } from "~/server/api/client";
 
 export default function Page({ params }: { params: { exerciseId: string } }) {
   const { exerciseId } = params;
   const { data: exercise } = api.exercise.getById.useQuery({ exerciseId });
   const [score, setScore] = useState(40);
 
-  const columns: ColumnDef<ProblemWithStatus>[] = [
+  const columns: ColumnDef<PublicProblems>[] = [
     {
       accessorKey: "status",
       header: "Status",

@@ -21,11 +21,7 @@ import {
 import MultipleSelector, { Option } from "~/components/shared/multiselect";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ProblemWithSkeletonCode,
-  defaultEditorOptions,
-  tagOptions,
-} from "~/lib/types";
+import { defaultEditorOptions, tagOptions } from "~/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -50,9 +46,10 @@ import { useProblemSkeletonStore } from "~/hooks/use-problem-skeleton-store";
 import { Editor as JsonEditor } from "@monaco-editor/react";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { useTheme } from "next-themes";
+import { PrivateProblem } from "~/server/api/client";
 
 interface ProblemFormProps {
-  problem?: ProblemWithSkeletonCode;
+  problem?: PrivateProblem;
   _mode: "view" | "edit" | "create";
 }
 
@@ -463,7 +460,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl className="w-full">
-                        <div className="h-96 min-h-0 flex-1 rounded-md border w-full">
+                        <div className="h-96 min-h-0 w-full flex-1 rounded-md border">
                           <JsonEditor
                             theme={theme === "dark" ? "vs-dark" : "vs-light"}
                             language="json"

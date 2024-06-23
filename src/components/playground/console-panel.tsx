@@ -1,9 +1,16 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
 import { GrTest } from "react-icons/gr";
 import { HiClipboardDocumentList } from "react-icons/hi2";
+import { useSubmissionStore } from "~/hooks/use-submission-store";
+import { useProblemStore } from "~/hooks/use-problem-store";
 
 const ConsolePanel = () => {
+  const { submission } = useSubmissionStore();
+  const { problem } = useProblemStore();
+
   return (
     <Tabs defaultValue="testcase" className="flex h-full w-full flex-col">
       <TabsList className="flex w-full justify-start gap-1">

@@ -15,10 +15,13 @@ import { DEFAULT_LANGUAGE } from "~/routes";
 import { defaultEditorOptions } from "~/lib/types";
 import { FaCloudArrowUp } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa6";
+import { Spinner } from "../shared/spinner";
+import { useSubmissionStore } from "~/hooks/use-submission-store";
 
 export function CodeEditor() {
   const { theme } = useTheme();
   const { problem } = useProblemStore();
+  const { setSubmission } = useSubmissionStore();
 
   const {
     languages,
@@ -85,6 +88,7 @@ export function CodeEditor() {
   const runProblem = api.submission.run.useMutation({
     onSuccess(data) {
       console.log(data);
+      setSubmission(data);
     },
   });
 
@@ -116,8 +120,17 @@ export function CodeEditor() {
       <div className="flex justify-between gap-3 p-2">
         <SelectLanguage />
         <div className="my-auto space-x-2">
-          <Button size="sm" variant="secondary" onClick={onRun}>
-            <FaPlay className="mr-2 size-4" />
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={onRun}
+            disabled={runProblem.isPending}
+          >
+            {runProblem.isPending ? (
+              <Spinner className="mr-2 size-5" />
+            ) : (
+              <FaPlay className="mr-2 size-4" />
+            )}
             Run
           </Button>
           <Button size="sm">

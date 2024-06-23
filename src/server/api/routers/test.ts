@@ -67,6 +67,7 @@ export const testRouter = createTRPCRouter({
           }
           return {
             ...problem,
+            solution: !!problem.solution,
             status,
           };
         });

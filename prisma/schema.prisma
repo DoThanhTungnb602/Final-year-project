@@ -80,10 +80,10 @@ model Problem {
     difficulty      Difficulty
     isPublic        Boolean
     tags            Topic[]
-    description     String?
+    description     String
     timeLimit       Int?
     memoryLimit     Int?
-    testcases       String?
+    testcases       String
     testCaseDrivers TestCaseDriver[]
     solution        String?
     submissions     Submission[]

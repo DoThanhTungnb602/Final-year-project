@@ -38,11 +38,14 @@ export const submissionRouter = createTRPCRouter({
           languageId: input.languageId,
           testcases: problem.testcases ?? "",
         });
-        const token = await createSubmission({
-          code,
-          languageId: input.languageId,
-          stdin,
-        });
+        // TODO: Remove this line
+        const token = "c6e711c1-f4bc-47b0-9065-765b4099bc8b";
+        // const token = "192c8477-78af-4f80-9cce-439bb2c653b3";
+        // const token = await createSubmission({
+        //   code,
+        //   languageId: input.languageId,
+        //   stdin,
+        // });
         if (!token) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",

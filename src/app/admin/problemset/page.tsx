@@ -15,7 +15,6 @@ import { Badge } from "~/components/ui/badge";
 import { GrDocumentVerified } from "react-icons/gr";
 import { MdNotInterested } from "react-icons/md";
 import { Checkbox } from "~/components/ui/checkbox";
-import { ProblemWithStatus } from "~/lib/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +39,7 @@ import { FaTrash } from "react-icons/fa6";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { ProblemFilterSchema } from "~/schemas";
 import { z } from "zod";
+import { PrivateProblems } from "~/server/api/client";
 
 export default function ProblemSet() {
   const [filter, setFilter] = useState(false);
@@ -47,7 +47,7 @@ export default function ProblemSet() {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
   const query = api.problem.all.useQuery();
-  const [filteredData, setFilteredData] = useState<ProblemWithStatus[]>([]);
+  const [filteredData, setFilteredData] = useState<PrivateProblems[]>([]);
   const router = useRouter();
   const utils = api.useUtils();
 
@@ -105,7 +105,7 @@ export default function ProblemSet() {
     setFilteredData(filtered ?? []);
   };
 
-  const columns: ColumnDef<ProblemWithStatus>[] = [
+  const columns: ColumnDef<PrivateProblems>[] = [
     {
       id: "select",
       header: ({ table }) => (

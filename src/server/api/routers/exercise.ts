@@ -44,6 +44,7 @@ export const exerciseRouter = createTRPCRouter({
           }
           return {
             ...problem,
+            solution: !!problem.solution,
             status,
           };
         });
