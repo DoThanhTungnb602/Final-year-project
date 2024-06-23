@@ -83,12 +83,10 @@ export const NewPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export const SolutionSchema = z.object({
-  code: z.string().min(1, {
-    message: "Solution is required",
-  }),
-  languageId: z.string().nonempty(),
-  problemId: z.number(),
+export const SubmissionSchema = z.object({
+  code: z.string().min(1),
+  languageId: z.string().min(1),
+  problemId: z.string().min(1),
 });
 
 export const ProblemFilterSchema = z.object({

@@ -1,51 +1,82 @@
 import { TRPCError } from "@trpc/server";
-import { axiosInstance } from "~/lib/axios";
-import { SolutionSchema } from "~/schemas";
+import { createSubmission, getSubmission } from "~/lib/axios";
+import { prepareSubmissionData } from "~/lib/utils";
+import { SubmissionSchema } from "~/schemas";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const submissionRouter = createTRPCRouter({
   run: protectedProcedure
-    .input(SolutionSchema)
-    .mutation(async ({ ctx, input }) => {
-      // const judge = await getUploadthingFile(
-      //   "6637e899-f8ee-430c-a6ef-2b21c1c6a136-e8f1xd.cpp",
-      // );
-      // const code = consolidateIncludes(input.code, judge);
-      // const data = await fetch(
-      //   `https://utfs.io/f/ac4bd4df-b52a-4607-8616-b6efaebd6fa5-e8f1xd.json`,
-      // );
-      // const testCases = await data.json();
-      // const stdin = jsonToStdin(testCases[0].input);
-      // console.log("code: ", code);
-      // console.log("stdin: ", testCases);
-    }),
-
-  submit: protectedProcedure
-    .input(SolutionSchema)
+    .input(SubmissionSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const response = await axiosInstance.post<{ token: string }>(
-          `/submissions`,
-          {
-            language_id: 15,
-            source_code: btoa(input.code),
-            stdin: "",
+        const problem = await ctx.db.problem.findUnique({
+          where: {
+            id: input.problemId,
           },
-          {
-            params: {
-              base64_encoded: "true",
-              wait: "false",
-              fields: "*",
+        });
+        const testcaseDriver = await ctx.db.testCaseDriver.findUnique({
+          where: {
+            languageId_problemId: {
+              languageId: input.languageId,
+              problemId: input.problemId,
             },
           },
-        );
-        return response.data;
+          select: {
+            code: true,
+          },
+        });
+        if (!problem || !testcaseDriver) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+        const { code, stdin } = prepareSubmissionData({
+          userCode: input.code,
+          driverCode: testcaseDriver.code,
+          languageId: input.languageId,
+          testcases: problem.testcases ?? "",
+        });
+        const token = await createSubmission({
+          code,
+          languageId: input.languageId,
+          stdin,
+        });
+        if (!token) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+        const submissionResponse = await getSubmission(token);
+        if (!submissionResponse) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+        return submissionResponse;
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to submit solution",
+          message: "Internal server error. Please try again later.",
         });
       }
     }),
+
+  // submit: protectedProcedure
+  //   .input(SubmissionSchema)
+  //   .mutation(async ({ ctx, input }) => {
+  //     try {
+  //     } catch (error) {
+  //       throw new TRPCError({
+  //         code: "INTERNAL_SERVER_ERROR",
+  //         message: "Failed to submit solution",
+  //       });
+  //     }
+  //   }),
 });

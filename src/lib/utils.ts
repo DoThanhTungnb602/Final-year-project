@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import { remark } from "remark";
 import html from "remark-html";
+import { TestCase } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,46 +22,80 @@ export async function getUploadthingFile(fileKey: string) {
   return data;
 }
 
-const extractIncludes = (code: string) => {
-  const includeRegex = /^\s*#include\s*<[^>]+>\s*\n/gm;
-  const includes = new Set();
-  let match;
-  while ((match = includeRegex.exec(code)) !== null) {
-    includes.add(match[0].trim().replaceAll(" ", ""));
-  }
-  const strippedCode = code.replace(includeRegex, "");
-  return { includes: Array.from(includes), strippedCode };
+export const insertDefaultIncludesForCpp = ({
+  userCode,
+  driverCode,
+}: {
+  userCode: string;
+  driverCode: string;
+}) => {
+  const defaultIncludes = `#include <algorithm>
+#include <array>
+#include <bitset>
+#include <deque>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <map>
+#include <queue>
+#include <set>
+#include <stack>
+#include <string>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+#include <cmath>
+using namespace std;
+`;
+  return `${defaultIncludes}\n${userCode}\n${driverCode}`;
 };
 
-export const consolidateIncludes = (userCode: string, judgeCode: string) => {
-  const userIncludes = extractIncludes(userCode);
-  const judgeIncludes = extractIncludes(judgeCode);
-
-  const combinedIncludes = new Set([
-    ...userIncludes.includes,
-    ...judgeIncludes.includes,
-  ]);
-
-  return {
-    includes: Array.from(combinedIncludes),
-    userStrippedCode: userIncludes.strippedCode,
-    judgeStrippedCode: judgeIncludes.strippedCode,
-  };
-};
-
-export const jsonToStdin = (input: string) => {
-  const stdin = Object.values(input)
-    .map((item: number | string | object) => {
-      if (typeof item === "number") {
-        return item;
-      }
-      if (typeof item === "string") {
-        return item;
-      }
-      if (typeof item === "object" && Array.isArray(item)) {
-        return item.join(" ");
-      }
+export const jsonToStdin = (testcasesJson: string) => {
+  const testcases = JSON.parse(testcasesJson) as TestCase[];
+  const stdin = testcases
+    .map((testcase) => {
+      const { input } = testcase;
+      return Object.values(input)
+        .map((item: unknown) => {
+          if (typeof item === "number") {
+            return item;
+          }
+          if (typeof item === "string") {
+            return item;
+          }
+          if (typeof item === "object" && Array.isArray(item)) {
+            return item.join(" ");
+          }
+        })
+        .join("\n");
     })
     .join("\n");
   return stdin;
+};
+
+export const prepareSubmissionData = ({
+  userCode,
+  driverCode,
+  languageId,
+  testcases,
+}: {
+  userCode: string;
+  driverCode: string;
+  languageId: string;
+  testcases: string;
+}) => {
+  let code = "";
+  let stdin = "";
+  switch (languageId) {
+    case "54":
+      code = insertDefaultIncludesForCpp({ userCode, driverCode });
+      stdin = jsonToStdin(testcases);
+      break;
+
+    default:
+      break;
+  }
+  return { code, stdin };
 };

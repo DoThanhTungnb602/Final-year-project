@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
 import { Test, Exercise } from "@prisma/client";
-import { ProblemWithStatus } from "~/lib/types";
+import { PublicProblems } from "~/server/api/client";
 
 interface SidebarState {
   title: string;
   setTitle: (title: string) => void;
   isShow: boolean;
   setIsShow: (isShow: boolean) => void;
-  problems?: ProblemWithStatus[] | null;
-  setProblems: (problems: ProblemWithStatus[] | null) => void;
+  problems?: PublicProblems[] | null;
+  setProblems: (problems: PublicProblems[] | null) => void;
   test?: Test | null;
   setTest: (test: Test | null) => void;
   exercise?: Exercise | null;

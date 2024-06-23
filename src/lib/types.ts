@@ -70,7 +70,7 @@ export type ProblemWithStatus = Problem & {
 
 export const languages: Array<Language> = [
   {
-    id: 15,
+    id: 54,
     name: "C++",
     editorValue: "cpp",
   },
@@ -345,3 +345,62 @@ export const editorOptionsDisableIntellisense: IEditorOptions = {
   },
   renderValidationDecorations: "off",
 };
+
+export interface TestCase {
+  input: Record<string, unknown>;
+  expected_output: Record<string, unknown>;
+}
+
+export type SubmissionResponse = {
+  stdout: string | null;
+  time: string;
+  memory: number;
+  stderr: string | null;
+  token: string;
+  compile_output: string | null;
+  message: string | null;
+  status: {
+    id: number;
+    description: string;
+  };
+};
+//
+// const json = `[
+//   {
+//     "input": {
+//       "nums": [2, 7, 11, 15],
+//       "target": 9
+//     },
+//     "expected_output": {
+//       "nums": [0, 1]
+//     }
+//   },
+//   {
+//     "input": {
+//       "nums": [3, 2, 4],
+//       "target": 6
+//     },
+//     "expected_output": {
+//       "nums": [1, 2]
+//     }
+//   },
+//   {
+//     "input": {
+//       "nums": [3, 3],
+//       "target": 6
+//     },
+//     "expected_output": {
+//       "nums": [0, 1]
+//     }
+//   }
+// ]
+// `;
+
+// const testCases: TestCase[] = JSON.parse(json) as TestCase[];
+
+// testCases.forEach((testCase, index) => {
+//   console.log(`Test Case ${index + 1}:`);
+//   console.log("Nums: ", testCase.input.nums);
+//   console.log("Target: ", testCase.input.target);
+//   console.log("Expected Output: ", testCase.expected_output.nums);
+// });

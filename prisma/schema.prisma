@@ -75,23 +75,37 @@ model PasswordResetToken {
 }
 
 model Problem {
-    id          String       @id @default(cuid())
-    title       String
-    difficulty  Difficulty
-    isPublic    Boolean
-    tags        Topic[]
-    description String?
-    timeLimit   Int?
-    memoryLimit Int?
-    testcases   String?
-    solution    String?
-    submissions Submission[]
-    exercises   Exercise[]
-    tests       Test[]
+    id              String           @id @default(cuid())
+    title           String
+    difficulty      Difficulty
+    isPublic        Boolean
+    tags            Topic[]
+    description     String?
+    timeLimit       Int?
+    memoryLimit     Int?
+    testcases       String?
+    testCaseDrivers TestCaseDriver[]
+    solution        String?
+    submissions     Submission[]
+    exercises       Exercise[]
+    tests           Test[]
+    skeletons       Skeleton[]
 
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-    skeletons Skeleton[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model TestCaseDriver {
+    languageId String
+    language   Language @relation(fields: [languageId], references: [id])
+    problem    Problem  @relation(fields: [problemId], references: [id])
+    problemId  String
+    code       String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@id([languageId, problemId])
 }
 
 model Skeleton {
@@ -147,11 +161,12 @@ model Test {
 }
 
 model Language {
-    id          String       @id
-    name        String
-    editorValue String
-    submissions Submission[]
-    skeletons   Skeleton[]
+    id              String           @id
+    name            String
+    editorValue     String
+    submissions     Submission[]
+    skeletons       Skeleton[]
+    testCaseDrivers TestCaseDriver[]
 
     @@unique([name])
 }

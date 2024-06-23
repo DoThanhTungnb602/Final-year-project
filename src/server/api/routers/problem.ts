@@ -56,7 +56,19 @@ export const problemRouter = createTRPCRouter({
         where: {
           isPublic: true,
         },
-        include: {
+        // include: {
+        //   submissions: {
+        //     where: {
+        //       userId: ctx.session?.user.id,
+        //     },
+        //     select: {
+        //       verdict: true,
+        //     },
+        //   },
+        // },
+        select: {
+          id: true,
+          title: true,
           submissions: {
             where: {
               userId: ctx.session?.user.id,
@@ -65,6 +77,9 @@ export const problemRouter = createTRPCRouter({
               verdict: true,
             },
           },
+          difficulty: true,
+          solution: true,
+          tags: true,
         },
       });
       return problems.map((problem) => {
@@ -81,6 +96,7 @@ export const problemRouter = createTRPCRouter({
         return {
           ...problem,
           status,
+          solution: !!problem.solution,
         };
       });
     } catch (error) {
@@ -203,13 +219,14 @@ export const problemRouter = createTRPCRouter({
       }
     }),
 
-  getById: protectedProcedure
+  getPublicProblemById: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
       try {
         const problem = await ctx.db.problem.findUnique({
           where: {
             id: input,
+            isPublic: true,
           },
           include: {
             skeletons: {

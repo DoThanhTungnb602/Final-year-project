@@ -14,7 +14,7 @@ export default function Page({
   params: { exerciseId: string; problemId: string };
 }) {
   const { exerciseId, problemId } = params;
-  const { data: problem, isPending } = api.problem.getById.useQuery(problemId);
+  const { data: problem, isPending } = api.problem.getPublicProblemById.useQuery(problemId);
   const { data: exercise } = api.exercise.getById.useQuery({ exerciseId });
   const { setProblem } = useProblemStore();
   const { setIsShow, setTitle, setProblems, setExercise } = useSidebarStore();

@@ -41,6 +41,22 @@ export function CodeEditor() {
     enabled: !languages,
   });
 
+  useEffect(() => {
+    if (problem) {
+      problem.skeletons.forEach((skeleton) => {
+        setCodeMap({ language: skeleton.language.name, code: skeleton.code });
+      });
+      setSourceCode(codeMap.get(selectedLanguage.name));
+    }
+
+    return () => {
+      problem?.skeletons.forEach((skeleton) => {
+        setCodeMap({ language: skeleton.language.name, code: "" });
+      });
+      setSourceCode("");
+    };
+  }, [problem]);
+
   // Set languages
   useEffect(() => {
     if (data?.length) {
@@ -67,13 +83,19 @@ export function CodeEditor() {
   }, [selectedLanguage]);
 
   const runProblem = api.submission.run.useMutation({
-    onSuccess() {
-      console.log("success");
+    onSuccess(data) {
+      console.log(data);
     },
   });
 
   const onRun = () => {
-    console.log("running code");
+    if (problem) {
+      runProblem.mutate({
+        problemId: problem.id,
+        languageId: selectedLanguage.id,
+        code: sourceCode ?? "",
+      });
+    }
   };
 
   return problem ? (

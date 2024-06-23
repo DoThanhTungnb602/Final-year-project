@@ -7,7 +7,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "~/components/ui/badge";
 import { GrDocumentVerified } from "react-icons/gr";
 import { MdFilterAlt, MdFilterAltOff, MdNotInterested } from "react-icons/md";
-import { ProblemWithStatus } from "~/lib/types";
 import Link from "next/link";
 import { Toggle } from "~/components/ui/toggle";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
@@ -20,8 +19,9 @@ import { z } from "zod";
 import { ProblemFilterSchema } from "~/schemas";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import CustomTooltip from "~/components/shared/custom-tooltip";
+import { PublicProblems } from "~/server/api/client";
 
-const columns: ColumnDef<ProblemWithStatus>[] = [
+const columns: ColumnDef<PublicProblems>[] = [
   {
     accessorKey: "status",
     header: "Status",
@@ -104,7 +104,7 @@ const columns: ColumnDef<ProblemWithStatus>[] = [
 export default function Home() {
   const { data, isPending } = api.problem.allPublic.useQuery();
   const [filter, setFilter] = useState(false);
-  const [filteredData, setFilteredData] = useState<ProblemWithStatus[]>([]);
+  const [filteredData, setFilteredData] = useState<PublicProblems[]>([]);
 
   useEffect(() => {
     setFilteredData(data ?? []);
