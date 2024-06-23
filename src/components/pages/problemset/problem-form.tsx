@@ -20,9 +20,12 @@ import {
 } from "~/components/ui/select";
 import MultipleSelector, { Option } from "~/components/shared/multiselect";
 import { useEffect, useState } from "react";
-import { Textarea } from "~/components/ui/textarea";
 import Link from "next/link";
-import { ProblemWithSkeletonCode, tagOptions } from "~/lib/types";
+import {
+  ProblemWithSkeletonCode,
+  defaultEditorOptions,
+  tagOptions,
+} from "~/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -44,6 +47,9 @@ import { toast } from "sonner";
 import { FaPen, FaCheck } from "react-icons/fa";
 import { CodeEditor } from "./problem-code-editor";
 import { useProblemSkeletonStore } from "~/hooks/use-problem-skeleton-store";
+import { Editor as JsonEditor } from "@monaco-editor/react";
+import DefaultLoadingPage from "~/components/shared/default-loading-page";
+import { useTheme } from "next-themes";
 
 interface ProblemFormProps {
   problem?: ProblemWithSkeletonCode;
@@ -51,6 +57,7 @@ interface ProblemFormProps {
 }
 
 export function ProblemForm({ problem, _mode }: ProblemFormProps) {
+  const { theme } = useTheme();
   const [tags, setTags] = useState<Option[]>(
     problem?.tags.map((tag) => ({ value: tag, label: tag })) ?? [],
   );
@@ -449,19 +456,25 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                   Provide test cases for the problem
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="w-full">
                 <FormField
                   control={form.control}
                   name="testcases"
                   render={({ field }) => (
-                    <FormItem className="h-full">
-                      <FormControl>
-                        <Textarea
-                          readOnly={mode === "view"}
-                          {...field}
-                          rows={12}
-                          placeholder="Enter test cases in json format"
-                        />
+                    <FormItem className="w-full">
+                      <FormControl className="w-full">
+                        <div className="h-96 min-h-0 flex-1 rounded-md border w-full">
+                          <JsonEditor
+                            theme={theme === "dark" ? "vs-dark" : "vs-light"}
+                            language="json"
+                            value={field.value}
+                            options={{
+                              ...defaultEditorOptions,
+                            }}
+                            onChange={field.onChange}
+                            loading={<DefaultLoadingPage />}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

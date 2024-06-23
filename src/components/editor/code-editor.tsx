@@ -12,92 +12,9 @@ import { api } from "~/trpc/react";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { useProblemStore } from "~/hooks/use-problem-store";
 import { DEFAULT_LANGUAGE } from "~/routes";
-
-interface ISuggestOptions {
-    filterGraceful?: boolean;
-    insertMode?: "insert" | "replace";
-    localityBonus?: boolean;
-    matchOnWordStartOnly?: boolean;
-    preview?: boolean;
-    previewMode?: "prefix" | "subword" | "subwordSmart";
-    selectionMode?: "always" | "never" | "whenTriggerCharacter" | "whenQuickSuggestion";
-    shareSuggestSelections?: boolean;
-    showClasses?: boolean;
-    showColors?: boolean;
-    showConstants?: boolean;
-    showConstructors?: boolean;
-    showDeprecated?: boolean;
-    showEnumMembers?: boolean;
-    showEnums?: boolean;
-    showEvents?: boolean;
-    showFields?: boolean;
-    showFiles?: boolean;
-    showFolders?: boolean;
-    showFunctions?: boolean;
-    showIcons?: boolean;
-    showInlineDetails?: boolean;
-    showInterfaces?: boolean;
-    showIssues?: boolean;
-    showKeywords?: boolean;
-    showMethods?: boolean;
-    showModules?: boolean;
-    showOperators?: boolean;
-    showProperties?: boolean;
-    showReferences?: boolean;
-    showSnippets?: boolean;
-    showStatusBar?: boolean;
-    showStructs?: boolean;
-    showTypeParameters?: boolean;
-    showUnits?: boolean;
-    showUsers?: boolean;
-    showValues?: boolean;
-    showVariables?: boolean;
-    showWords?: boolean;
-    snippetsPreventQuickSuggestions?: boolean;
-}
-
-const editorConfig: ISuggestOptions = {
-    filterGraceful: false,
-    insertMode: "insert",
-    localityBonus: false,
-    matchOnWordStartOnly: false,
-    preview: false,
-    previewMode: "prefix",
-    selectionMode: "never",
-    shareSuggestSelections: false,
-    showClasses: false,
-    showColors: false,
-    showConstants: false,
-    showConstructors: false,
-    showDeprecated: false,
-    showEnumMembers: false,
-    showEnums: false,
-    showEvents: false,
-    showFields: false,
-    showFiles: false,
-    showFolders: false,
-    showFunctions: false,
-    showIcons: false,
-    showInlineDetails: false,
-    showInterfaces: false,
-    showIssues: false,
-    showKeywords: false,
-    showMethods: false,
-    showModules: false,
-    showOperators: false,
-    showProperties: false,
-    showReferences: false,
-    showSnippets: false,
-    showStatusBar: false,
-    showStructs: false,
-    showTypeParameters: false,
-    showUnits: false,
-    showUsers: false,
-    showValues: false,
-    showVariables: false,
-    showWords: false,
-    snippetsPreventQuickSuggestions: false,
-};
+import { defaultEditorOptions } from "~/lib/types";
+import { FaCloudArrowUp } from "react-icons/fa6";
+import { FaPlay } from "react-icons/fa6";
 
 export function CodeEditor() {
   const { theme } = useTheme();
@@ -149,11 +66,15 @@ export function CodeEditor() {
     setSourceCode(codeMap.get(selectedLanguage.name));
   }, [selectedLanguage]);
 
-  const runProblem = api.problem.run.useMutation({
+  const runProblem = api.submission.run.useMutation({
     onSuccess() {
       console.log("success");
     },
   });
+
+  const onRun = () => {
+    console.log("running code");
+  };
 
   return problem ? (
     <div className="flex h-full min-h-0 w-full flex-col">
@@ -163,7 +84,9 @@ export function CodeEditor() {
           defaultLanguage={selectedLanguage.editorValue}
           language={selectedLanguage.editorValue}
           value={sourceCode ?? ""}
-          options={{ minimap: { enabled: false }, suggest: editorConfig, padding: { top: 5 } }}
+          options={{
+            ...defaultEditorOptions,
+          }}
           onChange={setSourceCode}
           loading={<DefaultLoadingPage />}
         />
@@ -171,16 +94,12 @@ export function CodeEditor() {
       <div className="flex justify-between gap-3 p-2">
         <SelectLanguage />
         <div className="my-auto space-x-2">
-          <Button
-            size="sm"
-            onClick={() => {
-              // runProblem.mutate({
-              //   code: debouncedSourceCode ?? "",
-              //   languageId: language.id,
-              //   problemId: 1,
-              // });
-            }}
-          >
+          <Button size="sm" variant="secondary" onClick={onRun}>
+            <FaPlay className="mr-2 size-4" />
+            Run
+          </Button>
+          <Button size="sm">
+            <FaCloudArrowUp className="mr-2 size-4" />
             Submit
           </Button>
         </div>
