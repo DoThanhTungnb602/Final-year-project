@@ -132,6 +132,9 @@ export const ProblemSchema = z.object({
         message: "Invalid test cases. Please enter a valid JSON array",
       },
     ),
+  testCaseDrivers: z.array(
+    z.object({ languageId: z.string(), code: z.string() }),
+  ),
   solution: z.string().min(1, {
     message: "Solution is required",
   }),

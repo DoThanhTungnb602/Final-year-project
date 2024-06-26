@@ -117,3 +117,17 @@ export const prepareSubmissionData = ({
   }
   return { code, stdin };
 };
+
+export function unknownToString(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  } else if (typeof value === "number") {
+    return value.toString();
+  } else if (Array.isArray(value)) {
+    return `[${value.map(unknownToString).join(", ")}]`;
+  } else if (typeof value === "object") {
+    return JSON.stringify(value);
+  } else {
+    return value?.toString() ?? "null";
+  }
+}

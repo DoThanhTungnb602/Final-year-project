@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <AdminSidebar />
       <div className="flex h-full flex-col overflow-hidden">
         <AdminHeader />
-        <main className="flex-1 overflow-auto p-3">{children}</main>
+        <main className="flex-1 overflow-auto lg:p-6 p-3 !pt-0">{children}</main>
       </div>
     </div>
   );

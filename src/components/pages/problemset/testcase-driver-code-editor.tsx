@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useProblemSkeletonStore } from "~/hooks/use-problem-skeleton-store";
+import { useProblemTestcaseDriverStore } from "~/hooks/use-problem-testcase-driver-store";
 import { Editor } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useTheme } from "next-themes";
-import { LanguageSelector } from "~/components/pages/problemset/language-selector";
+import { LanguageSelector } from "~/components/pages/problemset/driver-language-selector";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { api } from "~/trpc/react";
 import { DEFAULT_LANGUAGE } from "~/routes";
@@ -15,7 +15,7 @@ interface CodeEditorProps {
   readOnly?: boolean;
 }
 
-export function SkeletonCodeEditor({ readOnly }: CodeEditorProps) {
+export function TestcaseDriverCodeEditor({ readOnly }: CodeEditorProps) {
   const { theme } = useTheme();
 
   const {
@@ -25,7 +25,7 @@ export function SkeletonCodeEditor({ readOnly }: CodeEditorProps) {
     codeMap,
     setCodeMap,
     languages,
-  } = useProblemSkeletonStore();
+  } = useProblemTestcaseDriverStore();
 
   const { data } = api.language.all.useQuery(undefined, {
     enabled: !languages,

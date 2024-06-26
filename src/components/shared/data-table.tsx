@@ -97,11 +97,7 @@ export function DataTable<TData extends { id?: string }, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 pb-1 pt-4">
-        <div>
-          <DataTablePagination table={table} />
-        </div>
-      </div>
+      <DataTablePagination table={table} />
     </div>
   );
 }

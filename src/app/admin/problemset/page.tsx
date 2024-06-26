@@ -40,6 +40,7 @@ import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { ProblemFilterSchema } from "~/schemas";
 import { z } from "zod";
 import { PrivateProblems } from "~/server/api/client";
+import { PlusCircle } from "lucide-react";
 
 export default function ProblemSet() {
   const [filter, setFilter] = useState(false);
@@ -212,7 +213,7 @@ export default function ProblemSet() {
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-4 pt-4 lg:gap-6 lg:pt-6">
       <AlertDialog open={open}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -243,57 +244,58 @@ export default function ProblemSet() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div className="flex items-center ">
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            className="px-2"
-            variant="outline"
-            pressed={filter}
-            onPressedChange={() => setFilter(!filter)}
-          >
-            {filter ? (
-              <MdFilterAlt className="size-6" />
-            ) : (
-              <MdFilterAltOff className="size-6" />
-            )}
-          </Toggle>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                disabled={Object.keys(rowSelection).length === 0}
+      <div className="ml-auto flex items-center gap-2">
+        <Toggle
+          className="px-2"
+          variant="outline"
+          pressed={filter}
+          onPressedChange={() => setFilter(!filter)}
+        >
+          {filter ? (
+            <MdFilterAlt className="size-6" />
+          ) : (
+            <MdFilterAltOff className="size-6" />
+          )}
+        </Toggle>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              disabled={Object.keys(rowSelection).length === 0}
+            >
+              <FaTrash className="h-4 w-4" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                selected problems.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  const selectedRowIds = Object.keys(rowSelection).filter(
+                    (key) => rowSelection[key],
+                  );
+                  deleteManyProblemsMutation.mutate(selectedRowIds);
+                }}
               >
-                <FaTrash className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  selected problems.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    const selectedRowIds = Object.keys(rowSelection).filter(
-                      (key) => rowSelection[key],
-                    );
-                    deleteManyProblemsMutation.mutate(selectedRowIds);
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <Link href="/admin/problemset/create">
-            <Button>Add Problem</Button>
-          </Link>
-        </div>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <Link href="/admin/problemset/create">
+          <Button>
+            <PlusCircle className="mr-2 size-4" />
+            Add Problem
+          </Button>
+        </Link>
       </div>
       {filter && (
         <Card className="bg-dark">
@@ -309,7 +311,7 @@ export default function ProblemSet() {
         <DefaultLoadingPage />
       ) : (
         <Card x-chunk="dashboard-06-chunk-0" className="bg-dark">
-          <CardContent className="overflow-auto pt-6">
+          <CardContent className="overflow-auto p-0">
             <DataTable
               columns={columns}
               data={filteredData}
@@ -319,6 +321,6 @@ export default function ProblemSet() {
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   );
 }

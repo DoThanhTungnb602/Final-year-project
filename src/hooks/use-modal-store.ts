@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 import { Class } from "@prisma/client";
 
-export type ModalType = "invite" | "deleteClass" | "joinClass" | "leaveClass";
+export type ModalType = "invite" | "deleteClass" | "joinClass" | "leaveClass" | "saveChanges";
 
 interface ModalData {
   classroom?: Class;

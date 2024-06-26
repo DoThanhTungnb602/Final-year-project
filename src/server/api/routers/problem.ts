@@ -102,7 +102,7 @@ export const problemRouter = createTRPCRouter({
     .input(ProblemSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const { skeletons, ...problem } = input;
+        const { skeletons, testCaseDrivers, ...problem } = input;
         const languages = await ctx.db.language.findMany();
         const isSkeletonEmpty = languages?.some((language) => {
           const skeleton = skeletons?.find((skeleton) => {
@@ -129,6 +129,16 @@ export const problemRouter = createTRPCRouter({
                 },
               })),
             },
+            testCaseDrivers: {
+              create: testCaseDrivers.map((driver) => ({
+                code: driver.code,
+                language: {
+                  connect: {
+                    id: driver.languageId,
+                  },
+                },
+              })),
+            },
           },
         });
       } catch (error) {
@@ -146,7 +156,7 @@ export const problemRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }).merge(ProblemSchema))
     .mutation(async ({ ctx, input }) => {
       try {
-        const { id, skeletons, ...problem } = input;
+        const { id, skeletons, testCaseDrivers, ...problem } = input;
         return await ctx.db.problem.update({
           where: {
             id,
@@ -163,6 +173,19 @@ export const problemRouter = createTRPCRouter({
                 },
                 data: {
                   code: skeleton.code,
+                },
+              })),
+            },
+            testCaseDrivers: {
+              update: testCaseDrivers.map((driver) => ({
+                where: {
+                  languageId_problemId: {
+                    languageId: driver.languageId,
+                    problemId: id,
+                  },
+                },
+                data: {
+                  code: driver.code,
                 },
               })),
             },
@@ -284,6 +307,17 @@ export const problemRouter = createTRPCRouter({
             id: input,
           },
           include: {
+            testCaseDrivers: {
+              select: {
+                languageId: true,
+                code: true,
+                language: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
             skeletons: {
               select: {
                 languageId: true,

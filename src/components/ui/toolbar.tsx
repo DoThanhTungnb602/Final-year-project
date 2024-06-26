@@ -14,7 +14,7 @@ const Toolbar = ({ children, className }: ToolbarProps) => {
   return (
     <ToolbarPrimitive
       className={cn(
-        "sticky inset-x-0 top-0 z-50 my-2 rounded-sm bg-secondary/40 px-4 py-2 backdrop-blur-lg",
+        "sticky inset-x-0 top-0 z-10 my-2 rounded-sm bg-secondary/30 px-4 py-2 backdrop-blur",
         className,
       )}
     >

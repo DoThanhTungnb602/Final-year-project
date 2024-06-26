@@ -3,12 +3,12 @@
 import { Ban, Check } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
-import { useProblemSkeletonStore } from "~/hooks/use-problem-skeleton-store";
+import { useProblemTestcaseDriverStore } from "~/hooks/use-problem-testcase-driver-store";
 import { cn } from "~/lib/utils";
 
 export function LanguageSelector() {
   const { languages, selectedLanguage, setSelectedLanguage, codeMap } =
-    useProblemSkeletonStore();
+    useProblemTestcaseDriverStore();
 
   return (
     languages && (

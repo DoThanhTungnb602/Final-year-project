@@ -139,37 +139,37 @@ export default function Home() {
   return isPending ? (
     <DefaultLoadingPage />
   ) : (
-    <Card
-      x-chunk="dashboard-06-chunk-0"
-      className="bg-dark flex h-full w-full flex-1 flex-col gap-4"
-    >
-      <CardHeader>
-        <div className="flex justify-between">
-          <div className="text-2xl font-bold">List of Problems</div>
-          <Toggle
-            className="px-2"
-            variant="outline"
-            pressed={filter}
-            onPressedChange={() => setFilter(!filter)}
-          >
-            {filter ? (
-              <MdFilterAlt className="size-6" />
-            ) : (
-              <MdFilterAltOff className="size-6" />
-            )}
-          </Toggle>
-        </div>
-        {filter && (
-          <Card className="bg-dark">
-            <CardContent className="p-3">
-              <ProblemFilter onFilterChange={handleFilterChange} />
-            </CardContent>
-          </Card>
-        )}
-      </CardHeader>
-      <CardContent className="h-full overflow-auto">
-        <DataTable columns={columns} data={filteredData} />
-      </CardContent>
-    </Card>
+    <div className="mx-auto max-w-4xl space-y-4 lg:p-3">
+      <div className="flex justify-between">
+        <div className="text-2xl font-bold">List of Problems</div>
+        <Toggle
+          className="px-2"
+          variant="outline"
+          pressed={filter}
+          onPressedChange={() => setFilter(!filter)}
+        >
+          {filter ? (
+            <MdFilterAlt className="size-6" />
+          ) : (
+            <MdFilterAltOff className="size-6" />
+          )}
+        </Toggle>
+      </div>
+      {filter && (
+        <Card className="bg-dark">
+          <CardContent className="p-3">
+            <ProblemFilter onFilterChange={handleFilterChange} />
+          </CardContent>
+        </Card>
+      )}
+      <Card
+        x-chunk="dashboard-06-chunk-0"
+        className="bg-dark flex h-full w-full flex-1 flex-col gap-4"
+      >
+        <CardContent className="h-full overflow-auto p-0">
+          <DataTable columns={columns} data={filteredData} />
+        </CardContent>
+      </Card>
+    </div>
   );
 }
