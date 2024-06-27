@@ -17,6 +17,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
+import SubmissionsPanel from "./submissions-panel";
 
 const ProblemDescriptionPanel = () => {
   const { problem } = useProblemStore();
@@ -113,7 +114,9 @@ const ProblemDescriptionPanel = () => {
       </TabsContent>
       <TabsContent value="submissions" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
-          <CardContent className="h-full min-h-0 p-0"></CardContent>
+          <CardContent className="h-full min-h-0 p-0">
+            {problem ? <SubmissionsPanel /> : <DefaultLoadingPage />}
+          </CardContent>
         </Card>
       </TabsContent>
     </Tabs>

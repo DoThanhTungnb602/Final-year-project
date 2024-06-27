@@ -8,8 +8,10 @@ import {
 import { SubmissionRequest, TestCase } from "~/lib/types";
 import { prepareSubmissionData } from "~/lib/utils";
 import { SubmissionSchema } from "~/schemas";
+import { decode } from "js-base64";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { z } from "zod";
 
 export const submissionRouter = createTRPCRouter({
   run: protectedProcedure
@@ -65,14 +67,13 @@ export const submissionRouter = createTRPCRouter({
         );
 
         // const tokens = await createBatchSubmission(submissions);
-        // console.log(tokens);
         // if (!tokens) {
         //   throw new TRPCError({
         //     code: "INTERNAL_SERVER_ERROR",
         //     message: "Internal server error. Please try again later.",
         //   });
         // }
-        //
+
         // TODO: refetch submissions
 
         // Wrong Answer tokens
@@ -86,24 +87,108 @@ export const submissionRouter = createTRPCRouter({
         // ];
 
         // Accepted tokens
-        // const tokens = [
-        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        // ];
-
-        // Compilation Error tokens
         const tokens = [
-          { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-          { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
+          { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
+          { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
         ];
 
-        const submissionResponse = await getBatchSubmission(tokens);
+        // Compilation Error tokens
+        // const tokens = [
+        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
+        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
+        // ];
+
+        // Runtime Error tokens
+        // const tokens = [
+        //   { token: "9c57e2da-884b-4124-a8cb-c8e66e9906ab" },
+        //   { token: "25182e62-db3a-485e-a1fe-a377674f6de5" },
+        // ];
+
+        // Time Limit Exceeded tokens
+        // const tokens = [
+        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
+        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
+        // ];
+
+        let submissionResponse = await getBatchSubmission(tokens);
         if (!submissionResponse) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Internal server error. Please try again later.",
           });
         }
+
+        const isProcessing = submissionResponse.submissions.some(
+          (submission) => submission.status.description === "Processing",
+        );
+
+        while (isProcessing) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          const updatedSubmissionResponse = await getBatchSubmission(tokens);
+          if (!updatedSubmissionResponse) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Internal server error. Please try again later.",
+            });
+          }
+          if (
+            updatedSubmissionResponse.submissions.every(
+              (submission) => submission.status.description !== "Processing",
+            )
+          ) {
+            submissionResponse = updatedSubmissionResponse;
+            break;
+          }
+        }
+
+        const isCompilationError = submissionResponse.submissions.some(
+          (submission) => submission.status.description === "Compilation Error",
+        );
+        if (isCompilationError) {
+          return {
+            status: "Compilation Error",
+            error: decode(
+              submissionResponse.submissions[0]?.compile_output ?? "",
+            ),
+          };
+        }
+
+        const isRuntimeError = submissionResponse.submissions.some(
+          (submission) =>
+            submission.status.description === "Runtime Error (NZEC)" ||
+            submission.status.description === "Runtime Error (SIGSEGV)" ||
+            submission.status.description === "Runtime Error (SIGXFSZ)" ||
+            submission.status.description === "Runtime Error (SIGFPE)" ||
+            submission.status.description === "Runtime Error (SIGABRT)" ||
+            submission.status.description === "Runtime Error (Other)",
+        );
+        if (isRuntimeError) {
+          return {
+            status: "Runtime Error",
+            error: decode(submissionResponse.submissions[0]?.stderr ?? ""),
+          };
+        }
+
+        const isTimeLimitExceeded = submissionResponse.submissions.some(
+          (submission) =>
+            submission.status.description === "Time Limit Exceeded",
+        );
+        if (isTimeLimitExceeded) {
+          return {
+            status: "Time Limit Exceeded",
+            runtime: submissionResponse.submissions.reduce(
+              (acc, submission) => acc + parseFloat(submission.time),
+              0,
+            ),
+            submissions: submissionResponse.submissions,
+            timeLimitExceededTestcase: publicTestcases.find(
+              (testcase, index) =>
+                submissionResponse.submissions[index]?.status.description ===
+                "Time Limit Exceeded",
+            ),
+          };
+        }
+
         const isAccepted = submissionResponse.submissions.every(
           (submission) => submission.status.description === "Accepted",
         );
@@ -117,6 +202,7 @@ export const submissionRouter = createTRPCRouter({
             submissions: submissionResponse.submissions,
           };
         }
+
         const isWrongAnswer = submissionResponse.submissions.some(
           (submission) => submission.status.description === "Wrong Answer",
         );
@@ -130,44 +216,10 @@ export const submissionRouter = createTRPCRouter({
             submissions: submissionResponse.submissions,
           };
         }
-        const isCompilationError = submissionResponse.submissions.every(
-          (submission) => submission.status.description === "Compilation Error",
-        );
-        if (isCompilationError) {
-          return {
-            status: "Compilation Error",
-            error: atob(
-              submissionResponse.submissions[0]?.compile_output ?? "",
-            ),
-          };
-        }
-        const isRuntimeError = submissionResponse.submissions.every(
-          (submission) =>
-            submission.status.description === "Runtime Error (NZEC)" ||
-            submission.status.description === "Runtime Error (SIGSEGV)" ||
-            submission.status.description === "Runtime Error (SIGXFSZ)" ||
-            submission.status.description === "Runtime Error (SIGFPE)" ||
-            submission.status.description === "Runtime Error (SIGABRT)" ||
-            submission.status.description === "Runtime Error (Other)",
-        );
-        if (isRuntimeError) {
-          return {
-            status: "Runtime Error",
-            error: atob(submissionResponse.submissions[0]?.stderr ?? ""),
-          };
-        }
-        const isTimeLimitExceeded = submissionResponse.submissions.every(
-          (submission) =>
-            submission.status.description === "Time Limit Exceeded",
-        );
-        if (isTimeLimitExceeded) {
-          return {
-            status: "Time Limit Exceeded",
-          };
-        }
+
         return {
           status: "Internal Server Error",
-          message: "Internal server error. Please try again later.",
+          error: "Internal server error. Please try again later.",
         };
       } catch (error) {
         if (error instanceof TRPCError) {
@@ -285,6 +337,36 @@ export const submissionRouter = createTRPCRouter({
             message: "Internal server error. Please try again later.",
           });
         }
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Internal server error. Please try again later.",
+        });
+      }
+    }),
+
+  all: protectedProcedure
+    .input(z.object({ problemId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const submissions = await ctx.db.submission.findMany({
+          where: {
+            problemId: input.problemId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+        if (!submissions) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+        return submissions;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

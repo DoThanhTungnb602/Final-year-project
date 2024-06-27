@@ -47,7 +47,7 @@ const TestResultPanel = () => {
               {status}
             </p>
             <span className="text-sm font-semibold text-muted-foreground">
-              Runtime: {result?.runtime}ms
+              Runtime: {result?.runtime} s
             </span>
           </div>
           <div className="flex gap-4">
@@ -119,8 +119,55 @@ const TestResultPanel = () => {
       return (
         <div className="flex flex-col gap-4">
           <p className="text-xl font-semibold text-red-500">{status}</p>
-          <Card className="bg-neutral-100 dark:bg-neutral-800">
-            <CardContent className="flex min-h-0 items-center p-3 text-sm font-semibold">
+          <Card className="border-none bg-red-500/5 dark:bg-red-500/5">
+            <CardContent className="flex min-h-0 items-center p-3 text-sm font-semibold text-red-500">
+              <code>{result?.error}</code>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    } else if (status === "Runtime Error") {
+      return (
+        <div className="flex flex-col gap-4">
+          <p className="text-xl font-semibold text-red-500">{status}</p>
+          <Card className="border-none bg-red-500/5 dark:bg-red-500/5">
+            <CardContent className="flex min-h-0 items-center p-3 text-sm font-semibold text-red-500">
+              <code>{result?.error}</code>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    } else if (status === "Time Limit Exceeded") {
+      return (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <p className="text-xl font-semibold text-red-500">{status}</p>
+            <span className="text-sm font-semibold text-muted-foreground">
+              Runtime: {result?.runtime} s
+            </span>
+          </div>
+          <div className="flex flex-col gap-4">
+            <p className="text-sm font-semibold">Last Executed Input:</p>
+            {Object.entries(result?.timeLimitExceededTestcase?.input ?? {}).map(
+              ([key, value]) => (
+                <Card className="bg-neutral-100 dark:bg-neutral-800" key={key}>
+                  <CardContent className="flex min-h-0 items-center p-3 text-sm font-semibold">
+                    <code>
+                      {key}: {unknownToString(value)}
+                    </code>
+                  </CardContent>
+                </Card>
+              ),
+            )}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex flex-col gap-4">
+          <p className="text-xl font-semibold text-red-500">{status}</p>
+          <Card className="border-none bg-red-500/5 dark:bg-red-500/5">
+            <CardContent className="flex min-h-0 items-center p-3 text-sm font-semibold text-red-500">
               <code>{result?.error}</code>
             </CardContent>
           </Card>
