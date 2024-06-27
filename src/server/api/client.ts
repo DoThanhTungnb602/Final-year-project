@@ -9,3 +9,5 @@ export type PrivateProblems = RouterOutput["problem"]["all"][number];
 export type PublicProblem = RouterOutput["problem"]["getPublicProblemById"];
 
 export type PrivateProblem = RouterOutput["problem"]["getPrivateProblemById"];
+
+export type RunSubmissionResult = RouterOutput["submission"]["run"];

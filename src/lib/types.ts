@@ -235,7 +235,8 @@ export const editorOptionsDisableIntellisense: IEditorOptions = {
 
 export interface TestCase {
   input: Record<string, unknown>;
-  expected_output: Record<string, unknown>;
+  output: unknown;
+  expected_output: unknown;
 }
 
 export type SubmissionResponse = {
@@ -264,4 +265,14 @@ export type SubmissionResponse = {
       | "Internal Error"
       | "Exec Format Error";
   };
+};
+
+export type SubmissionRequest = {
+  source_code: string;
+  language_id: string;
+  stdin: string;
+  expected_output: string;
+  cpu_time_limit?: number;
+  memory_limit?: number;
+  stack_limit?: number;
 };

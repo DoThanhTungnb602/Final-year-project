@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-import { SubmissionResponse } from "~/lib/types";
+import { RunSubmissionResult } from "~/server/api/client";
 
-interface SubmissionState {
-  submission: SubmissionResponse | null;
-  setSubmission: (submission: SubmissionResponse | null) => void;
+interface RunResultState {
+  result: RunSubmissionResult | null;
+  setResult: (result: RunSubmissionResult) => void;
 }
 
-export const useSubmissionStore = create<SubmissionState>()((set) => ({
-  submission: null,
-  setSubmission: (submission) => set({ submission }),
+export const useRunResultStore = create<RunResultState>()((set) => ({
+  result: null,
+  setResult: (result) => set({ result }),
 }));

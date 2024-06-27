@@ -2,23 +2,23 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { GrTest } from "react-icons/gr";
-import { useSubmissionStore } from "~/hooks/use-submission-store";
+import { useRunResultStore } from "~/hooks/use-submission-store";
 import { Terminal } from "lucide-react";
 import { useEffect, useState } from "react";
 import TestCasePanel from "./testcase-panel";
 import TestResultPanel from "./test-result-panel";
 
 const ConsolePanel = () => {
-  const { submission } = useSubmissionStore();
+  const { result } = useRunResultStore();
   const [activeTab, setActiveTab] = useState<"testcase" | "test_result">(
     "testcase",
   );
 
   useEffect(() => {
-    if (submission) {
+    if (result) {
       setActiveTab("test_result");
     }
-  }, [submission]);
+  }, [result]);
 
   return (
     <Tabs
