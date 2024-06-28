@@ -9,7 +9,7 @@ import { GrDocumentVerified } from "react-icons/gr";
 import { MdFilterAlt, MdFilterAltOff, MdNotInterested } from "react-icons/md";
 import Link from "next/link";
 import { Toggle } from "~/components/ui/toggle";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import { ProblemFilter } from "~/components/shared/problem-filter";
 import { useEffect, useState } from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";

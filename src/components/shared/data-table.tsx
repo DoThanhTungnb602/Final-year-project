@@ -31,6 +31,7 @@ interface DataTableProps<TData extends { id?: string }, TValue> {
   data: TData[];
   rowSelection?: RowSelectionState;
   setRowSelection?: OnChangeFn<RowSelectionState>;
+  pagination?: boolean;
 }
 
 export function DataTable<TData extends { id?: string }, TValue>({
@@ -38,6 +39,7 @@ export function DataTable<TData extends { id?: string }, TValue>({
   data,
   rowSelection = {},
   setRowSelection,
+  pagination = true,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     getRowId: (row, index) => row.id ?? index.toString(),
@@ -97,7 +99,7 @@ export function DataTable<TData extends { id?: string }, TValue>({
           )}
         </TableBody>
       </Table>
-      <DataTablePagination table={table} />
+      {pagination && <DataTablePagination table={table} />}
     </div>
   );
 }

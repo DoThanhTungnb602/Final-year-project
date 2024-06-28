@@ -172,21 +172,24 @@ model Language {
 }
 
 model Submission {
-    id         String    @id @default(cuid())
-    verdict    Verdict
-    time       Int
-    memory     Int
-    code       String
-    languageId String
-    language   Language  @relation(fields: [languageId], references: [id])
-    problemId  String
-    problem    Problem   @relation(fields: [problemId], references: [id])
-    userId     String
-    user       User      @relation(fields: [userId], references: [id])
-    exercise   Exercise? @relation(fields: [exerciseId], references: [id])
-    exerciseId String?
-    test       Test?     @relation(fields: [testId], references: [id])
-    testId     String?
+    id             String    @id @default(cuid())
+    verdict        Verdict
+    stdout         String?
+    stderr         String?
+    compile_output String?
+    time           Int?
+    memory         Int?
+    code           String
+    languageId     String
+    language       Language  @relation(fields: [languageId], references: [id])
+    problemId      String
+    problem        Problem   @relation(fields: [problemId], references: [id])
+    userId         String
+    user           User      @relation(fields: [userId], references: [id])
+    exercise       Exercise? @relation(fields: [exerciseId], references: [id])
+    exerciseId     String?
+    test           Test?     @relation(fields: [testId], references: [id])
+    testId         String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
