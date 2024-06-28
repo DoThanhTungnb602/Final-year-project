@@ -33,6 +33,7 @@ export const LeaveClassModal = () => {
 
   const isModalOpen = isOpen && type === "leaveClass";
 
+  if (!data) return null;
   const { classId } = data;
 
   const onConfirm = () => {

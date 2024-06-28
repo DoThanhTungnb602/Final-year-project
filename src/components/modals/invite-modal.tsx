@@ -33,7 +33,7 @@ export const InviteModal = () => {
       onOpen({
         type: "invite",
         data: {
-          classroom: data,
+          inviteCode: data.inviteCode ?? "",
         },
       });
     },
@@ -46,6 +46,7 @@ export const InviteModal = () => {
   });
 
   const isModalOpen = isOpen && type === "invite";
+  if (!data) return null;
   const { classroom } = data;
   const inviteLink = `${origin}/invite/${classroom?.inviteCode}`;
   const inviteCode = classroom?.inviteCode ?? "";

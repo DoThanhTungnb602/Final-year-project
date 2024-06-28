@@ -11,21 +11,23 @@ export type ModalType =
 
 interface ModalData {
   classroom?: ClassroomById;
+  inviteCode?: string;
+  inviteLink?: string;
   classId?: string;
 }
 
 interface ModalState {
-  type: ModalType | null;
-  data: ModalData | null;
+  type?: ModalType;
+  data?: ModalData;
   isOpen: boolean;
   onOpen: ({ type, data }: { type: ModalType; data?: ModalData }) => void;
   onClose: () => void;
 }
 
 export const useModalStore = create<ModalState>()((set) => ({
-  type: null,
-  data: null,
+  type: undefined,
+  data: undefined,
   isOpen: false,
-  onOpen: ({ type, data = null }) => set({ type, data, isOpen: true }),
-  onClose: () => set({ type: null, isOpen: false }),
+  onOpen: ({ type, data }) => set({ type, data, isOpen: true }),
+  onClose: () => set({ type: undefined, isOpen: false }),
 }));

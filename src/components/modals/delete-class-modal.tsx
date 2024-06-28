@@ -32,11 +32,10 @@ export const DeleteClassModal = () => {
   });
 
   const isModalOpen = isOpen && type === "deleteClass";
-  const { classId } = data;
 
   const onConfirm = () => {
-    if (!classId) return;
-    classMutation.mutate({ id: classId });
+    if (!data?.classId) return;
+    classMutation.mutate({ id: data.classId });
   };
 
   return (
