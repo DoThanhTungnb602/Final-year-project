@@ -12,7 +12,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const classQuery = api.class.getById.useQuery(id);
 
   return (
-    <Tabs defaultValue="students" className="w-full h-full flex flex-col">
+    <Tabs defaultValue="students" className="flex h-full w-full flex-col">
       <TabsList className="w-full justify-start">
         <TabsTrigger value="students">Overview</TabsTrigger>
         <TabsTrigger value="exercises">Exercises</TabsTrigger>

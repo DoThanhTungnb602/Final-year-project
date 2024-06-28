@@ -41,20 +41,17 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { FaTrash } from "react-icons/fa6";
-import { Class, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { FaUserCircle } from "react-icons/fa";
 import { UserRoundPlus } from "lucide-react";
 import { useModalStore } from "~/hooks/use-modal-store";
-
-interface ClassWithStudents extends Class {
-  students: User[];
-}
+import { ClassroomById } from "~/server/api/client";
 
 export default function ClassOverview({
   classroom,
 }: {
-  classroom?: ClassWithStudents;
+  classroom?: ClassroomById;
 }) {
   const [editMode, setEditMode] = useState(false);
   const { onOpen } = useModalStore();

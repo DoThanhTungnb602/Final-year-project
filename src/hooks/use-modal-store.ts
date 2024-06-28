@@ -1,17 +1,22 @@
 import { create } from "zustand";
 
-import { Class } from "@prisma/client";
+import { ClassroomById } from "~/server/api/client";
 
-export type ModalType = "invite" | "deleteClass" | "joinClass" | "leaveClass" | "saveChanges";
+export type ModalType =
+  | "invite"
+  | "deleteClass"
+  | "joinClass"
+  | "leaveClass"
+  | "saveChanges";
 
 interface ModalData {
-  classroom?: Class;
+  classroom?: ClassroomById;
   classId?: string;
 }
 
 interface ModalState {
   type: ModalType | null;
-  data: ModalData;
+  data: ModalData | null;
   isOpen: boolean;
   onOpen: ({ type, data }: { type: ModalType; data?: ModalData }) => void;
   onClose: () => void;
@@ -19,8 +24,8 @@ interface ModalState {
 
 export const useModalStore = create<ModalState>()((set) => ({
   type: null,
-  data: {},
+  data: null,
   isOpen: false,
-  onOpen: ({ type, data = {} }) => set({ type, data, isOpen: true }),
+  onOpen: ({ type, data = null }) => set({ type, data, isOpen: true }),
   onClose: () => set({ type: null, isOpen: false }),
 }));

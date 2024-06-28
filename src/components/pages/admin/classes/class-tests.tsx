@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { Class, Test } from "@prisma/client";
+import { Test } from "@prisma/client";
 import { Checkbox } from "~/components/ui/checkbox";
 import moment from "moment";
 import {
@@ -39,15 +39,12 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { TestDialog } from "./class-tests-dialog";
-
-interface ClassWithTests extends Class {
-  tests: Test[];
-}
+import { ClassroomById } from "~/server/api/client";
 
 export default function ClassTests({
   classroom,
 }: {
-  classroom?: ClassWithTests;
+  classroom?: ClassroomById;
 }) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [testId, setTestId] = useState("");

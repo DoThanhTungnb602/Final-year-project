@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { Class, Exercise } from "@prisma/client";
+import { Exercise } from "@prisma/client";
 import { Checkbox } from "~/components/ui/checkbox";
 import moment from "moment";
 import {
@@ -39,15 +39,12 @@ import { FaTrash } from "react-icons/fa6";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
-
-interface ClassWithExercises extends Class {
-  exercises: Exercise[];
-}
+import { ClassroomById } from "~/server/api/client";
 
 export default function ClassExercises({
   classroom,
 }: {
-  classroom?: ClassWithExercises;
+  classroom?: ClassroomById;
 }) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [exerciseId, setExerciseId] = useState("");
@@ -59,16 +56,18 @@ export default function ClassExercises({
   const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
   const utils = api.useUtils();
 
-  const deleteManyExercisesMutation = api.class.deleteManyExercises.useMutation({
-    onSuccess: () => {
-      utils.class.getById.invalidate().catch(console.error);
-      setRowSelection({});
-      toast.success("Exercises deleted successfully");
+  const deleteManyExercisesMutation = api.class.deleteManyExercises.useMutation(
+    {
+      onSuccess: () => {
+        utils.class.getById.invalidate().catch(console.error);
+        setRowSelection({});
+        toast.success("Exercises deleted successfully");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
     },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
+  );
 
   const exerciseMutation = api.class.deleteExercise.useMutation({
     onSuccess: () => {
