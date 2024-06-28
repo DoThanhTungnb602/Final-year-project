@@ -1,14 +1,10 @@
-import { Class, Test } from "@prisma/client";
+import { ClassroomById } from "~/server/api/client";
 import { ClassTestItem } from "./class-test-item";
-
-interface ClassWithTests extends Class {
-  tests: Test[];
-}
 
 export default function ClassTests({
   classroom,
 }: {
-  classroom?: ClassWithTests;
+  classroom?: ClassroomById;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-4 bg-background md:gap-8 md:p-10">

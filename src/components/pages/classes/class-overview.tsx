@@ -11,19 +11,16 @@ import { DataTable } from "~/components/shared/data-table";
 import { Separator } from "~/components/ui/separator";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Class, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { FaUserCircle } from "react-icons/fa";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
-
-interface ClassWithStudents extends Class {
-  students: User[];
-}
+import { ClassroomById } from "~/server/api/client";
 
 export default function ClassOverview({
   classroom,
 }: {
-  classroom?: ClassWithStudents;
+  classroom?: ClassroomById;
 }) {
   const columns: ColumnDef<User>[] = [
     {

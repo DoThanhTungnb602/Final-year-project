@@ -1,14 +1,10 @@
-import { Class, Exercise } from "@prisma/client";
 import { ClassExerciseItem } from "./class-exercise-item";
-
-interface ClassWithExercises extends Class {
-  exercises: Exercise[];
-}
+import { ClassroomById } from "~/server/api/client";
 
 export default function ClassExercises({
   classroom,
 }: {
-  classroom?: ClassWithExercises;
+  classroom?: ClassroomById;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-4 bg-background md:gap-8 md:p-10">
