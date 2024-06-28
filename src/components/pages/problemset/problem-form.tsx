@@ -333,6 +333,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                             editable={mode !== "view"}
                             content={field.value}
                             onChange={(e) => {
+                              console.log(e);
                               field.onChange(e);
                             }}
                             placeholder="Enter description of the problem"
@@ -562,7 +563,10 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                         <Editor
                           editable={mode !== "view"}
                           content={field.value}
-                          onChange={field.onChange}
+                          onChange={(e) => {
+                            console.log(e);
+                            field.onChange(e);
+                          }}
                           placeholder="Enter solution of the problem"
                         />
                       </div>
@@ -653,7 +657,10 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                           options={{
                             ...defaultEditorOptions,
                           }}
-                          onChange={field.onChange}
+                          onChange={(e) => {
+                            console.log(e);
+                            field.onChange(e);
+                          }}
                           loading={<DefaultLoadingPage />}
                         />
                       </div>

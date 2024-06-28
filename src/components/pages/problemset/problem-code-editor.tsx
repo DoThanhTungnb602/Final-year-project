@@ -72,7 +72,10 @@ export function SkeletonCodeEditor({ readOnly }: CodeEditorProps) {
             readOnly,
             padding: { top: 10 },
           }}
-          onChange={setSourceCode}
+          onChange={(e) => {
+            console.log(e);
+            setSourceCode(e);
+          }}
           loading={<DefaultLoadingPage />}
         />
       </div>
