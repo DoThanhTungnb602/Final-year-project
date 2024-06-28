@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { tagOptions } from "~/lib/types";
+import { api } from "~/trpc/react";
 
 interface ProblemFilterProps {
   onFilterChange: (filter: z.infer<typeof ProblemFilterSchema>) => void;
@@ -30,6 +30,9 @@ export function ProblemFilter({
   const [tags, setTags] = useState<Option[]>();
   const [difficulty, setDifficulty] = useState("");
   const [status, setStatus] = useState("");
+  const [tagOptions, setTagOptions] = useState<Option[]>([]);
+
+  const { data: tagsData } = api.topic.all.useQuery();
 
   const form = useForm<z.infer<typeof ProblemFilterSchema>>({
     resolver: zodResolver(ProblemFilterSchema),
@@ -40,6 +43,17 @@ export function ProblemFilter({
       search: "",
     },
   });
+
+  useEffect(() => {
+    if (tagsData) {
+      setTagOptions(
+        tagsData.map((tag) => ({
+          label: tag.name,
+          value: tag.id,
+        })),
+      );
+    }
+  }, [tagsData]);
 
   useEffect(() => {
     const subscription = form.watch((values) => {
@@ -127,7 +141,12 @@ export function ProblemFilter({
                       value={tags}
                       onChange={(options) => {
                         setTags(options);
-                        field.onChange(options.map((option) => option.value));
+                        field.onChange(
+                          options.map((option) => ({
+                            id: option.value,
+                            name: option.label,
+                          })),
+                        );
                       }}
                       placeholder="Tags"
                     />

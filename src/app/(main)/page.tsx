@@ -119,9 +119,11 @@ export default function Home() {
         return false;
       }
       if (filter.tags && filter.tags.length > 0) {
-        const problemTags = problem.tags.map((tag) => tag);
-        const selectedTags = filter.tags.map((tag) => tag);
-        if (!selectedTags.every((tag) => problemTags.includes(tag))) {
+        if (
+          !filter.tags.some((tag) =>
+            problem.tags.map((t) => t.id).includes(tag),
+          )
+        ) {
           return false;
         }
       }

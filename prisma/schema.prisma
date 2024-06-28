@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-    // directUrl = env("DIRECT_URL")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -93,6 +93,14 @@ model Problem {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Topic {
+    id       String    @id @default(cuid())
+    name     String
+    problems Problem[]
+
+    @@unique([name])
 }
 
 model TestCaseDriver {
@@ -184,8 +192,8 @@ model Submission {
     language       Language  @relation(fields: [languageId], references: [id])
     problemId      String
     problem        Problem   @relation(fields: [problemId], references: [id])
-    userId         String
-    user           User      @relation(fields: [userId], references: [id])
+    userId         String?
+    user           User?     @relation(fields: [userId], references: [id])
     exercise       Exercise? @relation(fields: [exerciseId], references: [id])
     exerciseId     String?
     test           Test?     @relation(fields: [testId], references: [id])
@@ -213,78 +221,4 @@ enum Verdict {
     MEMORY_LIMIT_EXCEEDED
     RUNTIME_ERROR
     COMPILATION_ERROR
-}
-
-enum Topic {
-    ARRAY
-    STRING
-    HASH_TABLE
-    DYNAMIC_PROGRAMMING
-    MATH
-    SORTING
-    GREEDY
-    DEPTH_FIRST_SEARCH
-    DATABASE
-    BINARY_SEARCH
-    TREE
-    BREADTH_FIRST_SEARCH
-    MATRIX
-    BIT_MANIPULATION
-    TWO_POINTERS
-    BINARY_TREE
-    HEAP
-    PREFIX_SUM
-    STACK
-    SIMULATION
-    GRAPH
-    COUNTING
-    DESIGN
-    SLIDING_WINDOW
-    BACKTRACKING
-    ENUMERATION
-    UNION_FIND
-    LINKED_LIST
-    ORDERED_SET
-    MONOTONIC_STACK
-    NUMBER_THEORY
-    TRIE
-    DIVIDE_AND_CONQUER
-    BITMASK
-    RECURSION
-    SEGMENT_TREE
-    QUEUE
-    BINARY_SEARCH_TREE
-    MEMOIZATION
-    GEOMETRY
-    BINARY_INDEXED_TREE
-    HASH_FUNCTION
-    COMBINATORICS
-    TOPOLOGICAL_SORT
-    STRING_MATCHING
-    SHORTEST_PATH
-    ROLLING_HASH
-    GAME_THEORY
-    INTERACTIVE
-    DATA_STREAM
-    BRAINTEASER
-    MONOTONIC_QUEUE
-    RANDOMIZED
-    MERGE_SORT
-    ITERATOR
-    CONCURRENCY
-    DOUBLY_LINKED_LIST
-    PROBABILITY_AND_STATISTICS
-    QUICKSELECT
-    BUCKET_SORT
-    SUFFIX_ARRAY
-    MINIMUM_SPANNING_TREE
-    COUNTING_SORT
-    SHELL
-    LINE_SWEEP
-    RESERVOIR_SAMPLING
-    STRONGLY_CONNECTED_COMPONENT
-    EULERIAN_CIRCUIT
-    RADIX_SORT
-    REJECTION_SAMPLING
-    BICONNECTED_COMPONENT
 }

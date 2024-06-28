@@ -96,8 +96,8 @@ const ProblemDescriptionPanel = () => {
                       <AccordionContent>
                         <div className="flex flex-wrap gap-2">
                           {problem.tags.map((topic) => (
-                            <Badge key={topic} variant="secondary">
-                              {topic}
+                            <Badge key={topic.id} variant="secondary">
+                              {topic.name}
                             </Badge>
                           ))}
                         </div>

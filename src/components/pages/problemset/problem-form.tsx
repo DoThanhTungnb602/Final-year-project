@@ -21,7 +21,7 @@ import {
 import MultipleSelector, { Option } from "~/components/shared/multiselect";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { defaultEditorOptions, tagOptions } from "~/lib/types";
+import { defaultEditorOptions } from "~/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -68,8 +68,9 @@ interface ProblemFormProps {
 export function ProblemForm({ problem, _mode }: ProblemFormProps) {
   const { theme } = useTheme();
   const [tags, setTags] = useState<Option[]>(
-    problem?.tags.map((tag) => ({ value: tag, label: tag })) ?? [],
+    problem?.tags.map((tag) => ({ value: tag.id, label: tag.name })) ?? [],
   );
+  const [tagOptions, setTagOptions] = useState<Option[]>([]);
   const [mode, setMode] = useState(_mode);
   const [saveChanges, setSaveChanges] = useState(false);
   const router = useRouter();
@@ -79,6 +80,18 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
     codeMap: driverCodeMap,
     languages: driverLanguages,
   } = useProblemTestcaseDriverStore();
+  const { data: tagsData } = api.topic.all.useQuery();
+
+  useEffect(() => {
+    if (tagsData) {
+      setTagOptions(
+        tagsData.map((tag) => ({
+          value: tag.id,
+          label: tag.name,
+        })),
+      );
+    }
+  }, [tagsData]);
 
   const form = useForm<z.infer<typeof ProblemSchema>>({
     resolver: zodResolver(ProblemSchema),
@@ -467,7 +480,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                     name="tags"
                     render={({ field }) => {
                       const defaultOptions = tagOptions.filter((option) =>
-                        field.value.includes(option.value),
+                        tags.some((tag) => tag.value === option.value),
                       );
                       return (
                         <FormItem className="h-full">
@@ -480,7 +493,10 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                               onChange={(options) => {
                                 setTags(options);
                                 field.onChange(
-                                  options.map((option) => option.value),
+                                  options.map((option) => ({
+                                    id: option.value,
+                                    name: option.label,
+                                  })),
                                 );
                               }}
                               placeholder="Tags"

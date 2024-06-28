@@ -14,35 +14,40 @@ async function main() {
         email: "Alice@gmail.com",
         emailVerified: "2024-06-17T08:52:49.007Z",
         role: "USER",
-        password: "password",
+        password:
+          "$2a$10$B5jRo23oWN/pS1ttOIVhcu4L23R00Poo3wJvkHO0pCgN2F7B1nKz.",
       },
       {
         name: "Bob",
         email: "Bob@gmail.com",
         emailVerified: "2024-06-17T08:52:49.007Z",
         role: "USER",
-        password: "password",
+        password:
+          "$2a$10$B5jRo23oWN/pS1ttOIVhcu4L23R00Poo3wJvkHO0pCgN2F7B1nKz.",
       },
       {
         name: "Charlie",
         email: "Charlie@gmail.com",
         emailVerified: "2024-06-17T08:52:49.007Z",
         role: "USER",
-        password: "password",
+        password:
+          "$2a$10$B5jRo23oWN/pS1ttOIVhcu4L23R00Poo3wJvkHO0pCgN2F7B1nKz.",
       },
       {
         name: "David",
         email: "David@gmail.com",
         emailVerified: "2024-06-17T08:52:49.007Z",
         role: "USER",
-        password: "password",
+        password:
+          "$2a$10$B5jRo23oWN/pS1ttOIVhcu4L23R00Poo3wJvkHO0pCgN2F7B1nKz.",
       },
       {
         name: "Eve",
         email: "Eve@gmail.com",
         emailVerified: "2024-06-17T08:52:49.007Z",
         role: "USER",
-        password: "password",
+        password:
+          "$2a$10$B5jRo23oWN/pS1ttOIVhcu4L23R00Poo3wJvkHO0pCgN2F7B1nKz.",
       },
     ],
   });
@@ -273,7 +278,226 @@ Output: [0,1]
       },
     ],
   });
+
+  await db.topic.createMany({
+    data: [
+      {
+        name: "Array",
+      },
+      {
+        name: "String",
+      },
+      {
+        name: "Hash Table",
+      },
+      {
+        name: "Dynamic Programming",
+      },
+      {
+        name: "Math",
+      },
+      {
+        name: "Sorting",
+      },
+      {
+        name: "Greedy",
+      },
+      {
+        name: "Depth First Search",
+      },
+      {
+        name: "Database",
+      },
+      {
+        name: "Binary Search",
+      },
+      {
+        name: "Tree",
+      },
+      {
+        name: "Breadth First Search",
+      },
+      {
+        name: "Matrix",
+      },
+      {
+        name: "Bit Manipulation",
+      },
+      {
+        name: "Two Pointers",
+      },
+      {
+        name: "Binary Tree",
+      },
+      {
+        name: "Heap",
+      },
+      {
+        name: "Prefix Sum",
+      },
+      {
+        name: "Stack",
+      },
+      {
+        name: "Simulation",
+      },
+      {
+        name: "Graph",
+      },
+      {
+        name: "Counting",
+      },
+      {
+        name: "Design",
+      },
+      {
+        name: "Sliding Window",
+      },
+      {
+        name: "Backtracking",
+      },
+      {
+        name: "Enumeration",
+      },
+      {
+        name: "Union Find",
+      },
+      {
+        name: "Linked List",
+      },
+      {
+        name: "Ordered Set",
+      },
+      {
+        name: "Monotonic Stack",
+      },
+      {
+        name: "Number Theory",
+      },
+      {
+        name: "Trie",
+      },
+      {
+        name: "Divide and Conquer",
+      },
+      {
+        name: "Bitmask",
+      },
+      {
+        name: "Recursion",
+      },
+      {
+        name: "Segment Tree",
+      },
+      {
+        name: "Queue",
+      },
+      {
+        name: "Binary Search Tree",
+      },
+      {
+        name: "Memoization",
+      },
+      {
+        name: "Geometry",
+      },
+      {
+        name: "Binary Indexed Tree",
+      },
+      {
+        name: "Hash Function",
+      },
+      {
+        name: "Combinatorics",
+      },
+      {
+        name: "Topological Sort",
+      },
+      {
+        name: "String Matching",
+      },
+      {
+        name: "Shortest Path",
+      },
+      {
+        name: "Rolling Hash",
+      },
+      {
+        name: "Game Theory",
+      },
+      {
+        name: "Interactive",
+      },
+      {
+        name: "Data Stream",
+      },
+      {
+        name: "Brainteaser",
+      },
+      {
+        name: "Monotonic Queue",
+      },
+      {
+        name: "Randomized",
+      },
+      {
+        name: "Merge Sort",
+      },
+      {
+        name: "Iterator",
+      },
+      {
+        name: "Concurrency",
+      },
+      {
+        name: "Doubly Linked List",
+      },
+      {
+        name: "Probability and Statistics",
+      },
+      {
+        name: "Quickselect",
+      },
+      {
+        name: "Bucket Sort",
+      },
+      {
+        name: "Suffix Array",
+      },
+      {
+        name: "Minimum Spanning Tree",
+      },
+      {
+        name: "Counting Sort",
+      },
+      {
+        name: "Shell",
+      },
+      {
+        name: "Line Sweep",
+      },
+      {
+        name: "Reservoir Sampling",
+      },
+      {
+        name: "Strongly Connected Component",
+      },
+      {
+        name: "Eulerian Circuit",
+      },
+      {
+        name: "Radix Sort",
+      },
+      {
+        name: "Rejection Sampling",
+      },
+      {
+        name: "Biconnected Component",
+      },
+    ],
+  });
 }
+
 main()
   .then(async () => {
     await db.$disconnect();

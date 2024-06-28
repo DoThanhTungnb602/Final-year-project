@@ -3,8 +3,6 @@ import authConfig from "~/server/auth.config";
 const { auth: middleware } = NextAuth(authConfig);
 
 import {
-  publicRoutes,
-  protectedRoutes,
   authRoutes,
   apiAuthPrefix,
   adminRoutePrefix,
@@ -17,8 +15,6 @@ export default middleware(async (request) => {
   const isLoggedIn = !!request.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isAdminRoute = nextUrl.pathname.startsWith(adminRoutePrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isProtectedRoute = protectedRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   // Allow API routes to be accessed without authentication
@@ -33,16 +29,12 @@ export default middleware(async (request) => {
     return;
   }
 
-  if (!isProtectedRoute && !isPublicRoute && !isAdminRoute) {
-    return;
-  }
-
-  if (!isLoggedIn && !isPublicRoute) {
+  if (!isLoggedIn) {
     return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
   if (isAdminRoute) {
-    const isAdmin = await currentRole() === "ADMIN";
+    const isAdmin = (await currentRole()) === "ADMIN";
     if (!isAdmin) {
       return Response.redirect(new URL("/", nextUrl));
     }

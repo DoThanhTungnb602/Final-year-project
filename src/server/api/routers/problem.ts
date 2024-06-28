@@ -25,6 +25,7 @@ export const problemRouter = createTRPCRouter({
               verdict: true,
             },
           },
+          tags: true,
         },
       });
       return problems.map((problem) => {
@@ -73,6 +74,7 @@ export const problemRouter = createTRPCRouter({
           tags: true,
         },
       });
+      if (!problems) return [];
       return problems.map((problem) => {
         const hasAccepted = problem.submissions.some(
           (sub) => sub.verdict === "ACCEPTED",
@@ -102,7 +104,7 @@ export const problemRouter = createTRPCRouter({
     .input(ProblemSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        const { skeletons, testCaseDrivers, ...problem } = input;
+        const { skeletons, testCaseDrivers, tags, ...problem } = input;
         const languages = await ctx.db.language.findMany();
         const isSkeletonEmpty = languages?.some((language) => {
           const skeleton = skeletons?.find((skeleton) => {
@@ -139,6 +141,11 @@ export const problemRouter = createTRPCRouter({
                 },
               })),
             },
+            tags: {
+              connect: tags?.map((tag) => ({
+                id: tag.id,
+              })),
+            },
           },
         });
       } catch (error) {
@@ -156,7 +163,7 @@ export const problemRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }).merge(ProblemSchema))
     .mutation(async ({ ctx, input }) => {
       try {
-        const { id, skeletons, testCaseDrivers, ...problem } = input;
+        const { id, skeletons, testCaseDrivers, tags, ...problem } = input;
         return await ctx.db.problem.update({
           where: {
             id,
@@ -187,6 +194,11 @@ export const problemRouter = createTRPCRouter({
                 data: {
                   code: driver.code,
                 },
+              })),
+            },
+            tags: {
+              set: tags?.map((tag) => ({
+                id: tag.id,
               })),
             },
           },
@@ -262,6 +274,7 @@ export const problemRouter = createTRPCRouter({
                 verdict: true,
               },
             },
+            tags: true,
           },
         });
         if (!problem) {
@@ -337,6 +350,7 @@ export const problemRouter = createTRPCRouter({
                 verdict: true,
               },
             },
+            tags: true,
           },
         });
       } catch (error) {

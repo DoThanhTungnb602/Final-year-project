@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Difficulty, Topic } from "@prisma/client";
+import { Difficulty } from "@prisma/client";
 
 enum Status {
   TODO = "TODO",
@@ -91,7 +91,7 @@ export const SubmissionSchema = z.object({
 
 export const ProblemFilterSchema = z.object({
   difficulty: z.nativeEnum(Difficulty).optional(),
-  tags: z.array(z.nativeEnum(Topic)).optional(),
+  tags: z.array(z.string()).optional(),
   status: z.nativeEnum(Status).optional(),
   search: z.string().optional(),
 });
@@ -103,7 +103,7 @@ export const ProblemSchema = z.object({
   description: z.string().nonempty(),
   difficulty: z.nativeEnum(Difficulty),
   isPublic: z.boolean(),
-  tags: z.array(z.nativeEnum(Topic)).min(1, {
+  tags: z.array(z.object({ id: z.string(), name: z.string() })).min(1, {
     message: "At least one tag is required",
   }),
   timeLimit: z.number().optional(),
