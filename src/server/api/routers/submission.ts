@@ -695,6 +695,9 @@ export const submissionRouter = createTRPCRouter({
           orderBy: {
             createdAt: "desc",
           },
+          include: {
+            language: true,
+          },
         });
         if (!submissions) {
           throw new TRPCError({

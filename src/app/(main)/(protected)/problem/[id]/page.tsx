@@ -10,15 +10,23 @@ import { ProblemComponent } from "~/components/shared/problem";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
-  const { data: problem, isPending } = api.problem.getPublicProblemById.useQuery(id);
+  const { data: problem, isPending } =
+    api.problem.getPublicProblemById.useQuery(id);
   const { data: problemsQueryData } = api.problem.allPublic.useQuery();
   const { setProblem } = useProblemStore();
-  const { setProblems } = useSidebarStore();
+  const { setProblems, setIsShow, setTitle } = useSidebarStore();
 
   useEffect(() => {
     if (problemsQueryData) {
       setProblems(problemsQueryData);
+      setIsShow(true);
+      setTitle("Problem List");
     }
+
+    return () => {
+      setIsShow(false);
+      setTitle("");
+    };
   }, [problemsQueryData]);
 
   useEffect(() => {

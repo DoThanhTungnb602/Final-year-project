@@ -12,6 +12,6 @@ export type PrivateProblem = RouterOutput["problem"]["getPrivateProblemById"];
 
 export type RunSubmissionResult = RouterOutput["submission"]["run"];
 
-export type PublicSubmissions = RouterOutput["submission"]["all"];
+export type PublicSubmission = RouterOutput["submission"]["all"][number];
 
-export type PublicSubmission = RouterOutput["submission"]["submit"];
+export type AfterSubmitSubmission = RouterOutput["submission"]["submit"];
