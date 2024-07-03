@@ -386,7 +386,8 @@ export const submissionRouter = createTRPCRouter({
         if (!problem || !testcaseDriver) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Internal server error. Please try again later.",
+            // message: "Internal server error. Please try again later.",
+            message: "Problem or testcase driver not found.",
           });
         }
 
@@ -459,7 +460,8 @@ export const submissionRouter = createTRPCRouter({
         if (!submissionResponse) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Internal server error. Please try again later.",
+            // message: "Internal server error. Please try again later.",
+            message: "Submission response not found.",
           });
         }
 
@@ -477,7 +479,8 @@ export const submissionRouter = createTRPCRouter({
           if (!updatedSubmissionResponse) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              message: "Internal server error. Please try again later.",
+              // message: "Internal server error. Please try again later.",
+              message: "Updated submission response not found.",
             });
           }
           if (
