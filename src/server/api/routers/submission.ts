@@ -12,6 +12,7 @@ import { decode } from "js-base64";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import { warn } from "console";
 
 export const submissionRouter = createTRPCRouter({
   run: protectedProcedure
@@ -677,6 +678,7 @@ export const submissionRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
+      throw error;
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Internal server error. Please try again later.",
