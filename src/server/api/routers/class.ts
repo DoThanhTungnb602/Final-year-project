@@ -8,7 +8,6 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { protectedRoutes } from "~/routes";
 
 export const classRouter = createTRPCRouter({
   all: adminProcedure.query(async ({ ctx }) => {
