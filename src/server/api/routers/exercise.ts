@@ -21,6 +21,7 @@ export const exerciseRouter = createTRPCRouter({
                     verdict: true,
                   },
                 },
+                tags: true,
               },
             },
           },
