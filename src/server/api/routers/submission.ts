@@ -466,12 +466,14 @@ export const submissionRouter = createTRPCRouter({
           });
         }
 
+        console.log(submissionResponse.submissions);
+
         const isProcessing =
           submissionResponse.submissions.some(
-            (submission) => submission.status.description === "Processing",
+            (submission) => submission?.status.description === "Processing",
           ) ||
           submissionResponse.submissions.some(
-            (submission) => submission.status.description === "In Queue",
+            (submission) => submission?.status.description === "In Queue",
           );
 
         while (isProcessing) {
@@ -486,13 +488,15 @@ export const submissionRouter = createTRPCRouter({
           }
           if (
             updatedSubmissionResponse.submissions.every(
-              (submission) => submission.status.description !== "Processing",
+              (submission) => submission?.status.description !== "Processing",
             )
           ) {
             submissionResponse = updatedSubmissionResponse;
             break;
           }
         }
+
+        console.log(submissionResponse.submissions);
 
         const user = await ctx.db.user.findUnique({
           where: {
@@ -508,7 +512,8 @@ export const submissionRouter = createTRPCRouter({
         }
 
         const isCompilationError = submissionResponse.submissions.some(
-          (submission) => submission.status.description === "Compilation Error",
+          (submission) =>
+            submission?.status.description === "Compilation Error",
         );
         if (isCompilationError) {
           const newSubmission = await ctx.db.submission.create({
@@ -540,12 +545,12 @@ export const submissionRouter = createTRPCRouter({
 
         const isRuntimeError = submissionResponse.submissions.some(
           (submission) =>
-            submission.status.description === "Runtime Error (NZEC)" ||
-            submission.status.description === "Runtime Error (SIGSEGV)" ||
-            submission.status.description === "Runtime Error (SIGXFSZ)" ||
-            submission.status.description === "Runtime Error (SIGFPE)" ||
-            submission.status.description === "Runtime Error (SIGABRT)" ||
-            submission.status.description === "Runtime Error (Other)",
+            submission?.status.description === "Runtime Error (NZEC)" ||
+            submission?.status.description === "Runtime Error (SIGSEGV)" ||
+            submission?.status.description === "Runtime Error (SIGXFSZ)" ||
+            submission?.status.description === "Runtime Error (SIGFPE)" ||
+            submission?.status.description === "Runtime Error (SIGABRT)" ||
+            submission?.status.description === "Runtime Error (Other)",
         );
         if (isRuntimeError) {
           const newSubmission = await ctx.db.submission.create({
@@ -575,7 +580,7 @@ export const submissionRouter = createTRPCRouter({
 
         const isTimeLimitExceeded = submissionResponse.submissions.some(
           (submission) =>
-            submission.status.description === "Time Limit Exceeded",
+            submission?.status.description === "Time Limit Exceeded",
         );
         if (isTimeLimitExceeded) {
           const newSubmission = await ctx.db.submission.create({
@@ -603,7 +608,7 @@ export const submissionRouter = createTRPCRouter({
         }
 
         const isAccepted = submissionResponse.submissions.every(
-          (submission) => submission.status.description === "Accepted",
+          (submission) => submission?.status.description === "Accepted",
         );
         if (isAccepted) {
           const newSubmission = await ctx.db.submission.create({
@@ -639,7 +644,7 @@ export const submissionRouter = createTRPCRouter({
         }
 
         const isWrongAnswer = submissionResponse.submissions.some(
-          (submission) => submission.status.description === "Wrong Answer",
+          (submission) => submission?.status.description === "Wrong Answer",
         );
         if (isWrongAnswer) {
           const newSubmission = await ctx.db.submission.create({
@@ -678,7 +683,7 @@ export const submissionRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-      throw error;
+        throw error;
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Internal server error. Please try again later.",

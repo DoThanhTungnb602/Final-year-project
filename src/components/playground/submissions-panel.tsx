@@ -14,6 +14,7 @@ import { cn } from "~/lib/utils";
 import { ArrowLeft, Check, Clock, Copy, Cpu, Eye } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
+import moment from "moment";
 
 const SubmissionsPanel = () => {
   const { problem } = useProblemStore();
@@ -189,7 +190,12 @@ const SubmissionsPanel = () => {
             <ArrowLeft className="mr-2 size-4" />
             All submissions
           </Button>
-          <RenderStatus />
+          <div className="flex w-full items-center justify-between gap-4">
+            <RenderStatus />
+            <p className="text-xs font-semibold text-muted-foreground">
+              {moment(submissionDetail?.createdAt).local().format("MMM Do YYYY")}
+            </p>
+          </div>
           <p className="font-semibold">
             Code: {submissionDetail?.language.name}
           </p>
