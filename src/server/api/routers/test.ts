@@ -36,6 +36,7 @@ export const testRouter = createTRPCRouter({
                     verdict: true,
                   },
                 },
+                tags: true,
               },
             },
           },
