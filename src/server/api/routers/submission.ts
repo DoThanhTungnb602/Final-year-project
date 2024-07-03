@@ -13,6 +13,7 @@ import { decode } from "js-base64";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { warn } from "console";
+import { AxiosError } from "axios";
 
 export const submissionRouter = createTRPCRouter({
   run: protectedProcedure
@@ -279,6 +280,9 @@ export const submissionRouter = createTRPCRouter({
           error: "Internal server error. Please try again later.",
         };
       } catch (error) {
+        if (error instanceof AxiosError) {
+          throw error;
+        }
         if (error instanceof TRPCError) {
           throw error;
         }
@@ -495,8 +499,6 @@ export const submissionRouter = createTRPCRouter({
             break;
           }
         }
-
-        console.log(submissionResponse.submissions);
 
         const user = await ctx.db.user.findUnique({
           where: {
