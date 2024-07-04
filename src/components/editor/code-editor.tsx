@@ -17,7 +17,6 @@ import { FaCloudArrowUp } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa6";
 import { Spinner } from "../shared/spinner";
 import { useRunResultStore } from "~/hooks/use-submission-store";
-import { run } from "~/actions/submission";
 
 export function CodeEditor() {
   const { theme } = useTheme();

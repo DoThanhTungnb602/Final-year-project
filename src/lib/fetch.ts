@@ -89,6 +89,7 @@ export const getBatchSubmissionFetch = async (
     {
       method: "GET",
       headers,
+      cache: 'no-store'
     },
   );
 
