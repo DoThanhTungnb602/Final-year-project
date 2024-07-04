@@ -98,7 +98,7 @@ export function CodeEditor() {
     },
   });
 
-  const testQuery = api.submission.test.useMutation({
+  const test = api.submission.test.useMutation({
     onSuccess(data) {
       console.log(data);
     },
@@ -106,7 +106,11 @@ export function CodeEditor() {
 
   const onRun = () => {
     if (problem) {
-      testQuery.mutate();
+      test.mutate({
+        problemId: problem.id,
+        languageId: selectedLanguage.id,
+        code: sourceCode ?? "",
+      });
       // runProblem.mutate({
       //   problemId: problem.id,
       //   languageId: selectedLanguage.id,
