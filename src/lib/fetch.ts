@@ -80,16 +80,14 @@ export const createBatchSubmission = async (
   return response.json() as Promise<{ token: string }[]>;
 };
 
-export const getBatchSubmissionFetch = async (
-  tokens: { token: string }[],
-): Promise<{ submissions: SubmissionResponse[] }> => {
+export const getBatchSubmissionFetch = async (tokens: { token: string }[]) => {
   const tokenString = tokens.map((token) => token.token).join(",");
   const response = await fetch(
     `${judge0_api_url}/submissions/batch?base64_encoded=true&wait=false&tokens=${tokenString}`,
     {
       method: "GET",
       headers,
-      cache: 'no-store'
+      cache: "no-store",
     },
   );
 
@@ -98,5 +96,5 @@ export const getBatchSubmissionFetch = async (
     throw new Error("Internal server error. Please try again later.");
   }
 
-  return response.json() as Promise<{ submissions: SubmissionResponse[] }>;
+  return response.json();
 };
