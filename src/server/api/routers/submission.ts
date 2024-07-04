@@ -287,7 +287,7 @@ export const submissionRouter = createTRPCRouter({
           throw error;
         }
         if (error instanceof TRPCError) {
-          throw error;
+          return error;
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
