@@ -13,6 +13,7 @@ import { decode } from "js-base64";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { AxiosError } from "axios";
+import { getBatchSubmissionFetch } from "~/lib/fetch";
 
 export const submissionRouter = createTRPCRouter({
   run: protectedProcedure
@@ -287,7 +288,7 @@ export const submissionRouter = createTRPCRouter({
           throw error;
         }
         if (error instanceof TRPCError) {
-          return error;
+          throw error;
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -731,4 +732,13 @@ export const submissionRouter = createTRPCRouter({
         });
       }
     }),
+
+  test: protectedProcedure.mutation(async () => {
+    const tokens = [
+      { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
+      { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
+    ];
+    const submissions = await getBatchSubmissionFetch(tokens);
+    return submissions;
+  }),
 });

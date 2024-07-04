@@ -17,3 +17,5 @@ export type PublicSubmission = RouterOutput["submission"]["all"][number];
 export type AfterSubmitSubmission = RouterOutput["submission"]["submit"];
 
 export type ClassroomById = RouterOutput["class"]["getById"];
+
+export type Test = RouterOutput["submission"]["test"];

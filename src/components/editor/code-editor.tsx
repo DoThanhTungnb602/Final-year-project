@@ -17,6 +17,7 @@ import { FaCloudArrowUp } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa6";
 import { Spinner } from "../shared/spinner";
 import { useRunResultStore } from "~/hooks/use-submission-store";
+import { run } from "~/actions/submission";
 
 export function CodeEditor() {
   const { theme } = useTheme();
@@ -98,13 +99,20 @@ export function CodeEditor() {
     },
   });
 
+  const testQuery = api.submission.test.useMutation({
+    onSuccess(data) {
+      console.log(data);
+    },
+  });
+
   const onRun = () => {
     if (problem) {
-      runProblem.mutate({
-        problemId: problem.id,
-        languageId: selectedLanguage.id,
-        code: sourceCode ?? "",
-      });
+      testQuery.mutate();
+      // runProblem.mutate({
+      //   problemId: problem.id,
+      //   languageId: selectedLanguage.id,
+      //   code: sourceCode ?? "",
+      // });
     }
   };
 
