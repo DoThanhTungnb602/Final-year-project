@@ -64,7 +64,7 @@ export const getSubmission = async (
   return response.json() as Promise<SubmissionResponse>;
 };
 
-export const createBatchSubmission = async (
+export const createBatchSubmissionFetch = async (
   submissions: SubmissionRequest[],
 ): Promise<{ token: string }[]> => {
   const response = await fetch(
@@ -93,7 +93,6 @@ export const getBatchSubmissionFetch = async (
     {
       method: "GET",
       headers,
-      cache: "no-store",
     },
   );
 
