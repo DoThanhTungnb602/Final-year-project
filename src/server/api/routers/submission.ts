@@ -12,7 +12,6 @@ import { decode } from "js-base64";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { warn } from "console";
 import { AxiosError } from "axios";
 
 export const submissionRouter = createTRPCRouter({
@@ -37,6 +36,10 @@ export const submissionRouter = createTRPCRouter({
         }
 
         let submission = await getSubmission(token);
+
+        if (submission) {
+          console.log("Submission: ", submission);
+        }
 
         if (!submission) {
           throw new TRPCError({

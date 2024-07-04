@@ -56,6 +56,9 @@ export const createSubmission = async ({
 export const getSubmission = async (token: string) => {
   const response = await axiosInstance
     .get<SubmissionResponse>(`/submissions/${token}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
       params: {
         base64_encoded: "true",
         wait: "false",
