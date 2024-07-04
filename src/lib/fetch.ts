@@ -67,21 +67,49 @@ export const getSubmission = async (
 export const createBatchSubmissionFetch = async (
   submissions: SubmissionRequest[],
 ): Promise<{ token: string }[]> => {
-  const response = await fetch(
-    `${judge0_api_url}/submissions/batch?base64_encoded=true&wait=false`,
-    {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ submissions }),
+  const url =
+    "https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=true";
+  const options = {
+    method: "POST",
+    headers: {
+      "x-rapidapi-key": "65358de5c5msh85f235df7606377p107923jsna1c601409a6a",
+      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({
+      submissions: [
+        {
+          language_id: 46,
+          source_code: "ZWNobyBoZWxsbyBmcm9tIEJhc2gK",
+        },
+        {
+          language_id: 71,
+          source_code: "cHJpbnQoImhlbGxvIGZyb20gUHl0aG9uIikK",
+        },
+        {
+          language_id: 72,
+          source_code: "cHV0cygiaGVsbG8gZnJvbSBSdWJ5IikK",
+        },
+      ],
+    }),
+  };
 
-  if (!response.ok) {
-    console.log("Fetch error:", response.statusText);
-    throw new Error("Internal server error. Please try again later.");
+  try {
+    const response = await fetch(url, options);
+    const result = (await response.json()) as Promise<{ token: string }[]>;
+    return result;
+  } catch (error) {
+    console.error(error);
   }
 
-  return response.json() as Promise<{ token: string }[]>;
+  return [];
+
+  // if (!response.ok) {
+  //   console.log("Fetch error create:", response);
+  //   throw new Error("Internal server error. Please try again later.");
+  // }
+  //
+  // return response.json() as Promise<{ token: string }[]>;
 };
 
 export const getBatchSubmissionFetch = async (
@@ -97,7 +125,7 @@ export const getBatchSubmissionFetch = async (
   );
 
   if (!response.ok) {
-    console.log("Fetch error:", response.statusText);
+    console.log("Fetch error get:", response);
     throw new Error("Internal server error. Please try again later.");
   }
 
