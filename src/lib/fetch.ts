@@ -1,13 +1,17 @@
 import { SubmissionRequest, SubmissionResponse } from "./types";
 
-const judge0_api_url = process.env.JUDGE0_API_URL;
-const judge0_api_key = process.env.JUDGE0_API_KEY;
-const judge0_api_host = process.env.JUDGE0_API_HOST;
+// const judge0_api_url = process.env.JUDGE0_API_URL;
+const judge0_api_url = "https://judge0-ce.p.rapidapi.com";
+const judge0_api_key = "65358de5c5msh85f235df7606377p107923jsna1c601409a6a";
+const judge0_api_host = "judge0-ce.p.rapidapi.com";
+// JUDGE0_API_KEY=65358de5c5msh85f235df7606377p107923jsna1c601409a6a
+// JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
+// JUDGE0_API_HOST=judge0-ce.p.rapidapi.com
 
 const headers: HeadersInit = {
   "Content-Type": "application/json",
-  "X-RapidAPI-Key": judge0_api_key!,
-  "X-RapidAPI-Host": judge0_api_host!,
+  "X-RapidAPI-Key": judge0_api_key,
+  "X-RapidAPI-Host": judge0_api_host,
 };
 
 export const createSubmission = async ({
@@ -80,7 +84,9 @@ export const createBatchSubmission = async (
   return response.json() as Promise<{ token: string }[]>;
 };
 
-export const getBatchSubmissionFetch = async (tokens: { token: string }[]) => {
+export const getBatchSubmissionFetch = async (
+  tokens: { token: string }[],
+): Promise<{ submissions: SubmissionResponse[] }> => {
   const tokenString = tokens.map((token) => token.token).join(",");
   const response = await fetch(
     `${judge0_api_url}/submissions/batch?base64_encoded=true&wait=false&tokens=${tokenString}`,
@@ -96,5 +102,5 @@ export const getBatchSubmissionFetch = async (tokens: { token: string }[]) => {
     throw new Error("Internal server error. Please try again later.");
   }
 
-  return response.json();
+  return response.json() as Promise<{ submissions: SubmissionResponse[] }>;
 };
