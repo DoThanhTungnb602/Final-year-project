@@ -1,17 +1,13 @@
 import { SubmissionRequest, SubmissionResponse } from "./types";
 
-// const judge0_api_url = process.env.JUDGE0_API_URL;
-const judge0_api_url = "https://judge0-ce.p.rapidapi.com";
-const judge0_api_key = "65358de5c5msh85f235df7606377p107923jsna1c601409a6a";
-const judge0_api_host = "judge0-ce.p.rapidapi.com";
-// JUDGE0_API_KEY=65358de5c5msh85f235df7606377p107923jsna1c601409a6a
-// JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com
-// JUDGE0_API_HOST=judge0-ce.p.rapidapi.com
+const judge0_api_url = process.env.JUDGE0_API_URL;
+const judge0_api_key = process.env.JUDGE0_API_KEY;
+const judge0_api_host = process.env.JUDGE0_API_HOST;
 
 const headers: HeadersInit = {
   "Content-Type": "application/json",
-  "X-RapidAPI-Key": judge0_api_key,
-  "X-RapidAPI-Host": judge0_api_host,
+  "x-rapidapi-key": judge0_api_key!,
+  "x-rapidapi-host": judge0_api_host!,
 };
 
 export const createSubmission = async ({
@@ -66,32 +62,12 @@ export const getSubmission = async (
 
 export const createBatchSubmissionFetch = async (
   submissions: SubmissionRequest[],
-): Promise<{ token: string }[]> => {
-  const url =
-    "https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=true";
+): Promise<{ token: string }[] | null> => {
+  const url = `${judge0_api_url}/submissions/batch?base64_encoded=true`;
   const options = {
     method: "POST",
-    headers: {
-      "x-rapidapi-key": "65358de5c5msh85f235df7606377p107923jsna1c601409a6a",
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      submissions: [
-        {
-          language_id: 46,
-          source_code: "ZWNobyBoZWxsbyBmcm9tIEJhc2gK",
-        },
-        {
-          language_id: 71,
-          source_code: "cHJpbnQoImhlbGxvIGZyb20gUHl0aG9uIikK",
-        },
-        {
-          language_id: 72,
-          source_code: "cHV0cygiaGVsbG8gZnJvbSBSdWJ5IikK",
-        },
-      ],
-    }),
+    headers,
+    body: JSON.stringify({ submissions }),
   };
 
   try {
@@ -102,14 +78,7 @@ export const createBatchSubmissionFetch = async (
     console.error(error);
   }
 
-  return [];
-
-  // if (!response.ok) {
-  //   console.log("Fetch error create:", response);
-  //   throw new Error("Internal server error. Please try again later.");
-  // }
-  //
-  // return response.json() as Promise<{ token: string }[]>;
+  return null;
 };
 
 export const getBatchSubmissionFetch = async (

@@ -786,6 +786,7 @@ export const submissionRouter = createTRPCRouter({
           };
         },
       );
+
       const tokens = await createBatchSubmissionFetch(submissions);
       if (!tokens) {
         throw new TRPCError({

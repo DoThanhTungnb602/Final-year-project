@@ -99,7 +99,7 @@ const TestResultPanel = () => {
                 <code>
                   {stringToData(
                     atob(submissions[activeTestCaseTab]?.stdout ?? ""),
-                    typeof currentTestCase?.expected_output,
+                    typeof currentTestCase?.output,
                   )}
                 </code>
               </CardContent>

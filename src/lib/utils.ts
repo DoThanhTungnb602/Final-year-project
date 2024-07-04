@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { remark } from "remark";
 import html from "remark-html";
 import { TestCase } from "./types";
+import { CPP_JUDGE0_ID, JAVASCRIPT_JUDGE0_ID } from "./constant";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -22,7 +23,7 @@ export async function getUploadthingFile(fileKey: string) {
   return data;
 }
 
-const attachLibraryAndDriver = ({
+const addCppIncludesAndDriverCode = ({
   userCode,
   driverCode,
 }: {
@@ -136,7 +137,7 @@ export const preparePreSubmissionData = ({
 }) => {
   let code = "";
   switch (languageId) {
-    case "54": {
+    case CPP_JUDGE0_ID: {
       code = importCommonLibraryCpp(userCode);
     }
   }
@@ -158,10 +159,13 @@ export const prepareSubmissionData = ({
   let stdin_array: string[] = [];
   let expected_output_array: string[] = [];
   switch (languageId) {
-    case "54":
-      code = attachLibraryAndDriver({ userCode, driverCode });
+    case CPP_JUDGE0_ID:
+      code = addCppIncludesAndDriverCode({ userCode, driverCode });
       stdin_array = jsonToStdin(testcases);
       expected_output_array = jsonToExpectedOutput(testcases);
+      break;
+
+    case JAVASCRIPT_JUDGE0_ID:
       break;
 
     default:
