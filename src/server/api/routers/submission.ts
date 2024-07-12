@@ -41,10 +41,6 @@ export const submissionRouter = createTRPCRouter({
 
         let submission = await getSubmission(token);
 
-        if (submission) {
-          console.log("Submission: ", submission);
-        }
-
         if (!submission) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
@@ -148,16 +144,16 @@ export const submissionRouter = createTRPCRouter({
         // ];
 
         // Accepted tokens
-        const tokens = [
-          { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-          { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        ];
+        // const tokens = [
+        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
+        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
+        // ];
 
         // Compilation Error tokens
-        // const tokens = [
-        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
-        // ];
+        const tokens = [
+          { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
+          { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
+        ];
 
         // Runtime Error tokens
         // const tokens = [
@@ -734,67 +730,5 @@ export const submissionRouter = createTRPCRouter({
           message: "Internal server error. Please try again later.",
         });
       }
-    }),
-
-  test: protectedProcedure
-    .input(SubmissionSchema)
-    .mutation(async ({ input, ctx }) => {
-      const problem = await ctx.db.problem.findUnique({
-        where: {
-          id: input.problemId,
-        },
-      });
-
-      const testcaseDriver = await ctx.db.testCaseDriver.findUnique({
-        where: {
-          languageId_problemId: {
-            languageId: input.languageId,
-            problemId: input.problemId,
-          },
-        },
-        select: {
-          code: true,
-        },
-      });
-
-      if (!problem || !testcaseDriver) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Internal server error. Please try again later.",
-        });
-      }
-
-      const testcases = JSON.parse(problem.testcases) as TestCase[];
-      const publicTestcases = testcases.slice(0, 2);
-      const { code, stdin_array, expected_output_array } =
-        prepareSubmissionData({
-          userCode: input.code,
-          driverCode: testcaseDriver.code,
-          languageId: input.languageId,
-          testcases: publicTestcases,
-        });
-
-      const submissions: SubmissionRequest[] = publicTestcases.map(
-        (testcase, index) => {
-          const stdin = stdin_array[index] ?? "";
-          const expected_output = expected_output_array[index] ?? "";
-          return {
-            source_code: btoa(code),
-            language_id: input.languageId,
-            stdin: btoa(stdin),
-            expected_output: btoa(expected_output),
-          };
-        },
-      );
-
-      const tokens = await createBatchSubmissionFetch(submissions);
-      if (!tokens) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "No tokens found. Please try again later.",
-        });
-      }
-      const response = await getBatchSubmissionFetch(tokens);
-      return response;
     }),
 });

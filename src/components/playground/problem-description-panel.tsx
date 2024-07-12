@@ -18,9 +18,21 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import SubmissionsPanel from "./submissions-panel";
+import { useSubmitResultStore } from "~/hooks/use-submission-store";
+import { useEffect, useState } from "react";
 
 const ProblemDescriptionPanel = () => {
   const { problem } = useProblemStore();
+  const { submitResult } = useSubmitResultStore();
+  const [activeTab, setActiveTab] = useState<"description" | "submissions">(
+    "description",
+  );
+
+  useEffect(() => {
+    if (submitResult) {
+      setActiveTab("submissions");
+    }
+  }, [submitResult]);
 
   const ProblemStatus = () => {
     const status = problem?.status;
@@ -53,13 +65,25 @@ const ProblemDescriptionPanel = () => {
   };
 
   return (
-    <Tabs defaultValue="description" className="flex h-full w-full flex-col">
+    <Tabs
+      defaultValue="description"
+      className="flex h-full w-full flex-col"
+      value={activeTab}
+    >
       <TabsList className="flex w-full justify-start gap-1">
-        <TabsTrigger value="description" className="flex gap-2">
+        <TabsTrigger
+          value="description"
+          className="flex gap-2"
+          onClick={() => setActiveTab("description")}
+        >
           <IoDocumentText className="h-4 w-4" />
           Description
         </TabsTrigger>
-        <TabsTrigger value="submissions" className="flex gap-2">
+        <TabsTrigger
+          value="submissions"
+          className="flex gap-2"
+          onClick={() => setActiveTab("submissions")}
+        >
           <FaHistory />
           Submissions
         </TabsTrigger>

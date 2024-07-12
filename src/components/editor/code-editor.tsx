@@ -16,12 +16,16 @@ import { defaultEditorOptions } from "~/lib/types";
 import { FaCloudArrowUp } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa6";
 import { Spinner } from "../shared/spinner";
-import { useRunResultStore } from "~/hooks/use-submission-store";
+import {
+  useRunResultStore,
+  useSubmitResultStore,
+} from "~/hooks/use-submission-store";
 
 export function CodeEditor() {
   const { theme } = useTheme();
   const { problem } = useProblemStore();
   const { setResult } = useRunResultStore();
+  const { setSubmitResult } = useSubmitResultStore();
 
   const {
     languages,
@@ -95,27 +99,17 @@ export function CodeEditor() {
   const submitProblem = api.submission.submit.useMutation({
     onSuccess(data) {
       console.log(data);
-    },
-  });
-
-  const test = api.submission.test.useMutation({
-    onSuccess(data) {
-      console.log(data);
+      setSubmitResult(data);
     },
   });
 
   const onRun = () => {
     if (problem) {
-      test.mutate({
+      runProblem.mutate({
         problemId: problem.id,
         languageId: selectedLanguage.id,
         code: sourceCode ?? "",
       });
-      // runProblem.mutate({
-      //   problemId: problem.id,
-      //   languageId: selectedLanguage.id,
-      //   code: sourceCode ?? "",
-      // });
     }
   };
 

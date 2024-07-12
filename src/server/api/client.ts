@@ -12,10 +12,10 @@ export type PrivateProblem = RouterOutput["problem"]["getPrivateProblemById"];
 
 export type RunSubmissionResult = RouterOutput["submission"]["run"];
 
+export type SubmitSubmissionResult = RouterOutput["submission"]["submit"];
+
 export type PublicSubmission = RouterOutput["submission"]["all"][number];
 
 export type AfterSubmitSubmission = RouterOutput["submission"]["submit"];
 
 export type ClassroomById = RouterOutput["class"]["getById"];
-
-export type Test = RouterOutput["submission"]["test"];

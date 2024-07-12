@@ -5,7 +5,7 @@ import { useProblemStore } from "~/hooks/use-problem-store";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { Badge } from "~/components/ui/badge";
 import { api } from "~/trpc/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/shared/data-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -15,9 +15,11 @@ import { ArrowLeft, Check, Clock, Copy, Cpu, Eye } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import moment from "moment";
+import { useSubmitResultStore } from "~/hooks/use-submission-store";
 
 const SubmissionsPanel = () => {
   const { problem } = useProblemStore();
+  const { submitResult } = useSubmitResultStore();
   const submissionsQuery = api.submission.all.useQuery(
     {
       problemId: problem?.id ?? "",
@@ -35,6 +37,12 @@ const SubmissionsPanel = () => {
   >("submissions");
 
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (submitResult) {
+      setActiveTab("submissionDetail");
+    }
+  }, [submitResult]);
 
   const handleCopy = () => {
     if (isCopied) return;
@@ -172,11 +180,15 @@ const SubmissionsPanel = () => {
       value={activeTab}
     >
       <TabsContent value="submissions" className="min-h-0 flex-1">
-        <DataTable
-          columns={columns}
-          pagination={false}
-          data={submissionsQuery.data ?? []}
-        />
+        {submissionsQuery.isPending ? (
+          <DefaultLoadingPage />
+        ) : (
+          <DataTable
+            columns={columns}
+            pagination={false}
+            data={submissionsQuery.data ?? []}
+          />
+        )}
       </TabsContent>
       <TabsContent value="submissionDetail" className="min-h-0 flex-1">
         <div className="flex flex-col items-start gap-4 px-2">
@@ -193,7 +205,9 @@ const SubmissionsPanel = () => {
           <div className="flex w-full items-center justify-between gap-4">
             <RenderStatus />
             <p className="text-xs font-semibold text-muted-foreground">
-              {moment(submissionDetail?.createdAt).local().format("MMM Do YYYY")}
+              {moment(submissionDetail?.createdAt)
+                .local()
+                .format("MMM Do YYYY")}
             </p>
           </div>
           <p className="font-semibold">
