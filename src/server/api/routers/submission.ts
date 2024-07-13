@@ -13,10 +13,12 @@ import { decode } from "js-base64";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { AxiosError } from "axios";
-import {
-  createBatchSubmissionFetch,
-  getBatchSubmissionFetch,
-} from "~/lib/fetch";
+// import {
+//   createSubmissionFetch,
+//   getSubmissionFetch,
+//   createBatchSubmissionFetch,
+//   getBatchSubmissionFetch,
+// } from "~/lib/fetch";
 
 export const submissionRouter = createTRPCRouter({
   run: protectedProcedure
@@ -125,13 +127,13 @@ export const submissionRouter = createTRPCRouter({
           },
         );
 
-        // const tokens = await createBatchSubmission(submissions);
-        // if (!tokens) {
-        //   throw new TRPCError({
-        //     code: "INTERNAL_SERVER_ERROR",
-        //     message: "Internal server error. Please try again later.",
-        //   });
-        // }
+        const tokens = await createBatchSubmission(submissions);
+        if (!tokens) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
 
         // Wrong Answer tokens
         // const tokens = [
@@ -150,10 +152,10 @@ export const submissionRouter = createTRPCRouter({
         // ];
 
         // Compilation Error tokens
-        const tokens = [
-          { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-          { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
-        ];
+        // const tokens = [
+        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
+        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
+        // ];
 
         // Runtime Error tokens
         // const tokens = [
@@ -300,78 +302,81 @@ export const submissionRouter = createTRPCRouter({
     .input(SubmissionSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        // const token = await createSubmission({
-        //   code: preparePreSubmissionData({
-        //     userCode: input.code ?? "",
-        //     languageId: input.languageId,
-        //   }),
-        //   languageId: input.languageId,
-        //   stdin: "",
-        // });
-        //
-        // if (!token) {
-        //   throw new TRPCError({
-        //     code: "INTERNAL_SERVER_ERROR",
-        //     message: "Internal server error. Please try again later.",
-        //   });
-        // }
-        //
-        // let submission = await getSubmission(token);
-        //
-        // if (!submission) {
-        //   throw new TRPCError({
-        //     code: "INTERNAL_SERVER_ERROR",
-        //     message: "Internal server error. Please try again later.",
-        //   });
-        // }
-        //
-        // const isSubmissionProcessing =
-        //   submission.status.description === "Processing" ||
-        //   submission.status.description === "In Queue";
-        //
-        // while (isSubmissionProcessing) {
-        //   await new Promise((resolve) => setTimeout(resolve, 1000));
-        //   const updatedSubmissionResponse = await getSubmission(token);
-        //   if (!updatedSubmissionResponse) {
-        //     throw new TRPCError({
-        //       code: "INTERNAL_SERVER_ERROR",
-        //       message: "Internal server error. Please try again later.",
-        //     });
-        //   }
-        //   if (
-        //     updatedSubmissionResponse.status.description !== "Processing" ||
-        //     submission.status.description === "In Queue"
-        //   ) {
-        //     submission = updatedSubmissionResponse;
-        //     break;
-        //   }
-        // }
-        //
-        // if (submission.status.description === "Compilation Error") {
-        //   const newSubmission = await ctx.db.submission.create({
-        //     data: {
-        //       verdict: "COMPILATION_ERROR",
-        //       code: input.code,
-        //       compile_output: decode(submission.compile_output ?? ""),
-        //       problem: {
-        //         connect: {
-        //           id: input.problemId,
-        //         },
-        //       },
-        //       user: {
-        //         connect: {
-        //           id: ctx.session.user.id,
-        //         },
-        //       },
-        //       language: {
-        //         connect: {
-        //           id: input.languageId,
-        //         },
-        //       },
-        //     },
-        //   });
-        //   return newSubmission;
-        // }
+        const token = await createSubmission({
+          code: preparePreSubmissionData({
+            userCode: input.code ?? "",
+            languageId: input.languageId,
+          }),
+          languageId: input.languageId,
+          stdin: "",
+        });
+
+        if (!token) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+
+        let submission = await getSubmission(token);
+
+        if (!submission) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+
+        const isSubmissionProcessing =
+          submission.status.description === "Processing" ||
+          submission.status.description === "In Queue";
+
+        while (isSubmissionProcessing) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          const updatedSubmissionResponse = await getSubmission(token);
+          if (!updatedSubmissionResponse) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Internal server error. Please try again later.",
+            });
+          }
+          if (
+            updatedSubmissionResponse.status.description !== "Processing" ||
+            submission.status.description === "In Queue"
+          ) {
+            submission = updatedSubmissionResponse;
+            break;
+          }
+        }
+
+        if (submission.status.description === "Compilation Error") {
+          const newSubmission = await ctx.db.submission.create({
+            data: {
+              verdict: "COMPILATION_ERROR",
+              code: input.code,
+              compile_output: decode(submission.compile_output ?? ""),
+              problem: {
+                connect: {
+                  id: input.problemId,
+                },
+              },
+              user: {
+                connect: {
+                  id: ctx.session.user.id,
+                },
+              },
+              language: {
+                connect: {
+                  id: input.languageId,
+                },
+              },
+            },
+            include: {
+              language: true,
+            },
+          });
+          return newSubmission;
+        }
 
         const problem = await ctx.db.problem.findUnique({
           where: {
@@ -394,8 +399,7 @@ export const submissionRouter = createTRPCRouter({
         if (!problem || !testcaseDriver) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            // message: "Internal server error. Please try again later.",
-            message: "Problem or testcase driver not found.",
+            message: "Internal server error. Please try again later.",
           });
         }
 
@@ -422,13 +426,13 @@ export const submissionRouter = createTRPCRouter({
           },
         );
 
-        // const tokens = await createBatchSubmission(submissions);
-        // if (!tokens) {
-        //   throw new TRPCError({
-        //     code: "INTERNAL_SERVER_ERROR",
-        //     message: "Internal server error. Please try again later.",
-        //   });
-        // }
+        const tokens = await createBatchSubmission(submissions);
+        if (!tokens) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
 
         // Wrong Answer tokens
         // const tokens = [
@@ -441,10 +445,10 @@ export const submissionRouter = createTRPCRouter({
         // ];
 
         // Accepted tokens
-        const tokens = [
-          { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-          { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        ];
+        // const tokens = [
+        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
+        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
+        // ];
 
         // Compilation Error tokens
         // const tokens = [
@@ -468,12 +472,9 @@ export const submissionRouter = createTRPCRouter({
         if (!submissionResponse) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            // message: "Internal server error. Please try again later.",
-            message: "Submission response not found.",
+            message: "Internal server error. Please try again later.",
           });
         }
-
-        console.log(submissionResponse.submissions);
 
         const isProcessing =
           submissionResponse.submissions.some(
@@ -489,8 +490,7 @@ export const submissionRouter = createTRPCRouter({
           if (!updatedSubmissionResponse) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              // message: "Internal server error. Please try again later.",
-              message: "Updated submission response not found.",
+              message: "Internal server error. Please try again later.",
             });
           }
           if (
@@ -544,6 +544,9 @@ export const submissionRouter = createTRPCRouter({
                 },
               },
             },
+            include: {
+              language: true,
+            },
           });
           return newSubmission;
         }
@@ -579,6 +582,9 @@ export const submissionRouter = createTRPCRouter({
                 },
               },
             },
+            include: {
+              language: true,
+            },
           });
           return newSubmission;
         }
@@ -607,6 +613,9 @@ export const submissionRouter = createTRPCRouter({
                   id: input.languageId,
                 },
               },
+            },
+            include: {
+              language: true,
             },
           });
           return newSubmission;
@@ -644,6 +653,9 @@ export const submissionRouter = createTRPCRouter({
                 },
               },
             },
+            include: {
+              language: true,
+            },
           });
           return newSubmission;
         }
@@ -680,10 +692,12 @@ export const submissionRouter = createTRPCRouter({
                 },
               },
             },
+            include: {
+              language: true,
+            },
           });
           return newSubmission;
         }
-        return null;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
@@ -721,6 +735,36 @@ export const submissionRouter = createTRPCRouter({
           });
         }
         return submissions;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Internal server error. Please try again later.",
+        });
+      }
+    }),
+
+  get: protectedProcedure
+    .input(z.object({ submissionId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const submission = await ctx.db.submission.findUnique({
+          where: {
+            id: input.submissionId,
+          },
+          include: {
+            language: true,
+          },
+        });
+        if (!submission) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Internal server error. Please try again later.",
+          });
+        }
+        return submission;
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

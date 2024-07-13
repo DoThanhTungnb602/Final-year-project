@@ -26,6 +26,7 @@ export function CodeEditor() {
   const { problem } = useProblemStore();
   const { setResult } = useRunResultStore();
   const { setSubmitResult } = useSubmitResultStore();
+  const utils = api.useUtils();
 
   const {
     languages,
@@ -99,6 +100,7 @@ export function CodeEditor() {
   const submitProblem = api.submission.submit.useMutation({
     onSuccess(data) {
       console.log(data);
+      utils.submission.all.invalidate().catch(console.error);
       setSubmitResult(data);
     },
   });

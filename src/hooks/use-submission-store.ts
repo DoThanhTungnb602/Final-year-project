@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { RunSubmissionResult } from "~/server/api/client";
-import { SubmitSubmissionResult } from "~/server/api/client";
+import { SubmitResult } from "~/server/api/client";
 
 interface RunResultState {
   result: RunSubmissionResult | null;
@@ -9,8 +9,8 @@ interface RunResultState {
 }
 
 interface SubmitResultState {
-  submitResult: SubmitSubmissionResult | null | object;
-  setSubmitResult: (submitResult: SubmitSubmissionResult | object) => void;
+  submitResult: SubmitResult | null;
+  setSubmitResult: (submitResult: SubmitResult | null) => void;
 }
 
 export const useRunResultStore = create<RunResultState>()((set) => ({

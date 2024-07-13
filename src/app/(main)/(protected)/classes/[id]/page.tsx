@@ -13,16 +13,20 @@ export default function Page({ params }: { params: { id: string } }) {
 
   // TODO: Design overview page
   return (
-    <Tabs defaultValue="overview" className="flex h-full w-full flex-col">
+    <Tabs defaultValue="students" className="flex h-full w-full flex-col">
       <TabsList className="w-full justify-start">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
+        {
+          // <TabsTrigger value="overview">Overview</TabsTrigger>
+        }
+        <TabsTrigger value="students">Students</TabsTrigger>
         <TabsTrigger value="exercises">Exercises</TabsTrigger>
         <TabsTrigger value="tests">Tests</TabsTrigger>
-        <TabsTrigger value="students">Students</TabsTrigger>
       </TabsList>
-      <TabsContent value="overview" className="flex-1">
-        <div>Overview page</div>
-      </TabsContent>
+      {
+        // <TabsContent value="overview" className="flex-1">
+        //   <div>Overview page</div>
+        // </TabsContent>
+      }
       <TabsContent value="exercises" className="flex-1">
         <ClassExercises classroom={classQuery.data} />
       </TabsContent>

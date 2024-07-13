@@ -19,8 +19,8 @@ import { PublicProblems } from "~/server/api/client";
 
 export default function Page({ params }: { params: { testId: string } }) {
   const { testId } = params;
-  const [score, setScore] = useState(40);
-  const [totalScore, setTotalScore] = useState(100);
+  const [score, setScore] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [isStarted, setIsStarted] = useState(false);
 
@@ -29,6 +29,16 @@ export default function Page({ params }: { params: { testId: string } }) {
     { testId },
     { enabled: isStarted },
   );
+
+  useEffect(() => {
+    if (problems) {
+      setTotalScore(problems.length * 20);
+      const solved = problems.filter(
+        (problem) => problem.status === "ACCEPTED",
+      );
+      setScore(solved.length * 20);
+    }
+  }, [problems]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -127,7 +137,11 @@ export default function Page({ params }: { params: { testId: string } }) {
       <div>
         <p className="mb-2 text-lg font-semibold">Total score</p>
         <div className="flex items-center gap-5">
-          <Progress value={score} className="h-3 w-3/4" max={totalScore} />
+          <Progress
+            value={(score / totalScore) * 100}
+            className="h-3 w-3/4"
+            max={totalScore}
+          />
           <span className="text-muted-foreground">
             {score} / {totalScore}
           </span>

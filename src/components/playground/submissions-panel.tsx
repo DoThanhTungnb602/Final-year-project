@@ -19,7 +19,7 @@ import { useSubmitResultStore } from "~/hooks/use-submission-store";
 
 const SubmissionsPanel = () => {
   const { problem } = useProblemStore();
-  const { submitResult } = useSubmitResultStore();
+  const { submitResult, setSubmitResult } = useSubmitResultStore();
   const submissionsQuery = api.submission.all.useQuery(
     {
       problemId: problem?.id ?? "",
@@ -41,7 +41,13 @@ const SubmissionsPanel = () => {
   useEffect(() => {
     if (submitResult) {
       setActiveTab("submissionDetail");
+      setSubmissionDetail(submitResult);
     }
+
+    return () => {
+      setSubmitResult(null);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitResult]);
 
   const handleCopy = () => {

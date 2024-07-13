@@ -10,7 +10,7 @@ const headers: HeadersInit = {
   "x-rapidapi-host": judge0_api_host!,
 };
 
-export const createSubmission = async ({
+export const createSubmissionFetch = async ({
   code,
   languageId,
   stdin,
@@ -41,7 +41,7 @@ export const createSubmission = async ({
   return data.token;
 };
 
-export const getSubmission = async (
+export const getSubmissionFetch = async (
   token: string,
 ): Promise<SubmissionResponse> => {
   const response = await fetch(

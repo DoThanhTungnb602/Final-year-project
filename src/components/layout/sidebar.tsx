@@ -50,19 +50,21 @@ const Sidebar = () => {
             </Link>
           </Button>
         </CustomTooltip>
-        <CustomTooltip content="Tasks" side="right">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn("rounded-lg", pathname === "/tasks" && "bg-muted")}
-            aria-label="Tasks"
-            asChild
-          >
-            <Link href="/tasks">
-              <BiTask className="size-5" />
-            </Link>
-          </Button>
-        </CustomTooltip>
+        {
+// <CustomTooltip content="Tasks" side="right">
+//           <Button
+//             variant="ghost"
+//             size="icon"
+//             className={cn("rounded-lg", pathname === "/tasks" && "bg-muted")}
+//             aria-label="Tasks"
+//             asChild
+//           >
+//             <Link href="/tasks">
+//               <BiTask className="size-5" />
+//             </Link>
+//           </Button>
+//         </CustomTooltip>
+        }
         <CustomTooltip content="Settings" side="right">
           <Button
             variant="ghost"
