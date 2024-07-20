@@ -100,7 +100,7 @@ export function CodeEditor() {
   const submitProblem = api.submission.submit.useMutation({
     onSuccess(data) {
       console.log(data);
-      utils.submission.all.invalidate().catch(console.error);
+      utils.submission.getByProblemId.invalidate().catch(console.error);
       setSubmitResult(data);
     },
   });

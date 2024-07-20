@@ -62,7 +62,7 @@ export function UserInfo() {
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={() => {
-                router.push("/settings/profile");
+                router.push("/settings");
               }}
             >
               Profile

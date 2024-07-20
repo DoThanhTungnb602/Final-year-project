@@ -1,4 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 import bcrypt from "bcryptjs";
 
 import { TRPCError } from "@trpc/server";
@@ -6,6 +10,21 @@ import { z } from "zod";
 import { UpdateNameSchema, UpdatePasswordSchema } from "~/schemas";
 
 export const userRouter = createTRPCRouter({
+  all: adminProcedure.query(async ({ ctx }) => {
+    try {
+      const users = await ctx.db.user.findMany({
+        where: { role: "USER" },
+      });
+
+      return users;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch all users",
+      });
+    }
+  }),
+
   updateName: protectedProcedure
     .input(UpdateNameSchema)
     .mutation(async ({ ctx, input }) => {

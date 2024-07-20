@@ -710,7 +710,37 @@ export const submissionRouter = createTRPCRouter({
       }
     }),
 
-  all: protectedProcedure
+  all: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const submissions = await ctx.db.submission.findMany({
+        where: {
+          userId: ctx.session.user.id,
+          testId: null,
+          exerciseId: null,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          language: true,
+          problem: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      });
+      return submissions;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Internal server error. Please try again later.",
+      });
+    }
+  }),
+
+  getByProblemId: protectedProcedure
     .input(z.object({ problemId: z.string() }))
     .query(async ({ ctx, input }) => {
       try {

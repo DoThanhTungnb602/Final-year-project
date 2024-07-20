@@ -2,7 +2,6 @@
 
 import { Code2, Settings2, Home } from "lucide-react";
 import { SiGoogleclassroom } from "react-icons/si";
-import { BiTask } from "react-icons/bi";
 
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "../shared/mode-toggle";
@@ -51,19 +50,19 @@ const Sidebar = () => {
           </Button>
         </CustomTooltip>
         {
-// <CustomTooltip content="Tasks" side="right">
-//           <Button
-//             variant="ghost"
-//             size="icon"
-//             className={cn("rounded-lg", pathname === "/tasks" && "bg-muted")}
-//             aria-label="Tasks"
-//             asChild
-//           >
-//             <Link href="/tasks">
-//               <BiTask className="size-5" />
-//             </Link>
-//           </Button>
-//         </CustomTooltip>
+          // <CustomTooltip content="Tasks" side="right">
+          //           <Button
+          //             variant="ghost"
+          //             size="icon"
+          //             className={cn("rounded-lg", pathname === "/tasks" && "bg-muted")}
+          //             aria-label="Tasks"
+          //             asChild
+          //           >
+          //             <Link href="/tasks">
+          //               <BiTask className="size-5" />
+          //             </Link>
+          //           </Button>
+          //         </CustomTooltip>
         }
         <CustomTooltip content="Settings" side="right">
           <Button
@@ -76,7 +75,7 @@ const Sidebar = () => {
             aria-label="Settings"
             asChild
           >
-            <Link href="/settings/profile">
+            <Link href="/settings">
               <Settings2 className="size-5" />
             </Link>
           </Button>

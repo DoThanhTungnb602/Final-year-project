@@ -42,6 +42,11 @@ export default function Page() {
       </CardHeader>
       <Separator />
       <CardContent className="flex flex-wrap gap-4 pt-6">
+        {data?.length === 0 && (
+          <div className="w-full text-center font-semibold text-muted-foreground">
+            You have not enrolled in any classes yet.
+          </div>
+        )}
         {data?.map((classItem) => (
           <ClassItem
             key={classItem.id}

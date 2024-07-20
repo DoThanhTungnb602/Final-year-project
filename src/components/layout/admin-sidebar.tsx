@@ -2,6 +2,7 @@
 
 import { Code2, ClipboardList } from "lucide-react";
 import { SiGoogleclassroom } from "react-icons/si";
+import { FaUsers } from "react-icons/fa";
 
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "../shared/mode-toggle";
@@ -52,6 +53,22 @@ const AdminSidebar = () => {
           >
             <Link href="/admin/classes">
               <SiGoogleclassroom className="size-5" />
+            </Link>
+          </Button>
+        </CustomTooltip>
+        <CustomTooltip content="Manage users" side="right">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "rounded-lg",
+              pathname === "/admin/users" && "bg-muted",
+            )}
+            aria-label="Users"
+            asChild
+          >
+            <Link href="/admin/users">
+              <FaUsers className="size-5" />
             </Link>
           </Button>
         </CustomTooltip>

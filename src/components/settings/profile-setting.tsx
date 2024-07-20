@@ -42,7 +42,7 @@ import { api } from "~/trpc/react";
 import { useSession } from "next-auth/react";
 import { UpdateNameSchema, UpdatePasswordSchema } from "~/schemas";
 
-export default function ProfileSettingPage() {
+export function ProfileSettingComponent() {
   const [isNameEditable, setIsNameEditable] = useState(false);
   const [open, setOpen] = useState(false);
   const currentUser = useCurrentUser();
@@ -154,7 +154,7 @@ export default function ProfileSettingPage() {
         <Form {...nameForm}>
           <form
             onSubmit={nameForm.handleSubmit(onFormNameSubmit)}
-            className="space-y-5"
+            className="flex flex-col space-y-5"
           >
             <Card>
               <CardHeader>
@@ -214,7 +214,6 @@ export default function ProfileSettingPage() {
             </Card>
             <Button
               type="submit"
-              className="float-right"
               disabled={!nameForm.formState.isDirty || updateName.isPending}
             >
               Save Changes

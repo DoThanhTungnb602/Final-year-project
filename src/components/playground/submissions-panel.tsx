@@ -20,7 +20,7 @@ import { useSubmitResultStore } from "~/hooks/use-submission-store";
 const SubmissionsPanel = () => {
   const { problem } = useProblemStore();
   const { submitResult, setSubmitResult } = useSubmitResultStore();
-  const submissionsQuery = api.submission.all.useQuery(
+  const submissionsQuery = api.submission.getByProblemId.useQuery(
     {
       problemId: problem?.id ?? "",
     },
