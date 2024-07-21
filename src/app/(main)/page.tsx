@@ -20,6 +20,7 @@ import { ProblemFilterSchema } from "~/schemas";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import CustomTooltip from "~/components/shared/custom-tooltip";
 import { PublicProblems } from "~/server/api/client";
+import { useCurrentUser } from "~/hooks/use-current-user";
 
 const columns: ColumnDef<PublicProblems>[] = [
   {
@@ -102,7 +103,10 @@ const columns: ColumnDef<PublicProblems>[] = [
 ];
 
 export default function Home() {
-  const { data, isPending } = api.problem.allPublic.useQuery();
+  const currentUser = useCurrentUser();
+  const { data, isPending } = api.problem.allPublic.useQuery(
+    currentUser?.id ?? "",
+  );
   const [filter, setFilter] = useState(false);
   const [filteredData, setFilteredData] = useState<PublicProblems[]>([]);
 
