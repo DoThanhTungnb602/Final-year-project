@@ -11,7 +11,7 @@ import { api } from "~/trpc/react";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
 
-export function StatsComponent() {
+export function StatsComponent({ userId }: { userId: string }) {
   const columns: ColumnDef<PublicSubmission>[] = [
     {
       accessorKey: "problem",
@@ -64,9 +64,9 @@ export function StatsComponent() {
     },
   ];
 
-  const allSubmissionsQuery = api.submission.all.useQuery();
+  const allSubmissionsQuery = api.submission.all.useQuery(userId);
 
-  const { data: allPublicProblem } = api.problem.allPublic.useQuery();
+  const { data: allPublicProblem } = api.problem.allPublic.useQuery(userId);
 
   return (
     <div className="h-full w-full space-y-5 overflow-auto">

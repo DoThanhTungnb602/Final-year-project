@@ -25,6 +25,22 @@ export const userRouter = createTRPCRouter({
     }
   }),
 
+  getById: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    try {
+      const user = await ctx.db.user.findUnique({
+        where: { id: input },
+        include: { enrolledClasses: true },
+      });
+
+      return user;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch user",
+      });
+    }
+  }),
+
   updateName: protectedProcedure
     .input(UpdateNameSchema)
     .mutation(async ({ ctx, input }) => {

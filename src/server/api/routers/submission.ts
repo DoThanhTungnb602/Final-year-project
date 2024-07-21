@@ -710,11 +710,11 @@ export const submissionRouter = createTRPCRouter({
       }
     }),
 
-  all: protectedProcedure.query(async ({ ctx }) => {
+  all: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     try {
       const submissions = await ctx.db.submission.findMany({
         where: {
-          userId: ctx.session.user.id,
+          userId: input,
           testId: null,
           exerciseId: null,
         },

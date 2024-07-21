@@ -52,53 +52,55 @@ export const problemRouter = createTRPCRouter({
     }
   }),
 
-  allPublic: protectedProcedure.query(async ({ ctx }) => {
-    try {
-      const problems = await ctx.db.problem.findMany({
-        where: {
-          isPublic: true,
-        },
-        select: {
-          id: true,
-          title: true,
-          submissions: {
-            where: {
-              userId: ctx.session?.user.id,
-            },
-            select: {
-              verdict: true,
-            },
+  allPublic: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const problems = await ctx.db.problem.findMany({
+          where: {
+            isPublic: true,
           },
-          difficulty: true,
-          solution: true,
-          tags: true,
-        },
-      });
-      if (!problems) return [];
-      return problems.map((problem) => {
-        const hasAccepted = problem.submissions.some(
-          (sub) => sub.verdict === "ACCEPTED",
-        );
-        let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
-        if (hasAccepted) {
-          status = "ACCEPTED";
-        } else {
-          const hasAttempted = problem.submissions.length > 0;
-          if (hasAttempted) status = "ATTEMPTED";
-        }
-        return {
-          ...problem,
-          status,
-          solution: !!problem.solution,
-        };
-      });
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch problems",
-      });
-    }
-  }),
+          select: {
+            id: true,
+            title: true,
+            submissions: {
+              where: {
+                userId: input,
+              },
+              select: {
+                verdict: true,
+              },
+            },
+            difficulty: true,
+            solution: true,
+            tags: true,
+          },
+        });
+        if (!problems) return [];
+        return problems.map((problem) => {
+          const hasAccepted = problem.submissions.some(
+            (sub) => sub.verdict === "ACCEPTED",
+          );
+          let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
+          if (hasAccepted) {
+            status = "ACCEPTED";
+          } else {
+            const hasAttempted = problem.submissions.length > 0;
+            if (hasAttempted) status = "ATTEMPTED";
+          }
+          return {
+            ...problem,
+            status,
+            solution: !!problem.solution,
+          };
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch problems",
+        });
+      }
+    }),
 
   create: adminProcedure
     .input(ProblemSchema)
