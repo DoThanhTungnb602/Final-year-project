@@ -16,6 +16,7 @@ export const exerciseRouter = createTRPCRouter({
                 submissions: {
                   where: {
                     userId: ctx.session?.user.id,
+                    exerciseId: input.exerciseId,
                   },
                   select: {
                     verdict: true,

@@ -31,6 +31,7 @@ export const testRouter = createTRPCRouter({
                 submissions: {
                   where: {
                     userId: ctx.session?.user.id,
+                    testId: input.testId,
                   },
                   select: {
                     verdict: true,

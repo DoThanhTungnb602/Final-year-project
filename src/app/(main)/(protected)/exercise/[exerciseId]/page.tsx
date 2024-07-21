@@ -2,7 +2,7 @@
 
 import { Separator } from "~/components/ui/separator";
 import { Progress } from "~/components/ui/progress";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProblemDataTable } from "~/components/shared/problem-data-table";
 import { Badge } from "~/components/ui/badge";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -19,7 +19,18 @@ import { PublicProblems } from "~/server/api/client";
 export default function Page({ params }: { params: { exerciseId: string } }) {
   const { exerciseId } = params;
   const { data: exercise } = api.exercise.getById.useQuery({ exerciseId });
-  const [score, setScore] = useState(40);
+  const [score, setScore] = useState(0);
+
+  useEffect(() => {
+    if (exercise) {
+      const totalProblems = exercise.problems.length;
+      const solvedProblems = exercise.problems.filter(
+        (problem) => problem.status === "ACCEPTED",
+      ).length;
+      const progress = (solvedProblems / totalProblems) * 100;
+      setScore(progress);
+    }
+  }, [exercise]);
 
   const columns: ColumnDef<PublicProblems>[] = [
     {
