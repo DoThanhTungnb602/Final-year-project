@@ -7,12 +7,16 @@ import { useEffect } from "react";
 import { useProblemStore } from "~/hooks/use-problem-store";
 import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { ProblemComponent } from "~/components/shared/problem";
+import { useCurrentUser } from "~/hooks/use-current-user";
 
 export default function Page({ params }: { params: { id: string } }) {
+  const currentUser = useCurrentUser();
   const { id } = params;
   const { data: problem, isPending } =
     api.problem.getPublicProblemById.useQuery(id);
-  const { data: problemsQueryData } = api.problem.allPublic.useQuery();
+  const { data: problemsQueryData } = api.problem.allPublic.useQuery(
+    currentUser?.id ?? "",
+  );
   const { setProblem } = useProblemStore();
   const { setProblems, setIsShow, setTitle } = useSidebarStore();
 
