@@ -731,6 +731,12 @@ export const submissionRouter = createTRPCRouter({
           },
         },
       });
+      if (!submissions) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Internal server error. Please try again later.",
+        });
+      }
       return submissions;
     } catch (error) {
       throw new TRPCError({
@@ -756,6 +762,12 @@ export const submissionRouter = createTRPCRouter({
           },
           include: {
             language: true,
+            problem: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
           },
         });
         if (!submissions) {

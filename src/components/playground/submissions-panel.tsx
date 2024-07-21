@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/shared/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { PublicSubmission } from "~/server/api/client";
+import { PublicSubmission, SubmissionsByProblemId } from "~/server/api/client";
 import { cn } from "~/lib/utils";
 import { ArrowLeft, Check, Clock, Copy, Cpu, Eye } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
@@ -28,7 +28,7 @@ const SubmissionsPanel = () => {
   );
 
   const [submissionDetail, setSubmissionDetail] =
-    useState<PublicSubmission | null>(null);
+    useState<SubmissionsByProblemId | null>(null);
 
   const [isCopied, setIsCopied] = useState(false);
 
@@ -41,7 +41,7 @@ const SubmissionsPanel = () => {
   useEffect(() => {
     if (submitResult) {
       setActiveTab("submissionDetail");
-      setSubmissionDetail(submitResult);
+      // setSubmissionDetail(submitResult);
     }
 
     return () => {
@@ -64,7 +64,7 @@ const SubmissionsPanel = () => {
     }, 2000);
   };
 
-  const columns: ColumnDef<PublicSubmission>[] = [
+  const columns: ColumnDef<SubmissionsByProblemId>[] = [
     {
       accessorKey: "verdict",
       header: "Status",
