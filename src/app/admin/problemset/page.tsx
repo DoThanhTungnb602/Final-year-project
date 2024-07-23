@@ -215,7 +215,7 @@ export default function ProblemSet() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 pt-4 lg:gap-6 lg:pt-6">
+    <div className="flex flex-col gap-4 pt-4 lg:gap-6 lg:pt-6 mx-auto max-w-4xl">
       <AlertDialog open={open}>
         <AlertDialogContent>
           <AlertDialogHeader>

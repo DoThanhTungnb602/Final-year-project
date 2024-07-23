@@ -78,7 +78,7 @@ export default function Page() {
   ];
 
   return (
-    <Card className="bg-dark mt-3 flex w-full flex-col lg:mt-6">
+    <Card className="bg-dark mt-3 flex w-full flex-col lg:mt-6 mx-auto max-w-4xl">
       <CardContent className="flex-1 pt-6">
         <DataTable data={allUsersQuery?.data ?? []} columns={columns} />
       </CardContent>
