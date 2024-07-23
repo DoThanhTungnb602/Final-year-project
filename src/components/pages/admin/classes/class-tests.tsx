@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { TestDialog } from "./class-tests-dialog";
 import { ClassroomById } from "~/server/api/client";
+import Link from "next/link";
 
 export default function ClassTests({
   classroom,
@@ -107,6 +108,14 @@ export default function ClassTests({
     {
       accessorKey: "title",
       header: "Title",
+      cell: ({ row }) => (
+        <Link
+          href={`/admin/classes/${classroom?.id}/test/${row.original.id}`}
+          className="transition-all hover:underline"
+        >
+          {row.original.title}
+        </Link>
+      ),
     },
     {
       accessorKey: "startTime",
@@ -262,7 +271,7 @@ export default function ClassTests({
             <CardDescription>{classroom?.tests.length} tests</CardDescription>
           </CardHeader>
           <Separator />
-          <CardContent className="flex-1">
+          <CardContent className="flex-1 p-0">
             <DataTable
               data={classroom?.tests ?? []}
               columns={columns}

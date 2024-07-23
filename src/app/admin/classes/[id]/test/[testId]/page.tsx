@@ -15,10 +15,14 @@ import { api } from "~/trpc/react";
 import moment from "moment";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import Timer from "~/components/shared/timer";
-import { PublicProblems } from "~/server/api/client";
+import { PublicProblems, TestStats } from "~/server/api/client";
 
-export default function Page({ params }: { params: { testId: string } }) {
-  const { testId } = params;
+export default function Page({
+  params,
+}: {
+  params: { id: string; testId: string };
+}) {
+  const { testId, id: classId } = params;
   const [score, setScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [currentTime, setCurrentTime] = useState(Date.now());
@@ -30,6 +34,11 @@ export default function Page({ params }: { params: { testId: string } }) {
     { testId },
     { enabled: isStarted },
   );
+
+  const { data: students } = api.test.getStudentsProgress.useQuery({
+    testId,
+    classId,
+  });
 
   useEffect(() => {
     if (problems) {
@@ -68,51 +77,8 @@ export default function Page({ params }: { params: { testId: string } }) {
 
   const columns: ColumnDef<PublicProblems>[] = [
     {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.original.status;
-        if (status === "ACCEPTED") {
-          return (
-            <CustomTooltip content="Solved" side="top">
-              <span>
-                <IoMdCheckmarkCircleOutline className="h-6 w-6 text-green-400" />
-              </span>
-            </CustomTooltip>
-          );
-        } else if (status === "ATTEMPTED") {
-          return (
-            <CustomTooltip content="Attempted" side="top">
-              <span>
-                <SiTarget className="h-6 w-6 text-gray-300" />
-              </span>
-            </CustomTooltip>
-          );
-        } else {
-          return (
-            <CustomTooltip content="UnSolved" side="top">
-              <span>
-                <MdOutlineRadioButtonUnchecked className="h-6 w-6 text-gray-300" />
-              </span>
-            </CustomTooltip>
-          );
-        }
-      },
-    },
-    {
       accessorKey: "title",
       header: "Title",
-      cell: ({ row }) => {
-        const problem = row.original;
-        return (
-          <Link
-            href={`/test/${testId}/problem/${row.original.id}`}
-            className="transition-all hover:underline"
-          >
-            {problem.title}
-          </Link>
-        );
-      },
     },
     {
       accessorKey: "difficulty",
@@ -138,23 +104,29 @@ export default function Page({ params }: { params: { testId: string } }) {
     },
   ];
 
-  const ScoreBar = () => {
-    return (
-      <div>
-        <p className="mb-2 text-lg font-semibold">Total score</p>
-        <div className="flex items-center gap-5">
-          <Progress
-            value={(score / totalScore) * 100}
-            className="h-3 w-3/4"
-            max={totalScore}
-          />
-          <span className="text-muted-foreground">
-            {score} / {totalScore}
-          </span>
-        </div>
-      </div>
-    );
-  };
+  const studentsColumns: ColumnDef<TestStats>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <Link
+          href={`/admin/users/${row.original.id}`}
+          className="transition-all hover:underline"
+        >
+          {row.original.name}
+        </Link>
+      ),
+    },
+    {
+      accessorKey: "score",
+      header: "Score",
+      cell: ({ row }) => (
+        <p className="font-semibold text-muted-foreground">
+          {row.original.score}/{totalScore}
+        </p>
+      ),
+    },
+  ];
 
   return test ? (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 bg-background md:gap-8 md:p-10">
@@ -174,24 +146,13 @@ export default function Page({ params }: { params: { testId: string } }) {
         startTime={test.startTime.toString()}
         duration={test.duration * 1}
       />
-      <ScoreBar />
       <div className="flex flex-col gap-2">
         <p className="text-md font-semibold">Problem list</p>
-        {isStarted ? (
-          <>
-            {isFinished ? (
-              <p className="text-md rounded-md border px-4 py-5 text-muted-foreground">
-                Test has ended
-              </p>
-            ) : (
-              <ProblemDataTable columns={columns} data={problems ?? []} />
-            )}
-          </>
-        ) : (
-          <p className="text-md rounded-md border px-4 py-5 text-muted-foreground">
-            Problems will be available once the test starts.
-          </p>
-        )}
+        <ProblemDataTable columns={columns} data={problems ?? []} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-md font-semibold">Students</p>
+        <ProblemDataTable columns={studentsColumns} data={students ?? []} />
       </div>
     </div>
   ) : (

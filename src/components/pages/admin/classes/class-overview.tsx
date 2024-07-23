@@ -47,6 +47,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { UserRoundPlus } from "lucide-react";
 import { useModalStore } from "~/hooks/use-modal-store";
 import { ClassroomById } from "~/server/api/client";
+import Link from "next/link";
 
 export default function ClassOverview({
   classroom,
@@ -98,6 +99,14 @@ export default function ClassOverview({
     {
       accessorKey: "name",
       header: "Name",
+      cell: ({ row }) => (
+        <Link
+          href={`/admin/users/${row.original.id}`}
+          className="transition-all hover:underline"
+        >
+          {row.original.name}
+        </Link>
+      ),
     },
     {
       id: "actions",

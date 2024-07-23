@@ -20,12 +20,15 @@ import {
   useRunResultStore,
   useSubmitResultStore,
 } from "~/hooks/use-submission-store";
+import { useSidebarStore } from "~/hooks/use-sidebar-store";
+import { toast } from "sonner";
 
 export function CodeEditor() {
   const { theme } = useTheme();
   const { problem } = useProblemStore();
   const { setResult } = useRunResultStore();
   const { setSubmitResult } = useSubmitResultStore();
+  const { exercise, test } = useSidebarStore();
   const utils = api.useUtils();
 
   const {
@@ -107,22 +110,55 @@ export function CodeEditor() {
 
   const onRun = () => {
     if (problem) {
-      runProblem.mutate({
+      console.log({
         problemId: problem.id,
         languageId: selectedLanguage.id,
         code: sourceCode ?? "",
       });
+
+      // runProblem.mutate({
+      //   problemId: problem.id,
+      //   languageId: selectedLanguage.id,
+      //   code: sourceCode ?? "",
+      // });
     }
   };
 
   const onSubmit = () => {
     if (problem) {
-      submitProblem.mutate({
-        problemId: problem.id,
-        languageId: selectedLanguage.id,
-        code: sourceCode ?? "",
-      });
+      if (exercise) {
+        const now = new Date();
+        if (now > exercise.dueDate) {
+          toast.error("Submission is closed");
+          return;
+        } else {
+          toast.success("Submission success");
+          submitProblem.mutate({
+            problemId: problem.id,
+            languageId: selectedLanguage.id,
+            code: sourceCode ?? "",
+          });
+        }
+      }
     }
+
+    if (test) {
+      const now = new Date();
+      const end = test.startTime.getTime() + test.duration * 60000;
+      if (now.getTime() > end) {
+        toast.error("Test is closed");
+        return;
+      } else {
+        toast.success("Test success");
+      }
+    }
+    // if (problem) {
+    //   submitProblem.mutate({
+    //     problemId: problem.id,
+    //     languageId: selectedLanguage.id,
+    //     code: sourceCode ?? "",
+    //   });
+    // }
   };
 
   return problem ? (

@@ -25,8 +25,8 @@ import { PublicProblems } from "~/server/api/client";
 
 export function ProblemSidebar() {
   const { title, problems, test, exercise } = useSidebarStore();
-  const [score, setScore] = useState(40);
-  const [totalScore, setTotalScore] = useState(100);
+  const [score, setScore] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
   const [progress, setProgress] = useState(20);
 
   const columns: ColumnDef<PublicProblems>[] = [

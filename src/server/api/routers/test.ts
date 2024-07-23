@@ -1,7 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 
 export const testRouter = createTRPCRouter({
   getById: protectedProcedure
@@ -83,5 +87,61 @@ export const testRouter = createTRPCRouter({
           message: "Test not found",
         });
       }
+    }),
+
+  getStudentsProgress: adminProcedure
+    .input(z.object({ testId: z.string(), classId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const students = await ctx.db.user.findMany({
+        where: {
+          enrolledClasses: {
+            some: {
+              id: input.classId,
+            },
+          },
+        },
+        include: {
+          submissions: {
+            where: {
+              testId: input.testId,
+            },
+            select: {
+              verdict: true,
+              problemId: true,
+            },
+          },
+        },
+      });
+      const test = await ctx.db.test.findUnique({
+        where: { id: input.testId },
+        include: {
+          problems: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!test) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Test not found",
+        });
+      }
+      const problems = test.problems.map((problem) => problem.id);
+      const result = students.map((student) => {
+        const acceptedSubmissions = student.submissions.filter(
+          (sub) => sub.verdict === "ACCEPTED",
+        );
+        const solvedProblems = problems.filter((problem) =>
+          acceptedSubmissions.some((sub) => sub.problemId === problem),
+        );
+        return {
+          id: student.id,
+          name: student.name,
+          score: solvedProblems.length * 20,
+        };
+      });
+      return result;
     }),
 });
