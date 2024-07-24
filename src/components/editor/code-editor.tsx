@@ -126,17 +126,11 @@ export function CodeEditor() {
 
   const onRun = () => {
     if (problem) {
-      console.log({
+      runProblem.mutate({
         problemId: problem.id,
         languageId: selectedLanguage.id,
         code: sourceCode ?? "",
       });
-
-      // runProblem.mutate({
-      //   problemId: problem.id,
-      //   languageId: selectedLanguage.id,
-      //   code: sourceCode ?? "",
-      // });
     }
   };
 
@@ -145,10 +139,9 @@ export function CodeEditor() {
       if (exercise) {
         const now = new Date();
         if (now > exercise.dueDate) {
-          toast.error("Submission is closed");
+          toast.error("Exercise is closed");
           return;
         } else {
-          toast.success("Submission success");
           submitExercise.mutate({
             exerciseId: exercise.id,
             problemId: problem.id,
@@ -163,7 +156,6 @@ export function CodeEditor() {
           toast.error("Test is closed");
           return;
         } else {
-          toast.success("Test success");
           submitTest.mutate({
             testId: test.id,
             problemId: problem.id,

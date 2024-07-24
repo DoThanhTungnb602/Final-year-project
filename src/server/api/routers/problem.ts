@@ -66,6 +66,8 @@ export const problemRouter = createTRPCRouter({
             submissions: {
               where: {
                 userId: input,
+                testId: null,
+                exerciseId: null,
               },
               select: {
                 verdict: true,

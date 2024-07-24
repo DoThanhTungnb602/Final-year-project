@@ -9,26 +9,31 @@ import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/shared/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { PublicSubmission, SubmissionsByProblemId, SubmitResult } from "~/server/api/client";
+import { SubmissionsByProblemId, SubmitResult } from "~/server/api/client";
 import { cn } from "~/lib/utils";
 import { ArrowLeft, Check, Clock, Copy, Cpu, Eye } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import moment from "moment";
 import { useSubmitResultStore } from "~/hooks/use-submission-store";
+import { useSidebarStore } from "~/hooks/use-sidebar-store";
 
 const SubmissionsPanel = () => {
   const { problem } = useProblemStore();
+  const { test, exercise } = useSidebarStore();
   const { submitResult, setSubmitResult } = useSubmitResultStore();
   const submissionsQuery = api.submission.getByProblemId.useQuery(
     {
       problemId: problem?.id ?? "",
+      testId: test?.id ?? undefined,
+      exerciseId: exercise?.id ?? undefined,
     },
     { enabled: !!problem },
   );
 
-  const [submissionDetail, setSubmissionDetail] =
-    useState<SubmissionsByProblemId | null | SubmitResult>(null);
+  const [submissionDetail, setSubmissionDetail] = useState<
+    SubmissionsByProblemId | null | SubmitResult
+  >(null);
 
   const [isCopied, setIsCopied] = useState(false);
 
