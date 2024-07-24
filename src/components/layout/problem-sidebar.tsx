@@ -22,12 +22,34 @@ import Link from "next/link";
 import CustomTooltip from "~/components/shared/custom-tooltip";
 import Timer from "~/components/shared/timer";
 import { PublicProblems } from "~/server/api/client";
+import { useEffect } from "react";
 
 export function ProblemSidebar() {
   const { title, problems, test, exercise } = useSidebarStore();
   const [score, setScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
-  const [progress, setProgress] = useState(20);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (problems && test) {
+      setTotalScore(problems.length * 20);
+      const solved = problems.filter(
+        (problem) => problem.status === "ACCEPTED",
+      );
+      setScore(solved.length * 20);
+    }
+  }, [problems, test]);
+
+  useEffect(() => {
+    if (exercise && problems) {
+      const totalProblems = problems.length;
+      const solvedProblems = problems.filter(
+        (problem) => problem.status === "ACCEPTED",
+      ).length;
+      const progress = (solvedProblems / totalProblems) * 100;
+      setProgress(progress);
+    }
+  }, [exercise, problems]);
 
   const columns: ColumnDef<PublicProblems>[] = [
     {
@@ -116,7 +138,11 @@ export function ProblemSidebar() {
           <div>
             <p className="mb-2 text-lg font-semibold">Total score</p>
             <div className="flex items-center gap-5">
-              <Progress value={score} className="h-3 w-3/4" max={totalScore} />
+              <Progress
+                value={(score / totalScore) * 100}
+                className="h-3 w-3/4"
+                max={totalScore}
+              />
               <span className="text-muted-foreground">
                 {score} / {totalScore}
               </span>

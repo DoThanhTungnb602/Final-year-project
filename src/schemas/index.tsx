@@ -87,6 +87,8 @@ export const SubmissionSchema = z.object({
   code: z.string().min(1),
   languageId: z.string().min(1),
   problemId: z.string().min(1),
+  exerciseId: z.string().optional(),
+  testId: z.string().optional(),
 });
 
 export const ProblemFilterSchema = z.object({

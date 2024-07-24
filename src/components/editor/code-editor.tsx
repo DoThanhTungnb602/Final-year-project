@@ -108,6 +108,22 @@ export function CodeEditor() {
     },
   });
 
+  const submitTest = api.submission.submitTest.useMutation({
+    onSuccess(data) {
+      console.log(data);
+      utils.submission.getByProblemId.invalidate().catch(console.error);
+      setSubmitResult(data);
+    },
+  });
+
+  const submitExercise = api.submission.submitExercise.useMutation({
+    onSuccess(data) {
+      console.log(data);
+      utils.submission.getByProblemId.invalidate().catch(console.error);
+      setSubmitResult(data);
+    },
+  });
+
   const onRun = () => {
     if (problem) {
       console.log({
@@ -133,32 +149,36 @@ export function CodeEditor() {
           return;
         } else {
           toast.success("Submission success");
-          submitProblem.mutate({
+          submitExercise.mutate({
+            exerciseId: exercise.id,
             problemId: problem.id,
             languageId: selectedLanguage.id,
             code: sourceCode ?? "",
           });
         }
-      }
-    }
-
-    if (test) {
-      const now = new Date();
-      const end = test.startTime.getTime() + test.duration * 60000;
-      if (now.getTime() > end) {
-        toast.error("Test is closed");
-        return;
+      } else if (test) {
+        const now = new Date();
+        const end = test.startTime.getTime() + test.duration * 60000;
+        if (now.getTime() > end) {
+          toast.error("Test is closed");
+          return;
+        } else {
+          toast.success("Test success");
+          submitTest.mutate({
+            testId: test.id,
+            problemId: problem.id,
+            languageId: selectedLanguage.id,
+            code: sourceCode ?? "",
+          });
+        }
       } else {
-        toast.success("Test success");
+        submitProblem.mutate({
+          problemId: problem.id,
+          languageId: selectedLanguage.id,
+          code: sourceCode ?? "",
+        });
       }
     }
-    // if (problem) {
-    //   submitProblem.mutate({
-    //     problemId: problem.id,
-    //     languageId: selectedLanguage.id,
-    //     code: sourceCode ?? "",
-    //   });
-    // }
   };
 
   return problem ? (

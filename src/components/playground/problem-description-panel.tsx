@@ -20,9 +20,11 @@ import {
 import SubmissionsPanel from "./submissions-panel";
 import { useSubmitResultStore } from "~/hooks/use-submission-store";
 import { useEffect, useState } from "react";
+import { useSidebarStore } from "~/hooks/use-sidebar-store";
 
 const ProblemDescriptionPanel = () => {
   const { problem } = useProblemStore();
+  const { test, exercise } = useSidebarStore();
   const { submitResult } = useSubmitResultStore();
   const [activeTab, setActiveTab] = useState<"description" | "submissions">(
     "description",
@@ -36,6 +38,9 @@ const ProblemDescriptionPanel = () => {
 
   const ProblemStatus = () => {
     const status = problem?.status;
+    if (test ?? exercise) {
+      return null;
+    }
     if (status === "ACCEPTED") {
       return (
         <div className="flex items-center gap-2">
