@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Card, CardContent } from "~/components/ui/card";
-import { SlNote } from "react-icons/sl";
+// import { SlNote } from "react-icons/sl";
 import { Code2 } from "lucide-react";
 import { MdDraw } from "react-icons/md";
 import { useState } from "react";
