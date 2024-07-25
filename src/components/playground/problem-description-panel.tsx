@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { FaClipboardCheck } from "react-icons/fa";
 import { Card, CardContent } from "~/components/ui/card";
 import { IoDocumentText } from "react-icons/io5";
 import { FaHistory } from "react-icons/fa";
@@ -26,9 +27,9 @@ const ProblemDescriptionPanel = () => {
   const { problem } = useProblemStore();
   const { test, exercise } = useSidebarStore();
   const { submitResult } = useSubmitResultStore();
-  const [activeTab, setActiveTab] = useState<"description" | "submissions">(
-    "description",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "description" | "submissions" | "solution"
+  >("description");
 
   useEffect(() => {
     if (submitResult) {
@@ -85,6 +86,14 @@ const ProblemDescriptionPanel = () => {
           Description
         </TabsTrigger>
         <TabsTrigger
+          value="solution"
+          className="flex gap-2"
+          onClick={() => setActiveTab("solution")}
+        >
+          <FaClipboardCheck className="h-4 w-4" />
+          Solutions
+        </TabsTrigger>
+        <TabsTrigger
           value="submissions"
           className="flex gap-2"
           onClick={() => setActiveTab("submissions")}
@@ -135,6 +144,25 @@ const ProblemDescriptionPanel = () => {
                   </Accordion>
                 )}
               </div>
+            ) : (
+              <DefaultLoadingPage />
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="solution" className="min-h-0 flex-1">
+        <Card className="h-full min-h-0 overflow-y-auto p-3">
+          <CardContent className="h-full min-h-0 p-0">
+            {problem ? (
+              <>
+                {problem.solution && problem.solution !== "" ? (
+                  <Viewer content={problem.solution} />
+                ) : (
+                  <p className="mx-auto font-semibold text-muted-foreground">
+                    No solution provided.
+                  </p>
+                )}
+              </>
             ) : (
               <DefaultLoadingPage />
             )}

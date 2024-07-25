@@ -11,7 +11,7 @@ async function main() {
   await db.language.createMany({
     data: [
       {
-        id: "15",
+        id: "54",
         name: "C++",
         editorValue: "cpp",
       },
@@ -20,16 +20,16 @@ async function main() {
       //   name: "C#",
       //   editorValue: "csharp",
       // },
-      {
-        id: "91",
-        name: "Java",
-        editorValue: "java",
-      },
-      {
-        id: "92",
-        name: "Python",
-        editorValue: "python",
-      },
+      // {
+      //   id: "91",
+      //   name: "Java",
+      //   editorValue: "java",
+      // },
+      // {
+      //   id: "92",
+      //   name: "Python",
+      //   editorValue: "python",
+      // },
       {
         id: "93",
         name: "JavaScript",
@@ -50,11 +50,11 @@ async function main() {
       //   name: "Go",
       //   editorValue: "go",
       // },
-      {
-        id: "94",
-        name: "TypeScript",
-        editorValue: "typescript",
-      },
+      // {
+      //   id: "94",
+      //   name: "TypeScript",
+      //   editorValue: "typescript",
+      // },
     ],
   });
 
@@ -373,36 +373,35 @@ public:
         }
         return {};
     }
-};</code></pre><p><strong>Complexity Analysis</strong></p><ul><li><p>Time complexity: O(n).<br>We traverse the list containing n elements only once. Each lookup in the table costs only O(1) time.</p></li><li><p>Space complexity: O(n).<br>The extra space required depends on the number of items stored in the hash table, which stores at most n elements.</p></li></ul> problem-form.tsx:567:36
-`,
+};</code></pre><p><strong>Complexity Analysis</strong></p><ul><li><p>Time complexity: O(n).<br>We traverse the list containing n elements only once. Each lookup in the table costs only O(1) time.</p></li><li><p>Space complexity: O(n).<br>The extra space required depends on the number of items stored in the hash table, which stores at most n elements.</p></li></ul>`,
       testcases: `[
   {
     "input": {
       "nums": [2, 7, 11, 15],
       "target": 9
     },
-    "output": [0, 1]
+    "expected_output": [0, 1]
   },
   {
     "input": {
       "nums": [3, 2, 4],
       "target": 6
     },
-    "output": [1, 2]
+    "expected_output": [1, 2]
   },
   {
     "input": {
       "nums": [3, 3],
       "target": 6
     },
-    "output": [0, 1]
+    "expected_output": [0, 1]
   }
 ]`,
       testCaseDrivers: {
         createMany: {
           data: [
             {
-              languageId: "15",
+              languageId: "54",
               code: `int main() {
   Solution solution;
 
@@ -475,7 +474,7 @@ rl.once("close", () => {
         createMany: {
           data: [
             {
-              languageId: "15",
+              languageId: "54",
               code: `class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
