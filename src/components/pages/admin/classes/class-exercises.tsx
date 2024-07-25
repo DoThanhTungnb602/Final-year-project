@@ -40,6 +40,7 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
 import { ClassroomById } from "~/server/api/client";
+import Link from "next/link";
 
 export default function ClassExercises({
   classroom,
@@ -109,6 +110,14 @@ export default function ClassExercises({
     {
       accessorKey: "title",
       header: "Title",
+      cell: ({ row }) => (
+        <Link
+          href={`/admin/classes/${classroom?.id}/exercise/${row.original.id}`}
+          className="transition-all hover:underline"
+        >
+          {row.original.title}
+        </Link>
+      ),
     },
     {
       accessorKey: "dueDate",

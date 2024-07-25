@@ -126,7 +126,7 @@ export const problemRouter = createTRPCRouter({
           data: {
             ...problem,
             skeletons: {
-              create: skeletons.map((skeleton) => ({
+              create: skeletons?.map((skeleton) => ({
                 code: skeleton.code,
                 language: {
                   connect: {
@@ -136,7 +136,7 @@ export const problemRouter = createTRPCRouter({
               })),
             },
             testCaseDrivers: {
-              create: testCaseDrivers.map((driver) => ({
+              create: testCaseDrivers?.map((driver) => ({
                 code: driver.code,
                 language: {
                   connect: {
@@ -175,7 +175,7 @@ export const problemRouter = createTRPCRouter({
           data: {
             ...problem,
             skeletons: {
-              update: skeletons.map((skeleton) => ({
+              update: skeletons?.map((skeleton) => ({
                 where: {
                   languageId_problemId: {
                     languageId: skeleton.languageId,
@@ -188,7 +188,7 @@ export const problemRouter = createTRPCRouter({
               })),
             },
             testCaseDrivers: {
-              update: testCaseDrivers.map((driver) => ({
+              update: testCaseDrivers?.map((driver) => ({
                 where: {
                   languageId_problemId: {
                     languageId: driver.languageId,

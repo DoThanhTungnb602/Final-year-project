@@ -105,17 +105,17 @@ export const ProblemSchema = z.object({
   description: z.string().nonempty(),
   difficulty: z.nativeEnum(Difficulty),
   isPublic: z.boolean(),
-  tags: z.array(z.object({ id: z.string(), name: z.string() })).min(1, {
-    message: "At least one tag is required",
-  }),
+  tags: z.array(z.object({ id: z.string(), name: z.string() })).optional(),
   timeLimit: z.number().optional(),
   memoryLimit: z.number().optional(),
-  skeletons: z.array(
-    z.object({
-      languageId: z.string(),
-      code: z.string(),
-    }),
-  ),
+  skeletons: z
+    .array(
+      z.object({
+        languageId: z.string(),
+        code: z.string(),
+      }),
+    )
+    .optional(),
   testcases: z
     .string()
     .min(1, {
@@ -134,12 +134,10 @@ export const ProblemSchema = z.object({
         message: "Invalid test cases. Please enter a valid JSON array",
       },
     ),
-  testCaseDrivers: z.array(
-    z.object({ languageId: z.string(), code: z.string() }),
-  ),
-  solution: z.string().min(1, {
-    message: "Solution is required",
-  }),
+  testCaseDrivers: z
+    .array(z.object({ languageId: z.string(), code: z.string() }))
+    .optional(),
+  solution: z.string().optional(),
 });
 
 export const ClassSchema = z.object({

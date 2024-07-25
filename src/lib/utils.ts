@@ -4,7 +4,11 @@ import { twMerge } from "tailwind-merge";
 import { remark } from "remark";
 import html from "remark-html";
 import { TestCase } from "./types";
-import { CPP_JUDGE0_ID, JAVASCRIPT_JUDGE0_ID } from "./constant";
+import {
+  CPP_JUDGE0_ID,
+  DEFAULT_CPP_INCLUDES,
+  JAVASCRIPT_JUDGE0_ID,
+} from "./constant";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -30,54 +34,14 @@ const addCppIncludesAndDriverCode = ({
   userCode: string;
   driverCode: string;
 }) => {
-  const defaultIncludes = `#include <algorithm>
-#include <array>
-#include <bitset>
-#include <deque>
-#include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <stack>
-#include <string>
-#include <tuple>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-#include <cmath>
-using namespace std;
-`;
-  return `${defaultIncludes}\n${userCode}\n${driverCode}`;
+  return `${DEFAULT_CPP_INCLUDES}\n${userCode}\n${driverCode}`;
 };
 
 const importCommonLibraryCpp = (code: string) => {
-  const defaultIncludes = `#include <algorithm>
-#include <array>
-#include <bitset>
-#include <deque>
-#include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <stack>
-#include <string>
-#include <tuple>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-#include <cmath>
-using namespace std;
-`;
   const mainFunction = `int main(){
 return 0;
 }`;
-  return `${defaultIncludes}\n${code}\n${mainFunction}`;
+  return `${DEFAULT_CPP_INCLUDES}\n${code}\n${mainFunction}`;
 };
 
 export const getPublicTestcases = (testcasesJson: string) => {

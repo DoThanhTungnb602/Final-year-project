@@ -1,16 +1,11 @@
 "use client";
 
 import { Separator } from "~/components/ui/separator";
-import { Progress } from "~/components/ui/progress";
 import { useEffect, useState } from "react";
 import { ProblemDataTable } from "~/components/shared/problem-data-table";
 import { Badge } from "~/components/ui/badge";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { SiTarget } from "react-icons/si";
-import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import CustomTooltip from "~/components/shared/custom-tooltip";
 import { api } from "~/trpc/react";
 import moment from "moment";
 import DefaultLoadingPage from "~/components/shared/default-loading-page";
@@ -23,17 +18,12 @@ export default function Page({
   params: { id: string; testId: string };
 }) {
   const { testId, id: classId } = params;
-  const [score, setScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
-  const [currentTime, setCurrentTime] = useState(Date.now());
-  const [isStarted, setIsStarted] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
 
   const { data: test } = api.test.getById.useQuery({ testId });
-  const { data: problems } = api.test.getProblems.useQuery(
-    { testId },
-    { enabled: isStarted },
-  );
+  const { data: problems } = api.test.getProblemsWithoutChecking.useQuery({
+    testId,
+  });
 
   const { data: students } = api.test.getStudentsProgress.useQuery({
     testId,
@@ -43,37 +33,8 @@ export default function Page({
   useEffect(() => {
     if (problems) {
       setTotalScore(problems.length * 20);
-      const solved = problems.filter(
-        (problem) => problem.status === "ACCEPTED",
-      );
-      setScore(solved.length * 20);
     }
   }, [problems]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (test) {
-      const start = new Date(test.startTime).getTime();
-
-      if (currentTime < start) {
-        setIsStarted(false);
-      } else {
-        setIsStarted(true);
-      }
-
-      const end = start + test.duration * 60 * 1000;
-      if (currentTime > end) {
-        setIsFinished(true);
-      }
-    }
-  }, [currentTime, test]);
 
   const columns: ColumnDef<PublicProblems>[] = [
     {

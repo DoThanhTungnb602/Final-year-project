@@ -61,4 +61,62 @@ export const exerciseRouter = createTRPCRouter({
         });
       }
     }),
+
+  getProblems: protectedProcedure
+    .input(z.object({ exerciseId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const exercise = await ctx.db.exercise.findUnique({
+          where: { id: input.exerciseId },
+          include: {
+            problems: {
+              include: {
+                submissions: {
+                  where: {
+                    userId: ctx.session?.user.id,
+                    exerciseId: input.exerciseId,
+                  },
+                  select: {
+                    verdict: true,
+                  },
+                },
+                tags: true,
+              },
+            },
+          },
+        });
+        if (!exercise) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Test not found",
+          });
+        }
+        const problems = exercise.problems.map((problem) => {
+          const hasAccepted = problem.submissions.some(
+            (sub) => sub.verdict === "ACCEPTED",
+          );
+          let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
+          if (hasAccepted) {
+            status = "ACCEPTED";
+          } else {
+            const hasAttempted = problem.submissions.length > 0;
+            if (hasAttempted) status = "ATTEMPTED";
+          }
+          return {
+            ...problem,
+            solution: !!problem.solution,
+            status,
+          };
+        });
+        return problems;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Test not found",
+        });
+      }
+    }),
 });

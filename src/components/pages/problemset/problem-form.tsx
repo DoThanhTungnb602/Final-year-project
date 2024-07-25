@@ -562,7 +562,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                       <div className="h-96 overflow-hidden rounded-md border">
                         <Editor
                           editable={mode !== "view"}
-                          content={field.value}
+                          content={field.value ?? ""}
                           onChange={(e) => {
                             console.log(e);
                             field.onChange(e);
