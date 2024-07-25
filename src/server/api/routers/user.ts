@@ -25,6 +25,19 @@ export const userRouter = createTRPCRouter({
     }
   }),
 
+  delete: adminProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    try {
+      await ctx.db.user.delete({ where: { id: input } });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to delete user",
+      });
+    }
+
+    return { success: "User deleted successfully" };
+  }),
+
   getById: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
     try {
       const user = await ctx.db.user.findUnique({

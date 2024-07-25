@@ -22,9 +22,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { FaUserCircle } from "react-icons/fa";
 import { api } from "~/trpc/react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function Page() {
   const allUsersQuery = api.user.all.useQuery();
+  const deleteUserMutation = api.user.delete.useMutation({
+    onSuccess: () => {
+      toast.success("User deleted successfully");
+      allUsersQuery.refetch().catch(console.error);
+    },
+  });
+
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "image",
@@ -41,9 +49,14 @@ export default function Page() {
     {
       accessorKey: "name",
       header: "Name",
-      cell: ({ row }) => <Link href={`/admin/users/${row.original.id}`} className="hover:underline transition-all">
-        {row.original.name}
-      </Link>,
+      cell: ({ row }) => (
+        <Link
+          href={`/admin/users/${row.original.id}`}
+          className="transition-all hover:underline"
+        >
+          {row.original.name}
+        </Link>
+      ),
     },
     {
       id: "actions",
@@ -61,13 +74,19 @@ export default function Page() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently ban
+                    This action cannot be undone. This will permanently delete
+                    the user
                     {` '${row.original?.name}'`}.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction>
+                  <AlertDialogAction
+                    onClick={() => deleteUserMutation.mutate(row.original.id)}
+                    disabled={deleteUserMutation.isPending}
+                  >
+                    Continue
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -78,7 +97,7 @@ export default function Page() {
   ];
 
   return (
-    <Card className="bg-dark mt-3 flex w-full flex-col lg:mt-6 mx-auto max-w-4xl">
+    <Card className="bg-dark mx-auto mt-3 flex w-full max-w-4xl flex-col lg:mt-6">
       <CardContent className="flex-1 pt-6">
         <DataTable data={allUsersQuery?.data ?? []} columns={columns} />
       </CardContent>
