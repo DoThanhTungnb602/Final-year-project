@@ -5,7 +5,7 @@ import { SubmitResult } from "~/server/api/client";
 
 interface RunResultState {
   result: RunSubmissionResult | null;
-  setResult: (result: RunSubmissionResult) => void;
+  setResult: (result: RunSubmissionResult | null) => void;
 }
 
 interface SubmitResultState {

@@ -95,7 +95,6 @@ export function CodeEditor() {
 
   const runProblem = api.submission.run.useMutation({
     onSuccess(data) {
-      console.log(data);
       setResult(data);
     },
   });

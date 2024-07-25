@@ -8,6 +8,7 @@ import { useProblemStore } from "~/hooks/use-problem-store";
 import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { ProblemComponent } from "~/components/shared/problem";
 import { useCurrentUser } from "~/hooks/use-current-user";
+import { useRunResultStore } from "~/hooks/use-submission-store";
 
 export default function Page({ params }: { params: { id: string } }) {
   const currentUser = useCurrentUser();
@@ -19,6 +20,7 @@ export default function Page({ params }: { params: { id: string } }) {
   );
   const { setProblem } = useProblemStore();
   const { setProblems, setIsShow, setTitle } = useSidebarStore();
+  const { setResult } = useRunResultStore();
 
   useEffect(() => {
     if (problemsQueryData) {
@@ -36,6 +38,7 @@ export default function Page({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (problem) {
       setProblem(problem);
+      setResult(null);
     }
 
     return () => {

@@ -17,6 +17,8 @@ const ConsolePanel = () => {
   useEffect(() => {
     if (result) {
       setActiveTab("test_result");
+    } else {
+      setActiveTab("testcase");
     }
   }, [result]);
 
