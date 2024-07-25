@@ -14,6 +14,7 @@ interface ProblemSkeletonStore {
     language: Language["name"];
     code: string;
   }) => void;
+  resetCodeMap: () => void;
 }
 
 export const useProblemSkeletonStore = create<ProblemSkeletonStore>((set) => ({
@@ -22,6 +23,12 @@ export const useProblemSkeletonStore = create<ProblemSkeletonStore>((set) => ({
   selectedLanguage: { id: "76", name: "C++", editorValue: "cpp" },
   setSelectedLanguage: (language) => set({ selectedLanguage: language }),
   codeMap: new Map(),
+  resetCodeMap: () => {
+    set((state) => {
+      const codeMap = new Map();
+      return { ...state, codeMap };
+    });
+  },
   setCodeMap: ({
     language,
     code,

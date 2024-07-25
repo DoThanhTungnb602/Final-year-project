@@ -46,7 +46,7 @@ export function TestcaseDriverCodeEditor({ readOnly }: CodeEditorProps) {
 
   useEffect(() => {
     setSourceCode(codeMap.get(selectedLanguage.name));
-  }, [selectedLanguage]);
+  }, [selectedLanguage, codeMap]);
 
   useEffect(() => {
     if (data?.length) {

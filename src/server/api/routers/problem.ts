@@ -109,19 +109,6 @@ export const problemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { skeletons, testCaseDrivers, tags, ...problem } = input;
-        const languages = await ctx.db.language.findMany();
-        const isSkeletonEmpty = languages?.some((language) => {
-          const skeleton = skeletons?.find((skeleton) => {
-            return skeleton?.languageId === language.id;
-          });
-          return !skeleton || skeleton?.code?.trim() === "";
-        });
-        if (isSkeletonEmpty) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Skeleton code is required for all languages",
-          });
-        }
         return await ctx.db.problem.create({
           data: {
             ...problem,
@@ -273,6 +260,8 @@ export const problemRouter = createTRPCRouter({
             submissions: {
               where: {
                 userId: ctx.session?.user.id,
+                exerciseId: null,
+                testId: null,
               },
               select: {
                 verdict: true,

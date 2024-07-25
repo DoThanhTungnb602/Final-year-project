@@ -7,6 +7,7 @@ interface ProblemTestcaseDriverStore {
   selectedLanguage: Language;
   setSelectedLanguage: (language: Language) => void;
   codeMap: Map<Language["name"], string>;
+  resetCodeMap: () => void;
   setCodeMap: ({
     language,
     code,
@@ -23,6 +24,9 @@ export const useProblemTestcaseDriverStore = create<ProblemTestcaseDriverStore>(
     selectedLanguage: { id: "76", name: "C++", editorValue: "cpp" },
     setSelectedLanguage: (language) => set({ selectedLanguage: language }),
     codeMap: new Map(),
+    resetCodeMap: () => {
+      set((state) => ({ ...state, codeMap: new Map() }));
+    },
     setCodeMap: ({
       language,
       code,

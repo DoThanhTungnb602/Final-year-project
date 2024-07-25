@@ -36,12 +36,15 @@ const addCppIncludesAndDriverCode = ({
 }) => {
   return `${DEFAULT_CPP_INCLUDES}\n${userCode}\n${driverCode}`;
 };
-
 const importCommonLibraryCpp = (code: string) => {
-  const mainFunction = `int main(){
+  if (code.includes("int main()")) {
+    return `${DEFAULT_CPP_INCLUDES}\n${code}\n`;
+  } else {
+    const mainFunction = `int main(){
 return 0;
 }`;
-  return `${DEFAULT_CPP_INCLUDES}\n${code}\n${mainFunction}`;
+    return `${DEFAULT_CPP_INCLUDES}\n${code}\n${mainFunction}`;
+  }
 };
 
 export const getPublicTestcases = (testcasesJson: string) => {

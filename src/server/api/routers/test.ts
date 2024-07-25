@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { getPublicTestcases } from "~/lib/utils";
 
 import {
   adminProcedure,
@@ -77,6 +78,74 @@ export const testRouter = createTRPCRouter({
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Test not found",
+        });
+      }
+    }),
+
+  getPublicProblemById: protectedProcedure
+    .input(z.object({ testId: z.string(), problemId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const problem = await ctx.db.problem.findUnique({
+          where: {
+            id: input.problemId,
+            isPublic: true,
+          },
+          include: {
+            skeletons: {
+              select: {
+                languageId: true,
+                code: true,
+                language: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            submissions: {
+              where: {
+                userId: ctx.session?.user.id,
+                exerciseId: null,
+                testId: input.testId,
+              },
+              select: {
+                verdict: true,
+              },
+            },
+            tags: true,
+          },
+        });
+        if (!problem) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Problem not found",
+          });
+        }
+        const hasAccepted = problem.submissions.some(
+          (sub) => sub.verdict === "ACCEPTED",
+        );
+        let status: "UNSOLVED" | "ACCEPTED" | "ATTEMPTED" = "UNSOLVED";
+        if (hasAccepted) {
+          status = "ACCEPTED";
+        } else {
+          const hasAttempted = problem.submissions.length > 0;
+          if (hasAttempted) status = "ATTEMPTED";
+        }
+        const { testcases, ...rest } = problem;
+        const publicTestcases = getPublicTestcases(testcases ?? "");
+        return {
+          ...rest,
+          status,
+          testcases: publicTestcases,
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch problem",
         });
       }
     }),

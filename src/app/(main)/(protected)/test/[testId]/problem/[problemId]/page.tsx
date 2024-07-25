@@ -8,7 +8,6 @@ import { useProblemStore } from "~/hooks/use-problem-store";
 import { useSidebarStore } from "~/hooks/use-sidebar-store";
 import { ProblemComponent } from "~/components/shared/problem";
 
-// TODO: Make a timer component for problem page
 export default function Page({
   params,
 }: {
@@ -21,9 +20,12 @@ export default function Page({
   const { setProblem } = useProblemStore();
   const { setIsShow, setTitle, setProblems, setTest } = useSidebarStore();
 
-  const { data: problem, isPending } = api.problem.getPublicProblemById.useQuery(problemId, {
-    enabled: isStarted,
-  });
+  const { data: problem, isPending } = api.test.getPublicProblemById.useQuery(
+    { testId, problemId },
+    {
+      enabled: isStarted,
+    },
+  );
   const { data: test } = api.test.getById.useQuery({ testId });
   const { data: problemList } = api.test.getProblems.useQuery(
     { testId },

@@ -74,11 +74,13 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
   const [mode, setMode] = useState(_mode);
   const [saveChanges, setSaveChanges] = useState(false);
   const router = useRouter();
-  const { setCodeMap, codeMap, languages } = useProblemSkeletonStore();
+  const { setCodeMap, codeMap, languages, resetCodeMap } =
+    useProblemSkeletonStore();
   const {
     setCodeMap: setDriverCodeMap,
     codeMap: driverCodeMap,
     languages: driverLanguages,
+    resetCodeMap: resetDriverCodeMap,
   } = useProblemTestcaseDriverStore();
   const { data: tagsData } = api.topic.all.useQuery();
 
@@ -125,6 +127,11 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
         });
       });
     }
+
+    return () => {
+      resetCodeMap();
+      resetDriverCodeMap();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [problem]);
 
@@ -136,7 +143,10 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
         code,
       };
     });
-    form.setValue("skeletons", skeletons ?? [], { shouldDirty: true });
+    if (skeletons) {
+      form.setValue("skeletons", skeletons, { shouldDirty: true });
+    }
+    // form.setValue("skeletons", skeletons ?? [], { shouldDirty: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeMap]);
 
@@ -148,7 +158,10 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
         code,
       };
     });
-    form.setValue("testCaseDrivers", drivers ?? [], { shouldDirty: true });
+    if(drivers) {
+      form.setValue("testCaseDrivers", drivers, { shouldDirty: true });
+    }
+    // form.setValue("testCaseDrivers", drivers ?? [], { shouldDirty: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [driverCodeMap]);
 
@@ -173,14 +186,14 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
   });
 
   const onSubmit = (values: z.infer<typeof ProblemSchema>) => {
-    const isSkeletonEmpty = languages?.some((language) => {
-      const code = codeMap.get(language.name);
-      return !code || code.trim() === "";
-    });
-    if (isSkeletonEmpty) {
-      toast.error("Please provide code skeleton for all languages");
-      return;
-    }
+    // const isSkeletonEmpty = languages?.some((language) => {
+    //   const code = codeMap.get(language.name);
+    //   return !code || code.trim() === "";
+    // });
+    // if (isSkeletonEmpty) {
+    //   toast.error("Please provide code skeleton for all languages");
+    //   return;
+    // }
     if (mode === "create") {
       problemCreator.mutate(values);
     } else if (mode === "edit" && problem) {
