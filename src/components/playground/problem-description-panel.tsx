@@ -85,14 +85,16 @@ const ProblemDescriptionPanel = () => {
           <IoDocumentText className="h-4 w-4" />
           Description
         </TabsTrigger>
-        <TabsTrigger
-          value="solution"
-          className="flex gap-2"
-          onClick={() => setActiveTab("solution")}
-        >
-          <FaClipboardCheck className="h-4 w-4" />
-          Solutions
-        </TabsTrigger>
+        {test ?? exercise ? null : (
+          <TabsTrigger
+            value="solution"
+            className="flex gap-2"
+            onClick={() => setActiveTab("solution")}
+          >
+            <FaClipboardCheck className="h-4 w-4" />
+            Solutions
+          </TabsTrigger>
+        )}
         <TabsTrigger
           value="submissions"
           className="flex gap-2"
@@ -150,25 +152,27 @@ const ProblemDescriptionPanel = () => {
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="solution" className="min-h-0 flex-1">
-        <Card className="h-full min-h-0 overflow-y-auto p-3">
-          <CardContent className="h-full min-h-0 p-0">
-            {problem ? (
-              <>
-                {problem.solution && problem.solution !== "" ? (
-                  <Viewer content={problem.solution} />
-                ) : (
-                  <p className="mx-auto font-semibold text-muted-foreground">
-                    No solution provided.
-                  </p>
-                )}
-              </>
-            ) : (
-              <DefaultLoadingPage />
-            )}
-          </CardContent>
-        </Card>
-      </TabsContent>
+      {test ?? exercise ? null : (
+        <TabsContent value="solution" className="min-h-0 flex-1">
+          <Card className="h-full min-h-0 overflow-y-auto p-3">
+            <CardContent className="h-full min-h-0 p-0">
+              {problem ? (
+                <>
+                  {problem.solution && problem.solution !== "" ? (
+                    <Viewer content={problem.solution} />
+                  ) : (
+                    <p className="mx-auto font-semibold text-muted-foreground">
+                      No solution provided.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <DefaultLoadingPage />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      )}
       <TabsContent value="submissions" className="min-h-0 flex-1">
         <Card className="h-full min-h-0 overflow-hidden">
           <CardContent className="h-full min-h-0 p-0">
