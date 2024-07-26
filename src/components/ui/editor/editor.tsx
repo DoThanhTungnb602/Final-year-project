@@ -44,6 +44,7 @@ const Editor = ({ content, placeholder, onChange, editable }: EditorProps) => {
     editor.setOptions({
       editable: editable,
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editable]);
 
   if (!editor) return <></>;
