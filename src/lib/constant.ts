@@ -21,3 +21,23 @@ export const DEFAULT_CPP_INCLUDES = `#include <algorithm>
 #include <cmath>
 using namespace std;
 `;
+
+export const DEFAULT_CPP_STRUCT_CLASS = `struct ListNode {
+  int val;
+  ListNode *next;
+  ListNode() : val(0), next(nullptr) {}
+  ListNode(int x) : val(x), next(nullptr) {}
+  ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
+`
+
+export const DEFAULT_PYTHON_IMPORTS = `from typing import (
+    List, Tuple, Set, Dict, FrozenSet, Deque, Optional, Union,
+    Any, Callable, TypeVar, Generic, Literal, Final, Protocol, TypedDict, Annotated
+)
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+`

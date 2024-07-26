@@ -7,6 +7,8 @@ import { TestCase } from "./types";
 import {
   CPP_JUDGE0_ID,
   DEFAULT_CPP_INCLUDES,
+  DEFAULT_CPP_STRUCT_CLASS,
+  DEFAULT_PYTHON_IMPORTS,
   JAVASCRIPT_JUDGE0_ID,
   PYTHON_JUDGE0_ID,
 } from "./constant";
@@ -28,23 +30,14 @@ export async function getUploadthingFile(fileKey: string) {
   return data;
 }
 
-const addCppIncludesAndDriverCode = ({
-  userCode,
-  driverCode,
-}: {
-  userCode: string;
-  driverCode: string;
-}) => {
-  return `${DEFAULT_CPP_INCLUDES}\n${userCode}\n${driverCode}`;
-};
 const importCommonLibraryCpp = (code: string) => {
   if (code.includes("int main()")) {
-    return `${DEFAULT_CPP_INCLUDES}\n${code}\n`;
+    return `${DEFAULT_CPP_INCLUDES}\n${DEFAULT_CPP_STRUCT_CLASS}\n${code}\n`;
   } else {
     const mainFunction = `int main(){
 return 0;
 }`;
-    return `${DEFAULT_CPP_INCLUDES}\n${code}\n${mainFunction}`;
+    return `${DEFAULT_CPP_INCLUDES}\n${DEFAULT_CPP_STRUCT_CLASS}\n${code}\n${mainFunction}`;
   }
 };
 
@@ -110,10 +103,11 @@ export const preparePreSubmissionData = ({
       break;
     }
     case JAVASCRIPT_JUDGE0_ID:
+      code = userCode;
       break;
 
     case PYTHON_JUDGE0_ID:
-      code = userCode;
+      code = `${DEFAULT_PYTHON_IMPORTS}\n${userCode}`;
       break;
   }
   return code;
@@ -135,16 +129,19 @@ export const prepareSubmissionData = ({
   let expected_output_array: string[] = [];
   switch (languageId) {
     case CPP_JUDGE0_ID:
-      code = addCppIncludesAndDriverCode({ userCode, driverCode });
+      code = `${DEFAULT_CPP_INCLUDES}\n${DEFAULT_CPP_STRUCT_CLASS}\n${userCode}\n${driverCode}`;
       stdin_array = jsonToStdin(testcases);
       expected_output_array = jsonToExpectedOutput(testcases);
       break;
 
     case JAVASCRIPT_JUDGE0_ID:
+      code = `${userCode}\n${driverCode}`;
+      stdin_array = jsonToStdin(testcases);
+      expected_output_array = jsonToExpectedOutput(testcases);
       break;
 
     case PYTHON_JUDGE0_ID:
-      code = userCode;
+      code = `${DEFAULT_PYTHON_IMPORTS}\n${userCode}\n${driverCode}`;
       stdin_array = jsonToStdin(testcases);
       expected_output_array = jsonToExpectedOutput(testcases);
       break;

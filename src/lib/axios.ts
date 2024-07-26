@@ -1,13 +1,17 @@
 import axios, { AxiosError } from "axios";
+import rateLimit from "axios-rate-limit";
 import { SubmissionRequest, SubmissionResponse } from "./types";
 
 const judge0_api_url = process.env.JUDGE0_API_URL;
 const judge0_api_key = process.env.JUDGE0_API_KEY;
 const judge0_api_host = process.env.JUDGE0_API_HOST;
 
-export const axiosInstance = axios.create({
-  baseURL: judge0_api_url,
-});
+export const axiosInstance = rateLimit(
+  axios.create({
+    baseURL: judge0_api_url,
+  }),
+  { maxRequests: 1, perMilliseconds: 1000, maxRPS: 1 },
+);
 
 axiosInstance.interceptors.request.use(async (config) => {
   try {
