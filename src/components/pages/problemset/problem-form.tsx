@@ -158,7 +158,7 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
         code,
       };
     });
-    if(drivers) {
+    if (drivers) {
       form.setValue("testCaseDrivers", drivers, { shouldDirty: true });
     }
     // form.setValue("testCaseDrivers", drivers ?? [], { shouldDirty: true });
@@ -361,7 +361,74 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
             </CardContent>
           </Card>
           <div className="flex flex-col gap-4 md:flex-row lg:gap-6">
+            {/*
             <div className="flex w-full flex-col gap-4 md:w-1/2 lg:gap-6">
+ <Card x-chunk="dashboard-07-chunk-1">
+                <CardHeader>
+                  <CardTitle>Time and Memory Limit</CardTitle>
+                  <CardDescription>
+                    Set up time and memory limit for problem
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="timeLimit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Time limit</FormLabel>
+                        <FormControl>
+                          <Input
+                            readOnly={mode === "view"}
+                            type="number"
+                            id="timeLimit"
+                            {...field}
+                            defaultValue={field.value}
+                            onChange={(e) => {
+                              if (e.target.valueAsNumber) {
+                                field.onChange(e.target.valueAsNumber);
+                              } else {
+                                field.onChange(undefined);
+                              }
+                            }}
+                            placeholder="Seconds"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="memoryLimit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Memory limit</FormLabel>
+                        <FormControl>
+                          <Input
+                            readOnly={mode === "view"}
+                            type="number"
+                            id="memoryLimit"
+                            {...field}
+                            onChange={(e) => {
+                              if (e.target.valueAsNumber) {
+                                field.onChange(e.target.valueAsNumber);
+                              } else {
+                                field.onChange(undefined);
+                              }
+                            }}
+                            placeholder="KiloBytes"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>*
+            </div>
+                  */}
+            <div className="flex w-full gap-4 lg:gap-6">
               <Card x-chunk="dashboard-07-chunk-3">
                 <CardHeader>
                   <CardTitle>Problem Difficulty</CardTitle>
@@ -416,71 +483,39 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                   )}
                 </CardContent>
               </Card>
-              <Card x-chunk="dashboard-07-chunk-1">
+              <Card x-chunk="dashboard-07-chunk-3">
                 <CardHeader>
-                  <CardTitle>Time and Memory Limit</CardTitle>
+                  <CardTitle>Problem Visibility</CardTitle>
                   <CardDescription>
-                    Set up time and memory limit for problem
+                    Set the visibility of the problem
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent>
                   <FormField
                     control={form.control}
-                    name="timeLimit"
+                    name="isPublic"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Time limit</FormLabel>
+                      <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">
+                            Make problem public
+                          </FormLabel>
+                          <FormDescription>
+                            This will make the problem visible to all users
+                          </FormDescription>
+                        </div>
                         <FormControl>
-                          <Input
-                            readOnly={mode === "view"}
-                            type="number"
-                            id="timeLimit"
-                            {...field}
-                            defaultValue={field.value}
-                            onChange={(e) => {
-                              if (e.target.valueAsNumber) {
-                                field.onChange(e.target.valueAsNumber);
-                              } else {
-                                field.onChange(undefined);
-                              }
-                            }}
-                            placeholder="Millisecond"
+                          <Switch
+                            disabled={mode === "view"}
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="memoryLimit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Memory limit</FormLabel>
-                        <FormControl>
-                          <Input
-                            readOnly={mode === "view"}
-                            type="number"
-                            id="memoryLimit"
-                            {...field}
-                            onChange={(e) => {
-                              if (e.target.valueAsNumber) {
-                                field.onChange(e.target.valueAsNumber);
-                              } else {
-                                field.onChange(undefined);
-                              }
-                            }}
-                            placeholder="Megabyte"
-                          />
-                        </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
                 </CardContent>
               </Card>
-            </div>
-            <div className="flex w-full flex-col gap-4 md:w-1/2 lg:gap-6">
               <Card x-chunk="dashboard-07-chunk-4">
                 <CardHeader>
                   <CardTitle>Problem Topics</CardTitle>
@@ -520,39 +555,6 @@ export function ProblemForm({ problem, _mode }: ProblemFormProps) {
                         </FormItem>
                       );
                     }}
-                  />
-                </CardContent>
-              </Card>
-              <Card x-chunk="dashboard-07-chunk-3">
-                <CardHeader>
-                  <CardTitle>Problem Visibility</CardTitle>
-                  <CardDescription>
-                    Set the visibility of the problem
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="isPublic"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between gap-4 rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Make problem public
-                          </FormLabel>
-                          <FormDescription>
-                            This will make the problem visible to all users
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            disabled={mode === "view"}
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
                   />
                 </CardContent>
               </Card>

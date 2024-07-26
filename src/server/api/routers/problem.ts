@@ -210,6 +210,7 @@ export const problemRouter = createTRPCRouter({
         },
       });
     } catch (error) {
+      console.log("error", error);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Failed to delete problem",

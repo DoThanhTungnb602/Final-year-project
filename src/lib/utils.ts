@@ -8,6 +8,7 @@ import {
   CPP_JUDGE0_ID,
   DEFAULT_CPP_INCLUDES,
   JAVASCRIPT_JUDGE0_ID,
+  PYTHON_JUDGE0_ID,
 } from "./constant";
 
 export function cn(...inputs: ClassValue[]) {
@@ -106,7 +107,14 @@ export const preparePreSubmissionData = ({
   switch (languageId) {
     case CPP_JUDGE0_ID: {
       code = importCommonLibraryCpp(userCode);
+      break;
     }
+    case JAVASCRIPT_JUDGE0_ID:
+      break;
+
+    case PYTHON_JUDGE0_ID:
+      code = userCode;
+      break;
   }
   return code;
 };
@@ -133,6 +141,12 @@ export const prepareSubmissionData = ({
       break;
 
     case JAVASCRIPT_JUDGE0_ID:
+      break;
+
+    case PYTHON_JUDGE0_ID:
+      code = userCode;
+      stdin_array = jsonToStdin(testcases);
+      expected_output_array = jsonToExpectedOutput(testcases);
       break;
 
     default:

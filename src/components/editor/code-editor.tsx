@@ -129,6 +129,8 @@ export function CodeEditor() {
         problemId: problem.id,
         languageId: selectedLanguage.id,
         code: sourceCode ?? "",
+        timeLimit: problem.timeLimit ?? undefined,
+        memoryLimit: problem.memoryLimit ?? undefined,
       });
     }
   };

@@ -89,6 +89,8 @@ export const SubmissionSchema = z.object({
   problemId: z.string().min(1),
   exerciseId: z.string().optional(),
   testId: z.string().optional(),
+  timeLimit: z.number().optional(),
+  memoryLimit: z.number().optional(),
 });
 
 export const ProblemFilterSchema = z.object({

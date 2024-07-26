@@ -129,40 +129,6 @@ export const submissionRouter = createTRPCRouter({
           });
         }
 
-        // Wrong Answer tokens
-        // const tokens = [
-        //   {
-        //     token: "b1d8a91e-2dac-467a-b9eb-d675a195678d",
-        //   },
-        //   {
-        //     token: "4ac1ccdd-8eec-407a-8d08-f6b1865ce78e",
-        //   },
-        // ];
-
-        // Accepted tokens
-        // const tokens = [
-        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        // ];
-
-        // Compilation Error tokens
-        // const tokens = [
-        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
-        // ];
-
-        // Runtime Error tokens
-        // const tokens = [
-        //   { token: "9c57e2da-884b-4124-a8cb-c8e66e9906ab" },
-        //   { token: "25182e62-db3a-485e-a1fe-a377674f6de5" },
-        // ];
-
-        // Time Limit Exceeded tokens
-        // const tokens = [
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        // ];
-
         let submissionResponse = await getBatchSubmission(tokens);
         if (!submissionResponse) {
           throw new TRPCError({
@@ -412,35 +378,6 @@ export const submissionRouter = createTRPCRouter({
             message: "Internal server error. Please try again later.",
           });
         }
-        // Wrong Answer tokens
-        // const tokens = [
-        //   {
-        //     token: "b1d8a91e-2dac-467a-b9eb-d675a195678d",
-        //   },
-        //   {
-        //     token: "4ac1ccdd-8eec-407a-8d08-f6b1865ce78e",
-        //   },
-        // ];
-        // Accepted tokens
-        // const tokens = [
-        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        // ];
-        // Compilation Error tokens
-        // const tokens = [
-        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
-        // ];
-        // Runtime Error tokens
-        // const tokens = [
-        //   { token: "9c57e2da-884b-4124-a8cb-c8e66e9906ab" },
-        //   { token: "25182e62-db3a-485e-a1fe-a377674f6de5" },
-        // ];
-        // Time Limit Exceeded tokens
-        // const tokens = [
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        // ];
         let submissionResponse = await getBatchSubmission(tokens);
         if (!submissionResponse) {
           throw new TRPCError({
@@ -804,35 +741,6 @@ export const submissionRouter = createTRPCRouter({
             message: "Internal server error. Please try again later.",
           });
         }
-        // Wrong Answer tokens
-        // const tokens = [
-        //   {
-        //     token: "b1d8a91e-2dac-467a-b9eb-d675a195678d",
-        //   },
-        //   {
-        //     token: "4ac1ccdd-8eec-407a-8d08-f6b1865ce78e",
-        //   },
-        // ];
-        // Accepted tokens
-        // const tokens = [
-        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        // ];
-        // Compilation Error tokens
-        // const tokens = [
-        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
-        // ];
-        // Runtime Error tokens
-        // const tokens = [
-        //   { token: "9c57e2da-884b-4124-a8cb-c8e66e9906ab" },
-        //   { token: "25182e62-db3a-485e-a1fe-a377674f6de5" },
-        // ];
-        // Time Limit Exceeded tokens
-        // const tokens = [
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        // ];
         let submissionResponse = await getBatchSubmission(tokens);
         if (!submissionResponse) {
           throw new TRPCError({
@@ -1210,35 +1118,6 @@ export const submissionRouter = createTRPCRouter({
             message: "Internal server error. Please try again later.",
           });
         }
-        // Wrong Answer tokens
-        // const tokens = [
-        //   {
-        //     token: "b1d8a91e-2dac-467a-b9eb-d675a195678d",
-        //   },
-        //   {
-        //     token: "4ac1ccdd-8eec-407a-8d08-f6b1865ce78e",
-        //   },
-        // ];
-        // Accepted tokens
-        // const tokens = [
-        //   { token: "5c82312d-645d-45da-af87-e32ce21ca7bb" },
-        //   { token: "e2d1e388-7d92-4a3b-bd88-8fe269fa778a" },
-        // ];
-        // Compilation Error tokens
-        // const tokens = [
-        //   { token: "7054f592-533b-44f1-bb27-4890fcb14a08" },
-        //   { token: "a5db2876-4a8f-4710-9ddc-5109b8100347" },
-        // ];
-        // Runtime Error tokens
-        // const tokens = [
-        //   { token: "9c57e2da-884b-4124-a8cb-c8e66e9906ab" },
-        //   { token: "25182e62-db3a-485e-a1fe-a377674f6de5" },
-        // ];
-        // Time Limit Exceeded tokens
-        // const tokens = [
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        //   { token: "d645b2fd-f69f-4bb9-aec1-bf669e134a71" },
-        // ];
         let submissionResponse = await getBatchSubmission(tokens);
         if (!submissionResponse) {
           throw new TRPCError({

@@ -1,5 +1,6 @@
 export const CPP_JUDGE0_ID = "54";
 export const JAVASCRIPT_JUDGE0_ID = "93";
+export const PYTHON_JUDGE0_ID = "92";
 export const DEFAULT_CPP_INCLUDES = `#include <algorithm>
 #include <array>
 #include <bitset>
