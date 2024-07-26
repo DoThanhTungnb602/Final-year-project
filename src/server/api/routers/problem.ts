@@ -60,6 +60,9 @@ export const problemRouter = createTRPCRouter({
           where: {
             isPublic: true,
           },
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
             id: true,
             title: true,
