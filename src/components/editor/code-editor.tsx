@@ -210,7 +210,9 @@ export function CodeEditor() {
             onClick={onSubmit}
             disabled={submitProblem.isPending}
           >
-            {submitProblem.isPending ? (
+            {submitProblem.isPending ??
+            submitTest.isPending ??
+            submitExercise.isPending ? (
               <Spinner className="mr-2 size-5" />
             ) : (
               <FaCloudArrowUp className="mr-2 size-4" />
